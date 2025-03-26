@@ -2,3 +2,6 @@
 
 # IDE0130: Namespace does not match folder structure
 dotnet_diagnostic.IDE0130.severity = silent
+
+# IDE0005: Remove unnecessary import
+dotnet_diagnostic.IDE0005.severity = warning
