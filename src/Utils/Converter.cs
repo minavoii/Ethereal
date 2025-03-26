@@ -1,17 +1,16 @@
+using System;
 using UnityEngine;
 
-namespace Ethereal.PluginUtils;
+namespace Ethereal.Utils;
 
-internal class Converter
+internal static class Converter
 {
-    internal static T WithinGameObject<T>(T instance, string name = "")
-        where T : Component
+    internal static Component WithinGameObject(Component instance, string name = "")
     {
-        return IntoGameObject(instance, name).GetComponent<T>();
+        return IntoGameObject(instance, name).GetComponent<Component>();
     }
 
-    internal static GameObject IntoGameObject<T>(T component, string name = "")
-        where T : Component
+    internal static GameObject IntoGameObject(Component component, string name = "")
     {
         GameObject gameObject = new() { name = name };
         CopyToGameObject(ref gameObject, component);
@@ -19,11 +18,10 @@ internal class Converter
         return gameObject;
     }
 
-    internal static void CopyToGameObject<T>(ref GameObject gameObject, T component)
-        where T : Component
+    internal static void CopyToGameObject(ref GameObject gameObject, Component component)
     {
-        var type = typeof(T);
-        T innerComponent = gameObject.AddComponent<T>();
+        Type type = component.GetType();
+        Component innerComponent = gameObject.AddComponent(type);
 
         foreach (var property in type.GetProperties())
         {
