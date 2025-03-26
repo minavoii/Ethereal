@@ -1,17 +1,14 @@
 ﻿using System.IO;
 using System.Reflection;
 using BepInEx;
-using BepInEx.Logging;
 using HarmonyLib;
 
 namespace Ethereal;
 
 [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
 [BepInProcess("Aethermancer.exe")]
-public class Plugin : BaseUnityPlugin
+internal class Plugin : BaseUnityPlugin
 {
-    internal static ManualLogSource Log;
-
     internal static readonly string PLUGINS_PATH = Path.GetDirectoryName(
         Assembly.GetExecutingAssembly().Location
     );
@@ -20,11 +17,12 @@ public class Plugin : BaseUnityPlugin
 
     private void Awake()
     {
-        Log = Logger;
+        Log.Plugin = Logger;
 
         Harmony harmony = new(MyPluginInfo.PLUGIN_GUID);
 
         harmony.PatchAll(typeof(Patches.Controller));
         harmony.PatchAll(typeof(Patches.Localisation));
+        harmony.PatchAll(typeof(Patches.Equipment));
     }
 }
