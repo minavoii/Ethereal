@@ -2,17 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Ethereal.PluginUtils;
+namespace Ethereal.Utils;
 
-internal class Collections
+public static class DictionaryExtensions
 {
-    internal static bool TryTakeKey<Key, Value>(
-        Dictionary<Key, Value> di,
+    public static bool TryTakeKey<Key, Value>(
+        this Dictionary<Key, Value> dictionary,
         Func<KeyValuePair<Key, Value>, bool> predicate,
         out Key key
     )
     {
-        var pair = di.FirstOrDefault(predicate);
+        var pair = dictionary.FirstOrDefault(predicate);
         key = pair.Key;
 
         return pair.Value != null;

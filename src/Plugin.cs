@@ -8,7 +8,7 @@ namespace Ethereal;
 
 [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
 [BepInProcess("Aethermancer.exe")]
-public class Plugin : BaseUnityPlugin
+internal class Plugin : BaseUnityPlugin
 {
     internal static ManualLogSource Log;
 
@@ -26,5 +26,6 @@ public class Plugin : BaseUnityPlugin
 
         harmony.PatchAll(typeof(Patches.Controller));
         harmony.PatchAll(typeof(Patches.Localisation));
+        harmony.PatchAll(typeof(Patches.Equipment));
     }
 }
