@@ -11,7 +11,7 @@ internal static class Assets
 
         if (gameObject == null)
         {
-            Plugin.Log.LogError("Could not load asset.");
+            Log.Plugin.LogError($"Could not load asset: {path}:{asset}");
             return null;
         }
 

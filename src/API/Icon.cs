@@ -21,7 +21,7 @@ public static class Icon
     {
         if (!System.IO.File.Exists(path))
         {
-            API2.Log.LogWarning("File not found: " + path);
+            Log.API.LogWarning("File not found: " + path);
             return null;
         }
 

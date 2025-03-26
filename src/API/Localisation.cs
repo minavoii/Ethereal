@@ -203,7 +203,7 @@ public static class Localisation
 
         foreach (Language language in languageList.OrderBy(x => x.addon))
         {
-            API2.Log.LogInfo($"Loaded locale: {language.name}{(language.addon ? " (Addon)" : "")}");
+            Log.API.LogInfo($"Loaded locale: {language.name}{(language.addon ? " (Addon)" : "")}");
 
             if (AllLanguageNames.Contains(language.name))
                 UpdateLanguage(language);

@@ -105,6 +105,6 @@ public static class Equipment
         GameController.Instance.ItemManager.Equipments.Add(equItemInst);
         WorldData.Instance.Referenceables.Add(go.GetComponent<global::Equipment>());
 
-        API2.Log.LogInfo($"Loaded item: {descriptor.name}");
+        Log.API.LogInfo($"Loaded item: {descriptor.name}");
     }
 }
