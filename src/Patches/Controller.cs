@@ -2,7 +2,7 @@ using HarmonyLib;
 
 namespace Ethereal.Patches;
 
-public class Controller
+internal static class Controller
 {
     [HarmonyPatch(typeof(GameController), "Initialize")]
     [HarmonyPrefix]
@@ -10,5 +10,8 @@ public class Controller
     {
         API.Localisation.GenerateTemplate();
         API.Localisation.LoadLanguages();
+
+        API.Localisation.IsReady = true;
+        API.Localisation.ReadQueue();
     }
 }

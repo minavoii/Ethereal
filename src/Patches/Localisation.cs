@@ -7,8 +7,34 @@ using static Ethereal.API.Localisation;
 
 namespace Ethereal.Patches;
 
-public class Localisation
+internal static class Localisation
 {
+    [HarmonyPatch(typeof(Loca), nameof(Loca.Localize))]
+    [HarmonyPrefix]
+    private static bool Localize(string text, ref string __result)
+    {
+        string res = text;
+
+        GameController.Instance.LocalisationData.LocaEntries.TryGetValue(
+            text,
+            out LocalisationData.LocalisationDataEntry value
+        );
+
+        if (value != null)
+        {
+            string localizedString =
+                value.GetLocalizedString(GameSettingsController.Instance.CurrentLanguage)
+                // Required if we get null values from uninitialized strings
+                ?? string.Empty;
+
+            if (localizedString != string.Empty)
+                res = localizedString;
+        }
+
+        __result = res.Replace("\\n", "\n");
+        return false;
+    }
+
     [HarmonyPatch(typeof(Loca), nameof(Loca.GetLanguageString))]
     [HarmonyPrefix]
     private static bool GetLanguageString(ELanguage language, ref string __result)
@@ -53,20 +79,20 @@ public class Localisation
             ELanguage.Chinese => __instance.StringContentSimplifiedChinese,
             ELanguage.Japanese => __instance.StringContentJapanese,
             ELanguage customLang => (
-                Localisations.Get(__instance.StringContent ?? "")?.Get(customLang)
+                CustomLocalisations.Get(__instance.StringContent ?? "")?.data.Get(customLang)
             ) ?? __instance.StringContentEnglish,
         };
 
         return false;
     }
 
-    [HarmonyPatch(typeof(Utils), "GetCultureInfo")]
+    [HarmonyPatch(typeof(global::Utils), "GetCultureInfo")]
     [HarmonyPrefix]
     private static bool GetCultureInfo(ref IFormatProvider __result)
     {
         var CultureInfos =
             (Dictionary<ELanguage, CultureInfo>)
-                AccessTools.Field(typeof(Utils), "CultureInfos").GetValue(null);
+                AccessTools.Field(typeof(global::Utils), "CultureInfos").GetValue(null);
 
         if (CultureInfos == null)
         {
@@ -82,7 +108,7 @@ public class Localisation
                 { ELanguage.Japanese, CultureInfo.CreateSpecificCulture("ja-JP") },
             };
 
-            AccessTools.Field(typeof(Utils), "CultureInfos").SetValue(null, CultureInfos);
+            AccessTools.Field(typeof(global::Utils), "CultureInfos").SetValue(null, CultureInfos);
         }
 
         __result = CultureInfos[GameSettingsController.Instance.CurrentLanguage];
