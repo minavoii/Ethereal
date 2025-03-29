@@ -78,6 +78,11 @@ public static class Localisation
             return;
         }
 
+        // Already translated
+        // Need to return in case multiple mods add the same `StringContent` to localise
+        if (LocalisationData.Instance.LocaEntries.ContainsKey(entry.StringContent))
+            return;
+
         var pair = LocalisationData.Instance.LocaEntries.FirstOrDefault(x =>
             x.Value.ID == entry.ID
         );
@@ -167,7 +172,7 @@ public static class Localisation
             else
                 CustomLocalisations.Add(
                     entry.StringContent,
-                    new((int)lang.Key, new() { { lang.Key, text } })
+                    new(entry.ID, new() { { lang.Key, text } })
                 );
         }
     }
@@ -224,13 +229,17 @@ public static class Localisation
             Enum.GetValues(typeof(ELanguage)).Cast<ELanguage>().Max() + 1 + CustomLanguages.Count;
 
         availableLanguages.Add(langId);
-        CustomLanguages.Add(langId, language.name);
         AllLanguageNames.Add(language.name);
+        CustomLanguages.Add(langId, language.name);
 
         foreach (var (locaId, text) in language.localisations)
         {
-            // Create native localisation if it doesn't exist
-            if (!LocalisationData.Instance.LocaEntries.Any(x => x.Value.ID == locaId))
+            if (
+                !LocalisationData.Instance.LocaEntries.TryTakeKey(
+                    x => x.Value?.ID == locaId,
+                    out string original
+                )
+            )
             {
                 LocalisationData.Instance.LocaEntries.Add(
                     text,
@@ -241,24 +250,16 @@ public static class Localisation
                         StringContentEnglish = text,
                     }
                 );
-            }
 
-            // Create custom localisation if it doesn't exist
-            var pair = CustomLocalisations.FirstOrDefault(x => x.Value.id == locaId);
+                original = text;
+            }
 
             // Already localised in another custom language
-            if (pair.Value != null)
-                pair.Value.data.Add(langId, text);
+            if (CustomLocalisations.TryGetValue(original, out var localisation1))
+                localisation1.data[langId] = text;
             // Not localised in any custom language yet
-            // We need to add a localisation now so we can use it later
-            //   (e.g. we add items later and want to remember their localisation in this language)
             else
-            {
-                if (CustomLocalisations.TryGetValue(text, out var localisation))
-                    localisation.data[langId] = text;
-                else
-                    CustomLocalisations.Add(text, new(locaId, new() { { langId, text } }));
-            }
+                CustomLocalisations.Add(original, new(locaId, new() { { langId, text } }));
         }
 
         // Add culture format
