@@ -37,6 +37,15 @@ public static class Equipment
         Dictionary<string, string> customLanguageEntries
     )> QueueAdd = new();
 
+    private static readonly ConcurrentQueue<(int id, EquipmentDescriptor descriptor)> QueueUpdate =
+        new();
+
+    private static readonly ConcurrentQueue<(
+        string name,
+        ERarity rarity,
+        EquipmentDescriptor descriptor
+    )> QueueUpdateByName = new();
+
     internal static void ReadQueue()
     {
         while (QueueAdd.TryDequeue(out var res))
@@ -50,6 +59,16 @@ public static class Equipment
             }
             else
                 Add(res.descriptor, res.localisationData, res.customLanguageEntries);
+        }
+
+        while (QueueUpdate.TryDequeue(out var res))
+        {
+            Update(res.id, res.descriptor);
+        }
+
+        while (QueueUpdateByName.TryDequeue(out var res))
+        {
+            Update(res.name, res.rarity, res.descriptor);
         }
     }
 
@@ -150,5 +169,102 @@ public static class Equipment
         Add(descriptor);
 
         Localisation.AddLocalisedText(localisationData, customLanguageEntries);
+    }
+
+    public static void Update(int id, EquipmentDescriptor descriptor)
+    {
+        // Defer loading until ready
+        if (GameController.Instance?.ItemManager == null || !IsReady)
+        {
+            QueueUpdate.Enqueue((id, descriptor));
+            return;
+        }
+
+        BaseItem common = GameController
+            .Instance.ItemManager.Equipments.Find(x => x.BaseItem?.ID == id)
+            ?.BaseItem;
+        BaseItem rare = GameController
+            .Instance.ItemManager.Equipments.Find(x => x.RareItem?.ID == id)
+            ?.BaseItem;
+        BaseItem epic = GameController
+            .Instance.ItemManager.Equipments.Find(x => x.EpicItem?.ID == id)
+            ?.BaseItem;
+
+        BaseItem item = common ?? rare ?? epic;
+
+        if (item != null)
+            Update((global::Equipment)item, descriptor);
+    }
+
+    public static void Update(string name, ERarity rarity, EquipmentDescriptor descriptor)
+    {
+        // Defer loading until ready
+        if (GameController.Instance?.ItemManager == null || !IsReady)
+        {
+            QueueUpdateByName.Enqueue((name, rarity, descriptor));
+            return;
+        }
+
+        BaseItem item = rarity switch
+        {
+            ERarity.Epic => GameController
+                .Instance.ItemManager.Equipments.Find(x => x.EpicItem?.Name == name)
+                ?.BaseItem,
+
+            ERarity.Rare => GameController
+                .Instance.ItemManager.Equipments.Find(x => x.RareItem?.Name == name)
+                ?.RareItem,
+
+            ERarity.Common or _ => GameController
+                .Instance.ItemManager.Equipments.Find(x => x.BaseItem?.Name == name)
+                ?.BaseItem,
+        };
+
+        if (item != null)
+            Update((global::Equipment)item, descriptor);
+    }
+
+    private static void Update(global::Equipment equipment, EquipmentDescriptor descriptor)
+    {
+        if (descriptor.name != string.Empty)
+            equipment.Name = descriptor.name;
+
+        if (descriptor.icon != null)
+            equipment.Icon = descriptor.icon;
+
+        if (descriptor.price != 0)
+            equipment.Price = descriptor.price;
+
+        if (descriptor.automaticPricing.HasValue)
+            equipment.AutomaticallySetPrice = descriptor.automaticPricing.Value;
+
+        if (descriptor.type.HasValue)
+            equipment.EquipmentType = descriptor.type.Value;
+
+        if (descriptor.rarity.HasValue)
+            equipment.EquipmentRarity = descriptor.rarity.Value;
+
+        if (descriptor.aura.HasValue)
+            equipment.Aura = descriptor.aura.Value;
+
+        if (descriptor.description != string.Empty)
+            equipment.DescriptionOverride = descriptor.description;
+
+        if (descriptor.passiveEffects.Count != 0)
+        {
+            foreach (PassiveEffect comp in equipment.GetComponents<PassiveEffect>())
+            {
+                Object.DestroyImmediate(comp);
+            }
+
+            GameObject go = equipment.gameObject;
+
+            foreach (PassiveEffect passive in descriptor.passiveEffects)
+            {
+                Utils.Converter.CopyToGameObject(ref go, passive);
+            }
+
+            equipment.InitializeReferenceable();
+        }
     }
 }
