@@ -6,7 +6,7 @@ namespace Ethereal.Utils;
 
 public static class DictionaryExtensions
 {
-    public static bool TryTakeKey<Key, Value>(
+    public static bool TryGetKey<Key, Value>(
         this Dictionary<Key, Value> dictionary,
         Func<KeyValuePair<Key, Value>, bool> predicate,
         out Key key

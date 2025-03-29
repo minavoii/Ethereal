@@ -235,7 +235,7 @@ public static class Localisation
         foreach (var (locaId, text) in language.localisations)
         {
             if (
-                !LocalisationData.Instance.LocaEntries.TryTakeKey(
+                !LocalisationData.Instance.LocaEntries.TryGetKey(
                     x => x.Value?.ID == locaId,
                     out string original
                 )
@@ -336,10 +336,10 @@ public static class Localisation
             else if (language.name == Loca.GetLanguageString(ELanguage.Chinese))
                 entry.StringContentSimplifiedChinese = text;
             // Custom languages
-            else if (CustomLanguages.TryTakeKey(x => x.Value == language.name, out var langId))
+            else if (CustomLanguages.TryGetKey(x => x.Value == language.name, out var langId))
             {
                 // Update text
-                if (CustomLocalisations.TryTakeKey(x => x.Value.id == locaId, out var key))
+                if (CustomLocalisations.TryGetKey(x => x.Value.id == locaId, out var key))
                     CustomLocalisations[key].data[langId] = text;
                 // Add text
                 else
