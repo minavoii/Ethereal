@@ -6,58 +6,82 @@ namespace Ethereal.API;
 
 public static class Equipment
 {
-    public class EquipmentDescriptor(
-        int id,
-        string name,
-        Sprite icon,
-        int price,
-        bool automaticPricing,
-        global::Equipment.EEquipmentType type,
-        ERarity rarity,
-        bool aura,
-        string description,
-        List<PassiveEffect> passiveEffects
-    )
+    public class EquipmentDescriptor
     {
-        public readonly int id = id;
+        public int id;
 
-        public readonly string name = name;
+        public string name = "";
 
-        public readonly Sprite icon = icon;
+        public Sprite icon;
 
-        public readonly int price = price;
+        public int price = 0;
 
-        public readonly bool automaticPricing = automaticPricing;
+        public bool? automaticPricing = true;
 
-        public readonly global::Equipment.EEquipmentType type = type;
+        public global::Equipment.EEquipmentType? type;
 
-        public readonly ERarity rarity = rarity;
+        public ERarity? rarity;
 
-        public readonly bool aura = aura;
+        public bool? aura = false;
 
-        public readonly string description = description;
+        public string description = "";
 
-        public readonly List<PassiveEffect> passiveEffects = passiveEffects;
+        public List<PassiveEffect> passiveEffects = [];
     }
 
     internal static bool IsReady = false;
 
-    private static readonly ConcurrentQueue<EquipmentDescriptor> Queue = new();
+    private static readonly ConcurrentQueue<(
+        EquipmentDescriptor descriptor,
+        LocalisationData.LocalisationDataEntry localisationData,
+        Dictionary<string, string> customLanguageEntries
+    )> QueueAdd = new();
 
     internal static void ReadQueue()
     {
-        while (Queue.TryDequeue(out var res))
+        while (QueueAdd.TryDequeue(out var res))
         {
-            Add(res);
+            if (res.customLanguageEntries == null)
+            {
+                if (res.localisationData == null)
+                    Add(res.descriptor);
+                else
+                    Add(res.descriptor, res.localisationData);
+            }
+            else
+                Add(res.descriptor, res.localisationData, res.customLanguageEntries);
         }
     }
 
     public static void Add(EquipmentDescriptor descriptor)
     {
+        LocalisationData.LocalisationDataEntry defaultLocalisation = new()
+        {
+            ID = descriptor.id,
+            StringContent = descriptor.name,
+            StringContentEnglish = descriptor.name,
+        };
+
         // Defer loading until ready
         if (GameController.Instance?.ItemManager == null || !IsReady)
         {
-            Queue.Enqueue(descriptor);
+            // Queue2.Enqueue((descriptor, defaultLocalisation));
+            QueueAdd.Enqueue((descriptor, null, null));
+            return;
+        }
+
+        Add(descriptor, defaultLocalisation);
+    }
+
+    public static void Add(
+        EquipmentDescriptor descriptor,
+        LocalisationData.LocalisationDataEntry localisationData
+    )
+    {
+        // Defer loading until ready
+        if (GameController.Instance?.ItemManager == null || !IsReady)
+        {
+            QueueAdd.Enqueue((descriptor, localisationData, null));
             return;
         }
 
@@ -71,10 +95,10 @@ public static class Equipment
             Name = descriptor.name,
             Icon = descriptor.icon,
             Price = descriptor.price,
-            EquipmentType = descriptor.type,
-            EquipmentRarity = descriptor.rarity,
-            AutomaticallySetPrice = descriptor.automaticPricing,
-            Aura = descriptor.aura,
+            EquipmentType = descriptor.type ?? global::Equipment.EEquipmentType.Accessory,
+            EquipmentRarity = descriptor.rarity ?? ERarity.Common,
+            AutomaticallySetPrice = descriptor.automaticPricing ?? false,
+            Aura = descriptor.aura ?? false,
             DescriptionOverride = descriptor.description,
             PassiveEffectList = [],
         };
@@ -105,6 +129,26 @@ public static class Equipment
         GameController.Instance.ItemManager.Equipments.Add(equItemInst);
         WorldData.Instance.Referenceables.Add(go.GetComponent<global::Equipment>());
 
+        Localisation.AddLocalisedText(localisationData);
+
         Log.API.LogInfo($"Loaded item: {descriptor.name}");
+    }
+
+    public static void Add(
+        EquipmentDescriptor descriptor,
+        LocalisationData.LocalisationDataEntry localisationData,
+        Dictionary<string, string> customLanguageEntries
+    )
+    {
+        // Defer loading until ready
+        if (GameController.Instance?.ItemManager == null || !IsReady)
+        {
+            QueueAdd.Enqueue((descriptor, localisationData, customLanguageEntries));
+            return;
+        }
+
+        Add(descriptor);
+
+        Localisation.AddLocalisedText(localisationData, customLanguageEntries);
     }
 }
