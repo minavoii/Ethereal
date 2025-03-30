@@ -29,7 +29,7 @@ public static class Equipment
         public List<PassiveEffect> passiveEffects = [];
     }
 
-    internal static bool IsReady = false;
+    private static bool IsReady = false;
 
     private static readonly ConcurrentQueue<(
         EquipmentDescriptor descriptor,
@@ -48,6 +48,8 @@ public static class Equipment
 
     internal static void ReadQueue()
     {
+        IsReady = true;
+
         while (QueueAdd.TryDequeue(out var res))
         {
             if (res.customLanguageEntries == null)
