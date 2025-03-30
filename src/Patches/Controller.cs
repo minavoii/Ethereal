@@ -11,7 +11,6 @@ internal static class Controller
         API.Localisation.GenerateTemplate();
         API.Localisation.LoadLanguages();
 
-        API.Localisation.IsReady = true;
         API.Localisation.ReadQueue();
     }
 }

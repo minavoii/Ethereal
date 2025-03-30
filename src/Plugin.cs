@@ -9,11 +9,11 @@ namespace Ethereal;
 [BepInProcess("Aethermancer.exe")]
 internal class Plugin : BaseUnityPlugin
 {
-    internal static readonly string PLUGINS_PATH = Path.GetDirectoryName(
+    private static readonly string PluginsPath = Path.GetDirectoryName(
         Assembly.GetExecutingAssembly().Location
     );
 
-    internal static readonly string ETHEREAL_PATH = Path.Join(PLUGINS_PATH, "ethereal");
+    internal static readonly string EtherealPath = Path.Join(PluginsPath, "Ethereal");
 
     private void Awake()
     {

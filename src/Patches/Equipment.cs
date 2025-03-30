@@ -8,7 +8,6 @@ internal static class Equipment
     [HarmonyPrefix]
     private static void BuildCache()
     {
-        API.Equipment.IsReady = true;
         API.Equipment.ReadQueue();
     }
 }
