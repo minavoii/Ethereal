@@ -10,7 +10,8 @@ internal static class Controller
     {
         API.Localisation.GenerateTemplate();
         API.Localisation.LoadLanguages();
-
         API.Localisation.ReadQueue();
+
+        API.Monster.ReadQueue();
     }
 }
