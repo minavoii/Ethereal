@@ -135,7 +135,7 @@ public static class Monster
 
         if (descriptor.signatureTrait != string.Empty)
         {
-            Trait trait = GetTrait(descriptor.signatureTrait);
+            global::Trait trait = Trait.Get(descriptor.signatureTrait);
 
             if (trait != null)
                 monster.GetComponent<SkillManager>().SignatureTrait = trait.gameObject;
@@ -199,34 +199,6 @@ public static class Monster
 
             if (action != null)
                 return action;
-        }
-
-        return null;
-    }
-
-    private static Trait GetTrait(string name)
-    {
-        // Find trait by monster type
-        foreach (MonsterType type in GameController.Instance.MonsterTypes)
-        {
-            Trait trait = type.Traits.Find(x => x.Name == name);
-
-            if (trait != null)
-                return trait;
-        }
-
-        // Find signature trait
-        foreach (GameObject monster in GameController.Instance.CompleteMonsterList)
-        {
-            if (monster == null)
-                continue;
-
-            Trait trait = monster
-                .GetComponent<SkillManager>()
-                ?.SignatureTrait?.GetComponent<Trait>();
-
-            if (trait.Name == name)
-                return trait;
         }
 
         return null;
