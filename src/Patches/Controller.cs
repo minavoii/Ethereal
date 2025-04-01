@@ -13,5 +13,6 @@ internal static class Controller
         API.Localisation.ReadQueue();
 
         API.Monster.ReadQueue();
+        API.Trait.ReadQueue();
     }
 }
