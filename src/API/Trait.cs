@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Ethereal.API;
@@ -8,6 +9,8 @@ public static class Trait
 {
     public class TraitDescriptor()
     {
+        public int id;
+
         public string name = "";
 
         public string description = "";
@@ -27,6 +30,8 @@ public static class Trait
         public ESkillType? skillType;
     }
 
+    private static readonly ConcurrentQueue<TraitDescriptor> Queue = new();
+
     private static readonly ConcurrentQueue<(int id, TraitDescriptor descriptor)> QueueUpdate =
         new();
 
@@ -40,6 +45,9 @@ public static class Trait
     internal static void ReadQueue()
     {
         IsReady = true;
+
+        while (Queue.TryDequeue(out var res))
+            Add(res);
 
         while (QueueUpdate.TryDequeue(out var res))
             Update(res.id, res.descriptor);
@@ -102,6 +110,48 @@ public static class Trait
         }
 
         return null;
+    }
+
+    public static void Add(TraitDescriptor descriptor)
+    {
+        // Defer loading until ready
+        if (GameController.Instance?.CompleteMonsterList == null || !IsReady)
+        {
+            Queue.Enqueue(descriptor);
+            return;
+        }
+
+        var trait = new global::Trait()
+        {
+            ID = descriptor.id,
+            Name = descriptor.name,
+            Description = descriptor.description,
+            Sidenote = descriptor.sidenote,
+            Aura = descriptor.aura ?? false,
+            MaverickSkill = descriptor.maverickSkill ?? false,
+            PassiveEffectList = descriptor.passiveEffects,
+            Types =
+            [
+                .. descriptor.types.Select(x =>
+                    GameController.Instance.MonsterTypes.Find(y => y?.Type == x)?.gameObject
+                ),
+            ],
+            Icon = descriptor.icon,
+            SkillType = descriptor.skillType ?? ESkillType.Shared,
+        };
+
+        var go = Utils.Converter.IntoGameObject(trait);
+
+        foreach (EMonsterType monsterType in descriptor.types)
+        {
+            MonsterType type = GameController.Instance.MonsterTypes.Find(x =>
+                x?.Type == monsterType
+            );
+
+            type.Traits.Add(go.GetComponent<global::Trait>());
+        }
+
+        WorldData.Instance.Referenceables.Add(go.GetComponent<global::Trait>());
     }
 
     public static void Update(int id, TraitDescriptor descriptor)
