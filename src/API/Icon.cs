@@ -7,6 +7,10 @@ public static class Icon
     public enum IconType
     {
         Equipment,
+        Action,
+        ActionSmall,
+        ActionCutSmall,
+        Trait,
     }
 
     public static Sprite LoadFromAsset(string path, string asset)
@@ -17,7 +21,7 @@ public static class Icon
         return sprite;
     }
 
-    public static Sprite LoadFromImage(IconType iconType, string path, string iconName)
+    public static Sprite LoadFromImage(IconType iconType, string path)
     {
         if (!System.IO.File.Exists(path))
         {
@@ -25,27 +29,32 @@ public static class Icon
             return null;
         }
 
-        Sprite sprite = null;
-
-        if (iconType == IconType.Equipment)
-            sprite = GetEquipment("Equipment_" + iconName.Replace(" ", ""));
+        Sprite sprite = CreateBySize(
+            iconType switch
+            {
+                IconType.Equipment or IconType.Trait => (48, 48),
+                IconType.Action => (18, 18),
+                IconType.ActionSmall => (12, 12),
+                IconType.ActionCutSmall => (12, 8),
+                _ => (0, 0),
+            }
+        );
 
         sprite.texture.LoadImage(System.IO.File.ReadAllBytes(path));
 
         return sprite;
     }
 
-    private static Sprite GetEquipment(string name)
+    private static Sprite CreateBySize((int width, int height) size)
     {
-        Texture2D texture = new(48, 48, TextureFormat.ARGB32, false)
+        Texture2D texture = new(size.width, size.height, TextureFormat.ARGB32, false)
         {
-            name = name,
             filterMode = FilterMode.Point,
         };
 
         Sprite sprite = Sprite.CreateSprite(
             texture,
-            new Rect(0, 0, 48, 48),
+            new Rect(0, 0, size.width, size.height),
             new Vector2(0.5f, 0.5f),
             1,
             1,
@@ -54,8 +63,6 @@ public static class Icon
             true,
             []
         );
-
-        sprite.name = name;
 
         return sprite;
     }
