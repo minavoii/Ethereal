@@ -11,6 +11,7 @@ public static class Icon
         ActionSmall,
         ActionCutSmall,
         Trait,
+        MonsterType,
     }
 
     public static Sprite LoadFromAsset(string path, string asset)
@@ -36,6 +37,7 @@ public static class Icon
                 IconType.Action => (18, 18),
                 IconType.ActionSmall => (12, 12),
                 IconType.ActionCutSmall => (12, 8),
+                IconType.MonsterType => (7, 7),
                 _ => (0, 0),
             }
         );
