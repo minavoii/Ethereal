@@ -6,7 +6,7 @@ internal static class Controller
 {
     [HarmonyPatch(typeof(GameController), "Initialize")]
     [HarmonyPrefix]
-    private static void PostFix()
+    private static void Prefix()
     {
         API.Localisation.GenerateTemplate();
         API.Localisation.LoadLanguages();
@@ -16,5 +16,12 @@ internal static class Controller
         API.Trait.ReadQueue();
         API.Action.ReadQueue();
         API.MonsterTypes.ReadQueue();
+    }
+
+    [HarmonyPatch(typeof(GameController), "Initialize")]
+    [HarmonyPostfix]
+    private static void Postfix()
+    {
+        API.Buffs.ReadQueue();
     }
 }
