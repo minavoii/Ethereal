@@ -6,12 +6,14 @@ public static class Icon
 {
     public enum IconType
     {
-        Equipment,
         Action,
         ActionSmall,
         ActionCutSmall,
         Trait,
         MonsterType,
+        Element,
+        ElementSmall,
+        Equipment,
     }
 
     public static Sprite LoadFromAsset(string path, string asset)
@@ -33,11 +35,13 @@ public static class Icon
         Sprite sprite = CreateBySize(
             iconType switch
             {
-                IconType.Equipment or IconType.Trait => (48, 48),
                 IconType.Action => (18, 18),
                 IconType.ActionSmall => (12, 12),
                 IconType.ActionCutSmall => (12, 8),
                 IconType.MonsterType => (7, 7),
+                IconType.Trait or IconType.Equipment => (48, 48),
+                IconType.Element => (8, 8),
+                IconType.ElementSmall => (4, 4),
                 _ => (0, 0),
             }
         );

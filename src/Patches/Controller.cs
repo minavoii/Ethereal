@@ -23,5 +23,6 @@ internal static class Controller
     private static void Postfix()
     {
         API.Buffs.ReadQueue();
+        API.Elements.ReadQueue();
     }
 }
