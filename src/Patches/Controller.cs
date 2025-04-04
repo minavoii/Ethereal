@@ -15,5 +15,6 @@ internal static class Controller
         API.Monster.ReadQueue();
         API.Trait.ReadQueue();
         API.Action.ReadQueue();
+        API.MonsterTypes.ReadQueue();
     }
 }
