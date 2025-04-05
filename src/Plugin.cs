@@ -23,6 +23,6 @@ internal class Plugin : BaseUnityPlugin
 
         harmony.PatchAll(typeof(Patches.Controller));
         harmony.PatchAll(typeof(Patches.Localisation));
-        harmony.PatchAll(typeof(Patches.Equipment));
+        harmony.PatchAll(typeof(Patches.World));
     }
 }
