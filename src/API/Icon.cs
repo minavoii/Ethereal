@@ -14,6 +14,7 @@ public static class Icon
         Element,
         ElementSmall,
         Equipment,
+        Artifact,
     }
 
     public static Sprite LoadFromAsset(string path, string asset)
@@ -39,7 +40,7 @@ public static class Icon
                 IconType.ActionSmall => (12, 12),
                 IconType.ActionCutSmall => (12, 8),
                 IconType.MonsterType => (7, 7),
-                IconType.Trait or IconType.Equipment => (48, 48),
+                IconType.Trait or IconType.Equipment or IconType.Artifact => (48, 48),
                 IconType.Element => (8, 8),
                 IconType.ElementSmall => (4, 4),
                 _ => (0, 0),
