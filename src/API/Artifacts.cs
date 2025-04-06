@@ -8,6 +8,8 @@ public static class Artifacts
 {
     public class ArtifactDescriptor
     {
+        public int id;
+
         public string name = "";
 
         public string description = "";
@@ -21,9 +23,17 @@ public static class Artifacts
         public Sprite actionIconSmall;
 
         public List<ActionModifier> actions = [];
+
+        public List<EElement> elements = [];
     }
 
     private static bool IsReady = false;
+
+    private static readonly ConcurrentQueue<(
+        ArtifactDescriptor descriptor,
+        LocalisationData.LocalisationDataEntry localisationData,
+        Dictionary<string, string> customLanguageEntries
+    )> QueueAdd = new();
 
     private static readonly ConcurrentQueue<(int id, ArtifactDescriptor descriptor)> QueueUpdate =
         new();
@@ -37,8 +47,24 @@ public static class Artifacts
     {
         IsReady = true;
 
+        while (QueueAdd.TryDequeue(out var res))
+        {
+            if (res.customLanguageEntries == null)
+            {
+                if (res.localisationData == null)
+                    Add(res.descriptor);
+                else
+                    Add(res.descriptor, res.localisationData);
+            }
+            else
+                Add(res.descriptor, res.localisationData, res.customLanguageEntries);
+        }
+
         while (QueueUpdate.TryDequeue(out var res))
             Update(res.id, res.descriptor);
+
+        while (QueueUpdateByName.TryDequeue(out var res))
+            Update(res.name, res.descriptor);
     }
 
     public static Consumable Get(int id)
@@ -57,6 +83,75 @@ public static class Artifacts
         );
 
         return item?.BaseItem as Consumable;
+    }
+
+    public static void Add(ArtifactDescriptor descriptor)
+    {
+        LocalisationData.LocalisationDataEntry defaultLocalisation = new()
+        {
+            ID = descriptor.id,
+            StringContent = descriptor.name,
+            StringContentEnglish = descriptor.name,
+        };
+
+        // Defer loading until ready
+        if (GameController.Instance?.ItemManager == null || !IsReady)
+        {
+            QueueAdd.Enqueue((descriptor, null, null));
+            return;
+        }
+
+        Add(descriptor, defaultLocalisation);
+    }
+
+    public static void Add(
+        ArtifactDescriptor descriptor,
+        LocalisationData.LocalisationDataEntry localisationData
+    )
+    {
+        // Defer loading until ready
+        if (GameController.Instance?.ItemManager == null || !IsReady)
+        {
+            QueueAdd.Enqueue((descriptor, localisationData, null));
+            return;
+        }
+
+        // Instantiating a BaseAction will call its `Update()` method,
+        //   preventing us from running `AddComponent<BaseAction>()`,
+        //   which instantiates the object by default
+        // We clone an existing prefab and edit it to prevent this behavior
+        Consumable original = (Consumable)
+            GameController.Instance.ItemManager.Consumables.Find(x => x != null).BaseItem;
+
+        Consumable artifact = Object.Instantiate(original);
+        artifact.ID = descriptor.id;
+
+        // We need the description to be empty if the user didn't provide any,
+        //   so the default description can show up
+        artifact.Description = descriptor.description;
+        artifact.Action.GetComponent<BaseAction>().DescriptionOverride = descriptor.description;
+
+        GameController.Instance.ItemManager.Consumables.Add(new() { BaseItem = artifact });
+        WorldData.Instance.Referenceables.Add(artifact);
+
+        Update(descriptor.id, descriptor);
+    }
+
+    public static void Add(
+        ArtifactDescriptor descriptor,
+        LocalisationData.LocalisationDataEntry localisationData,
+        Dictionary<string, string> customLanguageEntries
+    )
+    {
+        // Defer loading until ready
+        if (GameController.Instance?.ItemManager == null || !IsReady)
+        {
+            QueueAdd.Enqueue((descriptor, localisationData, customLanguageEntries));
+            return;
+        }
+
+        Add(descriptor);
+        Localisation.AddLocalisedText(localisationData, customLanguageEntries);
     }
 
     public static void Update(int id, ArtifactDescriptor descriptor)
@@ -123,5 +218,8 @@ public static class Artifacts
 
             action.InitializeReferenceable();
         }
+
+        if (descriptor.elements.Count != 0)
+            action.ElementsOverride = descriptor.elements;
     }
 }
