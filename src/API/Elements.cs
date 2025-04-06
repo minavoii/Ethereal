@@ -38,9 +38,16 @@ public static class Elements
             return;
         }
 
-        Prefabs.Instance.ElementIcons[(int)element] = icons.icon;
-        Prefabs.Instance.ElementIconsSmall[(int)element] = icons.iconSmall;
-        Prefabs.Instance.ElementIconsSmallEmpty[(int)element] = icons.iconSmallEmpty;
-        Prefabs.Instance.ElementIconsSmallFilled[(int)element] = icons.iconSmallFilled;
+        if (icons.icon != null)
+            Prefabs.Instance.ElementIcons[(int)element] = icons.icon;
+
+        if (icons.iconSmall != null)
+            Prefabs.Instance.ElementIconsSmall[(int)element] = icons.iconSmall;
+
+        if (icons.iconSmallEmpty != null)
+            Prefabs.Instance.ElementIconsSmallEmpty[(int)element] = icons.iconSmallEmpty;
+
+        if (icons.iconSmallFilled != null)
+            Prefabs.Instance.ElementIconsSmallFilled[(int)element] = icons.iconSmallFilled;
     }
 }
