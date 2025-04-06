@@ -134,7 +134,11 @@ public static class Artifacts
         GameController.Instance.ItemManager.Consumables.Add(new() { BaseItem = artifact });
         WorldData.Instance.Referenceables.Add(artifact);
 
+        Localisation.AddLocalisedText(localisationData);
+
         Update(descriptor.id, descriptor);
+
+        Log.API.LogInfo($"Loaded artifact: {descriptor.name}");
     }
 
     public static void Add(
@@ -151,6 +155,7 @@ public static class Artifacts
         }
 
         Add(descriptor);
+
         Localisation.AddLocalisedText(localisationData, customLanguageEntries);
     }
 
