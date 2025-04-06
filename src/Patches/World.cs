@@ -10,5 +10,6 @@ internal static class World
     {
         API.Artifacts.ReadQueue();
         API.Equipment.ReadQueue();
+        API.Mementos.ReadQueue();
     }
 }
