@@ -24,18 +24,36 @@ public static class Mementos
 
     public static MonsterMemento Get(int id)
     {
-        ItemManager.MonsterMementoInstance item =
-            GameController.Instance.ItemManager.MonsterMementos.Find(x => x?.BaseItem.ID == id);
-
-        return item?.BaseItem as MonsterMemento;
+        return GameController
+                .Instance.ItemManager.MonsterMementos.Find(x => x?.BaseItem.ID == id)
+                ?.BaseItem as MonsterMemento;
     }
 
     public static MonsterMemento Get(string name)
     {
-        ItemManager.MonsterMementoInstance item =
-            GameController.Instance.ItemManager.MonsterMementos.Find(x => x?.BaseItem.Name == name);
+        return GameController
+                .Instance.ItemManager.MonsterMementos.Find(x => x?.BaseItem.Name == name)
+                ?.BaseItem as MonsterMemento;
+    }
 
-        return item?.BaseItem as MonsterMemento;
+    public static bool TryGet(int id, out MonsterMemento result)
+    {
+        if (!IsReady)
+            result = null;
+        else
+            result = Get(id);
+
+        return result != null;
+    }
+
+    public static bool TryGet(string name, out MonsterMemento result)
+    {
+        if (!IsReady)
+            result = null;
+        else
+            result = Get(name);
+
+        return result != null;
     }
 
     public static void UpdateIcon(int id, Sprite icon)
@@ -47,7 +65,8 @@ public static class Mementos
             return;
         }
 
-        UpdateIcon(Get(id), icon);
+        if (TryGet(id, out var memento))
+            UpdateIcon(memento, icon);
     }
 
     public static void UpdateIcon(string name, Sprite icon)
@@ -59,7 +78,8 @@ public static class Mementos
             return;
         }
 
-        UpdateIcon(Get(name), icon);
+        if (TryGet(name, out var memento))
+            UpdateIcon(memento, icon);
     }
 
     private static void UpdateIcon(MonsterMemento memento, Sprite icon)

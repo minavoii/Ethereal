@@ -23,6 +23,16 @@ public static class MonsterTypes
         return GameController.Instance.MonsterTypes.Find(x => x?.Type == monsterType);
     }
 
+    public static bool TryGet(EMonsterType monsterType, out MonsterType result)
+    {
+        if (!IsReady)
+            result = null;
+        else
+            result = Get(monsterType);
+
+        return result != null;
+    }
+
     public static void UpdateIcon(EMonsterType monsterType, Sprite typeIcon)
     {
         // Defer loading until ready
@@ -32,6 +42,7 @@ public static class MonsterTypes
             return;
         }
 
-        Get(monsterType).TypeIcon = typeIcon;
+        if (TryGet(monsterType, out var type))
+            type.TypeIcon = typeIcon;
     }
 }

@@ -112,6 +112,26 @@ public static class Trait
         return null;
     }
 
+    public static bool TryGet(int id, out global::Trait result)
+    {
+        if (!IsReady)
+            result = null;
+        else
+            result = Get(id);
+
+        return result != null;
+    }
+
+    public static bool TryGet(string name, out global::Trait result)
+    {
+        if (!IsReady)
+            result = null;
+        else
+            result = Get(name);
+
+        return result != null;
+    }
+
     public static void Add(TraitDescriptor descriptor)
     {
         // Defer loading until ready
@@ -163,7 +183,8 @@ public static class Trait
             return;
         }
 
-        Update(Get(id), descriptor);
+        if (TryGet(id, out var trait))
+            Update(trait, descriptor);
     }
 
     public static void Update(string name, TraitDescriptor descriptor)
@@ -175,7 +196,8 @@ public static class Trait
             return;
         }
 
-        Update(Get(name), descriptor);
+        if (TryGet(name, out var trait))
+            Update(trait, descriptor);
     }
 
     private static void Update(global::Trait trait, TraitDescriptor descriptor)

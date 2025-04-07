@@ -34,6 +34,26 @@ public static class Buffs
             ?? Prefabs.Instance.AllDebuffs.Find(x => x.Name == name);
     }
 
+    public static bool TryGet(int id, out Buff result)
+    {
+        if (!IsReady)
+            result = null;
+        else
+            result = Get(id);
+
+        return result != null;
+    }
+
+    public static bool TryGet(string name, out Buff result)
+    {
+        if (!IsReady)
+            result = null;
+        else
+            result = Get(name);
+
+        return result != null;
+    }
+
     public static void UpdateIcon(int id, Sprite icon)
     {
         // Defer loading until ready
@@ -43,7 +63,8 @@ public static class Buffs
             return;
         }
 
-        UpdateIcon(Get(id), icon);
+        if (TryGet(id, out var buff))
+            UpdateIcon(buff, icon);
     }
 
     public static void UpdateIcon(string name, Sprite icon)
@@ -55,7 +76,8 @@ public static class Buffs
             return;
         }
 
-        UpdateIcon(Get(name), icon);
+        if (TryGet(name, out var buff))
+            UpdateIcon(buff, icon);
     }
 
     private static void UpdateIcon(Buff buff, Sprite icon)
