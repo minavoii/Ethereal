@@ -41,11 +41,11 @@ public static class Monsters
     {
         IsReady = true;
 
-        while (QueueUpdate.TryDequeue(out var res))
-            Update(res.id, res.descriptor);
+        while (QueueUpdate.TryDequeue(out var item))
+            Update(item.id, item.descriptor);
 
-        while (QueueUpdateByName.TryDequeue(out var res))
-            Update(res.name, res.descriptor);
+        while (QueueUpdateByName.TryDequeue(out var item))
+            Update(item.name, item.descriptor);
     }
 
     public static Monster Get(int id)

@@ -14,8 +14,8 @@ public static class MonsterTypes
     {
         IsReady = true;
 
-        while (Queue.TryDequeue(out var res))
-            UpdateIcon(res.monsterType, res.typeIcon);
+        while (Queue.TryDequeue(out var item))
+            UpdateIcon(item.monsterType, item.typeIcon);
     }
 
     public static MonsterType Get(EMonsterType monsterType)

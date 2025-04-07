@@ -50,27 +50,27 @@ public static class Equipments
     {
         IsReady = true;
 
-        while (QueueAdd.TryDequeue(out var res))
+        while (QueueAdd.TryDequeue(out var item))
         {
-            if (res.customLanguageEntries == null)
+            if (item.customLanguageEntries == null)
             {
-                if (res.localisationData == null)
-                    Add(res.descriptor);
+                if (item.localisationData == null)
+                    Add(item.descriptor);
                 else
-                    Add(res.descriptor, res.localisationData);
+                    Add(item.descriptor, item.localisationData);
             }
             else
-                Add(res.descriptor, res.localisationData, res.customLanguageEntries);
+                Add(item.descriptor, item.localisationData, item.customLanguageEntries);
         }
 
-        while (QueueUpdate.TryDequeue(out var res))
+        while (QueueUpdate.TryDequeue(out var item))
         {
-            Update(res.id, res.descriptor);
+            Update(item.id, item.descriptor);
         }
 
-        while (QueueUpdateByName.TryDequeue(out var res))
+        while (QueueUpdateByName.TryDequeue(out var item))
         {
-            Update(res.name, res.rarity, res.descriptor);
+            Update(item.name, item.rarity, item.descriptor);
         }
     }
 

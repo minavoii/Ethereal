@@ -46,14 +46,14 @@ public static class Traits
     {
         IsReady = true;
 
-        while (Queue.TryDequeue(out var res))
-            Add(res);
+        while (Queue.TryDequeue(out var item))
+            Add(item);
 
-        while (QueueUpdate.TryDequeue(out var res))
-            Update(res.id, res.descriptor);
+        while (QueueUpdate.TryDequeue(out var item))
+            Update(item.id, item.descriptor);
 
-        while (QueueUpdateByName.TryDequeue(out var res))
-            Update(res.name, res.descriptor);
+        while (QueueUpdateByName.TryDequeue(out var item))
+            Update(item.name, item.descriptor);
     }
 
     public static global::Trait Get(int id)

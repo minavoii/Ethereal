@@ -25,8 +25,11 @@ public static class Elements
     {
         IsReady = true;
 
-        while (QueueUpdate.TryDequeue(out var res))
-            UpdateIcon(res.element, res.icons);
+        while (QueueUpdate.TryDequeue(out var item))
+            UpdateIcon(item.element, item.icons);
+
+        while (QueueUpdate.TryDequeue(out var item))
+            UpdateIcon(item.element, item.icons);
     }
 
     public static void UpdateIcon(EElement element, ElementIcons icons)
