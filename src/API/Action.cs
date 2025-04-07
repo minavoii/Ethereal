@@ -83,28 +83,50 @@ public static class Action
         return null;
     }
 
+    public static bool TryGet(int id, out BaseAction result)
+    {
+        if (!IsReady)
+            result = null;
+        else
+            result = Get(id);
+
+        return result != null;
+    }
+
+    public static bool TryGet(string name, out BaseAction result)
+    {
+        if (!IsReady)
+            result = null;
+        else
+            result = Get(name);
+
+        return result != null;
+    }
+
     public static void Update(int id, ActionDescriptor descriptor)
     {
         // Defer loading until ready
-        if (GameController.Instance?.CompleteMonsterList == null || !IsReady)
+        if (!IsReady)
         {
             QueueUpdate.Enqueue((id, descriptor));
             return;
         }
 
-        Update(Get(id), descriptor);
+        if (TryGet(id, out var action))
+            Update(action, descriptor);
     }
 
     public static void Update(string name, ActionDescriptor descriptor)
     {
         // Defer loading until ready
-        if (GameController.Instance?.CompleteMonsterList == null || !IsReady)
+        if (!IsReady)
         {
             QueueUpdateByName.Enqueue((name, descriptor));
             return;
         }
 
-        Update(Get(name), descriptor);
+        if (TryGet(name, out var action))
+            Update(action, descriptor);
     }
 
     private static void Update(BaseAction action, ActionDescriptor descriptor)

@@ -48,44 +48,66 @@ public static class Monster
             Update(res.name, res.descriptor);
     }
 
+    public static global::Monster Get(int id)
+    {
+        return GameController
+            .Instance.CompleteMonsterList.Find(x => x?.GetComponent<global::Monster>()?.MonID == id)
+            .GetComponent<global::Monster>();
+    }
+
+    public static global::Monster Get(string name)
+    {
+        return GameController
+            .Instance.CompleteMonsterList.Find(x =>
+                x?.GetComponent<global::Monster>()?.Name == name
+            )
+            .GetComponent<global::Monster>();
+    }
+
+    public static bool TryGet(int id, out global::Monster result)
+    {
+        if (!IsReady)
+            result = null;
+        else
+            result = Get(id);
+
+        return result != null;
+    }
+
+    public static bool TryGet(string name, out global::Monster result)
+    {
+        if (!IsReady)
+            result = null;
+        else
+            result = Get(name);
+
+        return result != null;
+    }
+
     public static void Update(int id, MonsterDescriptor descriptor)
     {
         // Defer loading until ready
-        if (GameController.Instance?.CompleteMonsterList == null || !IsReady)
+        if (!IsReady)
         {
             QueueUpdate.Enqueue((id, descriptor));
             return;
         }
 
-        global::Monster monster = GameController
-            .Instance.CompleteMonsterList.Find(x => x?.GetComponent<global::Monster>()?.MonID == id)
-            .GetComponent<global::Monster>();
-
-        if (monster == null)
-            return;
-
-        Update(monster, descriptor);
+        if (TryGet(id, out var monster))
+            Update(monster, descriptor);
     }
 
     public static void Update(string name, MonsterDescriptor descriptor)
     {
         // Defer loading until ready
-        if (GameController.Instance?.CompleteMonsterList == null || !IsReady)
+        if (!IsReady)
         {
             QueueUpdateByName.Enqueue((name, descriptor));
             return;
         }
 
-        global::Monster monster = GameController
-            .Instance.CompleteMonsterList.Find(x =>
-                x?.GetComponent<global::Monster>()?.Name == name
-            )
-            .GetComponent<global::Monster>();
-
-        if (monster == null)
-            return;
-
-        Update(monster, descriptor);
+        if (TryGet(name, out var monster))
+            Update(monster, descriptor);
     }
 
     private static void Update(global::Monster monster, MonsterDescriptor descriptor)
@@ -147,7 +169,7 @@ public static class Monster
 
             foreach (string actionName in descriptor.startingActions)
             {
-                BaseAction action = GetAction(actionName);
+                BaseAction action = Action.Get(actionName);
 
                 if (action != null)
                     monster.GetComponent<SkillManager>().StartActions.Add(action.gameObject);
@@ -185,20 +207,6 @@ public static class Monster
                 if (perk.Perk.GetComponent<Perk>().Name == name)
                     return perk;
             }
-        }
-
-        return null;
-    }
-
-    private static BaseAction GetAction(string name)
-    {
-        // Find action by monster type
-        foreach (MonsterType type in GameController.Instance.MonsterTypes)
-        {
-            BaseAction action = type.Actions.Find(x => x.Name == name);
-
-            if (action != null)
-                return action;
         }
 
         return null;

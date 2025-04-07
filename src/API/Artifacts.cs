@@ -69,20 +69,36 @@ public static class Artifacts
 
     public static Consumable Get(int id)
     {
-        ItemManager.BaseItemInstance item = GameController.Instance.ItemManager.Consumables.Find(
-            x => x?.BaseItem.ID == id
-        );
-
-        return item?.BaseItem as Consumable;
+        return GameController
+                .Instance.ItemManager.Consumables.Find(x => x?.BaseItem.ID == id)
+                ?.BaseItem as Consumable;
     }
 
     public static Consumable Get(string name)
     {
-        ItemManager.BaseItemInstance item = GameController.Instance.ItemManager.Consumables.Find(
-            x => x?.BaseItem.Name == name
-        );
+        return GameController
+                .Instance.ItemManager.Consumables.Find(x => x?.BaseItem.Name == name)
+                ?.BaseItem as Consumable;
+    }
 
-        return item?.BaseItem as Consumable;
+    public static bool TryGet(int id, out Consumable result)
+    {
+        if (!IsReady)
+            result = null;
+        else
+            result = Get(id);
+
+        return result != null;
+    }
+
+    public static bool TryGet(string name, out Consumable result)
+    {
+        if (!IsReady)
+            result = null;
+        else
+            result = Get(name);
+
+        return result != null;
     }
 
     public static void Add(ArtifactDescriptor descriptor)
@@ -168,7 +184,8 @@ public static class Artifacts
             return;
         }
 
-        Update(Get(id), descriptor);
+        if (TryGet(id, out var artifact))
+            Update(artifact, descriptor);
     }
 
     public static void Update(string name, ArtifactDescriptor descriptor)
@@ -180,7 +197,8 @@ public static class Artifacts
             return;
         }
 
-        Update(Get(name), descriptor);
+        if (TryGet(name, out var artifact))
+            Update(artifact, descriptor);
     }
 
     private static void Update(Consumable artifact, ArtifactDescriptor descriptor)

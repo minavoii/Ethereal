@@ -74,6 +74,62 @@ public static class Equipment
         }
     }
 
+    public static global::Equipment Get(int id, ERarity rarity)
+    {
+        return rarity switch
+        {
+            ERarity.Epic => GameController
+                .Instance.ItemManager.Equipments.Find(x => x.EpicItem?.ID == id)
+                ?.BaseItem as global::Equipment,
+
+            ERarity.Rare => GameController
+                .Instance.ItemManager.Equipments.Find(x => x.RareItem?.ID == id)
+                ?.RareItem as global::Equipment,
+
+            ERarity.Common or _ => GameController
+                .Instance.ItemManager.Equipments.Find(x => x.BaseItem?.ID == id)
+                ?.BaseItem as global::Equipment,
+        };
+    }
+
+    public static global::Equipment Get(string name, ERarity rarity)
+    {
+        return rarity switch
+        {
+            ERarity.Epic => GameController
+                .Instance.ItemManager.Equipments.Find(x => x.EpicItem?.Name == name)
+                ?.BaseItem as global::Equipment,
+
+            ERarity.Rare => GameController
+                .Instance.ItemManager.Equipments.Find(x => x.RareItem?.Name == name)
+                ?.RareItem as global::Equipment,
+
+            ERarity.Common or _ => GameController
+                .Instance.ItemManager.Equipments.Find(x => x.BaseItem?.Name == name)
+                ?.BaseItem as global::Equipment,
+        };
+    }
+
+    public static bool TryGet(int id, ERarity rarity, out global::Equipment result)
+    {
+        if (!IsReady)
+            result = null;
+        else
+            result = Get(id, rarity);
+
+        return result != null;
+    }
+
+    public static bool TryGet(string name, ERarity rarity, out global::Equipment result)
+    {
+        if (!IsReady)
+            result = null;
+        else
+            result = Get(name, rarity);
+
+        return result != null;
+    }
+
     public static void Add(EquipmentDescriptor descriptor)
     {
         LocalisationData.LocalisationDataEntry defaultLocalisation = new()
@@ -176,54 +232,31 @@ public static class Equipment
     public static void Update(int id, EquipmentDescriptor descriptor)
     {
         // Defer loading until ready
-        if (GameController.Instance?.ItemManager == null || !IsReady)
+        if (!IsReady)
         {
             QueueUpdate.Enqueue((id, descriptor));
             return;
         }
 
-        BaseItem common = GameController
-            .Instance.ItemManager.Equipments.Find(x => x.BaseItem?.ID == id)
-            ?.BaseItem;
-        BaseItem rare = GameController
-            .Instance.ItemManager.Equipments.Find(x => x.RareItem?.ID == id)
-            ?.BaseItem;
-        BaseItem epic = GameController
-            .Instance.ItemManager.Equipments.Find(x => x.EpicItem?.ID == id)
-            ?.BaseItem;
-
-        BaseItem item = common ?? rare ?? epic;
-
-        if (item != null)
-            Update((global::Equipment)item, descriptor);
+        if (TryGet(id, ERarity.Common, out var common))
+            Update(common, descriptor);
+        else if (TryGet(id, ERarity.Rare, out var rare))
+            Update(rare, descriptor);
+        else if (TryGet(id, ERarity.Epic, out var epic))
+            Update(epic, descriptor);
     }
 
     public static void Update(string name, ERarity rarity, EquipmentDescriptor descriptor)
     {
         // Defer loading until ready
-        if (GameController.Instance?.ItemManager == null || !IsReady)
+        if (!IsReady)
         {
             QueueUpdateByName.Enqueue((name, rarity, descriptor));
             return;
         }
 
-        BaseItem item = rarity switch
-        {
-            ERarity.Epic => GameController
-                .Instance.ItemManager.Equipments.Find(x => x.EpicItem?.Name == name)
-                ?.BaseItem,
-
-            ERarity.Rare => GameController
-                .Instance.ItemManager.Equipments.Find(x => x.RareItem?.Name == name)
-                ?.RareItem,
-
-            ERarity.Common or _ => GameController
-                .Instance.ItemManager.Equipments.Find(x => x.BaseItem?.Name == name)
-                ?.BaseItem,
-        };
-
-        if (item != null)
-            Update((global::Equipment)item, descriptor);
+        if (TryGet(name, rarity, out var equipment))
+            Update(equipment, descriptor);
     }
 
     private static void Update(global::Equipment equipment, EquipmentDescriptor descriptor)
