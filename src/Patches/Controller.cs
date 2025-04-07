@@ -12,9 +12,9 @@ internal static class Controller
         API.Localisation.LoadLanguages();
         API.Localisation.ReadQueue();
 
-        API.Monster.ReadQueue();
-        API.Trait.ReadQueue();
-        API.Action.ReadQueue();
+        API.Monsters.ReadQueue();
+        API.Traits.ReadQueue();
+        API.Actions.ReadQueue();
         API.MonsterTypes.ReadQueue();
     }
 

@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Ethereal.API;
 
-public static class Trait
+public static class Traits
 {
     public class TraitDescriptor()
     {

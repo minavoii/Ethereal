@@ -24,12 +24,12 @@ public class Plugin : BaseUnityPlugin
     {
         Logger = base.Logger;
 
-        Ethereal.API.Equipment.Add(
+        Ethereal.API.Equipments.Add(
             Accessories.RedArmor.descriptor,
             Accessories.RedArmor.localisationData,
             Accessories.RedArmor.customLanguageEntries
         );
 
-        Ethereal.API.Equipment.Update("Blade", ERarity.Common, BlueBlade.descriptor);
+        Ethereal.API.Equipments.Update("Blade", ERarity.Common, BlueBlade.descriptor);
     }
 }

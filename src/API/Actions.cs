@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Ethereal.API;
 
-public static class Action
+public static class Actions
 {
     public class ActionDescriptor
     {

@@ -246,7 +246,7 @@ public static class Sprites
 
     private static void ReplaceIconTrait(string name, Sprite icon)
     {
-        Trait.Update(name, new() { icon = icon });
+        Traits.Update(name, new() { icon = icon });
     }
 
     private static void ReplaceIconType(string name, Sprite icon)

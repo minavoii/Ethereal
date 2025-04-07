@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Ethereal.API;
 
-public static class Monster
+public static class Monsters
 {
     public class MonsterDescriptor
     {
@@ -48,23 +48,21 @@ public static class Monster
             Update(res.name, res.descriptor);
     }
 
-    public static global::Monster Get(int id)
+    public static Monster Get(int id)
     {
         return GameController
-            .Instance.CompleteMonsterList.Find(x => x?.GetComponent<global::Monster>()?.MonID == id)
-            .GetComponent<global::Monster>();
+            .Instance.CompleteMonsterList.Find(x => x?.GetComponent<Monster>()?.MonID == id)
+            .GetComponent<Monster>();
     }
 
-    public static global::Monster Get(string name)
+    public static Monster Get(string name)
     {
         return GameController
-            .Instance.CompleteMonsterList.Find(x =>
-                x?.GetComponent<global::Monster>()?.Name == name
-            )
-            .GetComponent<global::Monster>();
+            .Instance.CompleteMonsterList.Find(x => x?.GetComponent<Monster>()?.Name == name)
+            .GetComponent<Monster>();
     }
 
-    public static bool TryGet(int id, out global::Monster result)
+    public static bool TryGet(int id, out Monster result)
     {
         if (!IsReady)
             result = null;
@@ -74,7 +72,7 @@ public static class Monster
         return result != null;
     }
 
-    public static bool TryGet(string name, out global::Monster result)
+    public static bool TryGet(string name, out Monster result)
     {
         if (!IsReady)
             result = null;
@@ -110,7 +108,7 @@ public static class Monster
             Update(monster, descriptor);
     }
 
-    private static void Update(global::Monster monster, MonsterDescriptor descriptor)
+    private static void Update(Monster monster, MonsterDescriptor descriptor)
     {
         if (descriptor.name != string.Empty)
         {
@@ -157,7 +155,7 @@ public static class Monster
 
         if (descriptor.signatureTrait != string.Empty)
         {
-            global::Trait trait = Trait.Get(descriptor.signatureTrait);
+            Trait trait = Traits.Get(descriptor.signatureTrait);
 
             if (trait != null)
                 monster.GetComponent<SkillManager>().SignatureTrait = trait.gameObject;
@@ -169,7 +167,7 @@ public static class Monster
 
             foreach (string actionName in descriptor.startingActions)
             {
-                BaseAction action = Action.Get(actionName);
+                BaseAction action = Actions.Get(actionName);
 
                 if (action != null)
                     monster.GetComponent<SkillManager>().StartActions.Add(action.gameObject);
