@@ -7,9 +7,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ethereal", "Ethereal.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Artifacts", "examples\Artifact\Artifacts.csproj", "{E1EE497B-0640-4847-87A1-D2C427D26714}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Equipments", "examples\equipments\Equipments.csproj", "{5CF62D2F-CB2B-2A77-B3D4-8F92A1A4566B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Equipments", "examples\Equipments\Equipments.csproj", "{5CF62D2F-CB2B-2A77-B3D4-8F92A1A4566B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Localisations", "examples\localisations\Localisations.csproj", "{D4194D66-6A72-429B-B66A-2DA544716CDA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Localisations", "examples\Localisations\Localisations.csproj", "{D4194D66-6A72-429B-B66A-2DA544716CDA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -49,9 +49,10 @@ public static class Localisation
         .. Enum.GetValues(typeof(ELanguage)).Cast<ELanguage>().Select(Loca.GetLanguageString),
     ];
 
-    private static readonly ConcurrentQueue<
-        Tuple<LocalisationData.LocalisationDataEntry, Dictionary<string, string>>
-    > Queue = new();
+    private static readonly ConcurrentQueue<(
+        LocalisationData.LocalisationDataEntry entry,
+        Dictionary<string, string> customLanguageEntries
+    )> Queue = new();
 
     internal static readonly Dictionary<ELanguage, string> CustomLanguages = [];
 
@@ -70,12 +71,12 @@ public static class Localisation
     {
         IsReady = true;
 
-        while (Queue.TryDequeue(out var res))
+        while (Queue.TryDequeue(out var item))
         {
-            if (res.Item2 == null)
-                AddLocalisedText(res.Item1);
+            if (item.customLanguageEntries != null)
+                AddLocalisedText(item.entry, item.customLanguageEntries);
             else
-                AddLocalisedText(res.Item1, res.Item2);
+                AddLocalisedText(item.entry);
         }
     }
 

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Ethereal.API;
 
-public static class Equipment
+public static class Equipments
 {
     public class EquipmentDescriptor
     {
@@ -18,7 +18,7 @@ public static class Equipment
 
         public bool? automaticPricing = true;
 
-        public global::Equipment.EEquipmentType? type;
+        public Equipment.EEquipmentType? type;
 
         public ERarity? rarity;
 
@@ -50,67 +50,67 @@ public static class Equipment
     {
         IsReady = true;
 
-        while (QueueAdd.TryDequeue(out var res))
+        while (QueueAdd.TryDequeue(out var item))
         {
-            if (res.customLanguageEntries == null)
+            if (item.customLanguageEntries == null)
             {
-                if (res.localisationData == null)
-                    Add(res.descriptor);
+                if (item.localisationData == null)
+                    Add(item.descriptor);
                 else
-                    Add(res.descriptor, res.localisationData);
+                    Add(item.descriptor, item.localisationData);
             }
             else
-                Add(res.descriptor, res.localisationData, res.customLanguageEntries);
+                Add(item.descriptor, item.localisationData, item.customLanguageEntries);
         }
 
-        while (QueueUpdate.TryDequeue(out var res))
+        while (QueueUpdate.TryDequeue(out var item))
         {
-            Update(res.id, res.descriptor);
+            Update(item.id, item.descriptor);
         }
 
-        while (QueueUpdateByName.TryDequeue(out var res))
+        while (QueueUpdateByName.TryDequeue(out var item))
         {
-            Update(res.name, res.rarity, res.descriptor);
+            Update(item.name, item.rarity, item.descriptor);
         }
     }
 
-    public static global::Equipment Get(int id, ERarity rarity)
+    public static Equipment Get(int id, ERarity rarity)
     {
         return rarity switch
         {
             ERarity.Epic => GameController
                 .Instance.ItemManager.Equipments.Find(x => x.EpicItem?.ID == id)
-                ?.BaseItem as global::Equipment,
+                ?.BaseItem as Equipment,
 
             ERarity.Rare => GameController
                 .Instance.ItemManager.Equipments.Find(x => x.RareItem?.ID == id)
-                ?.RareItem as global::Equipment,
+                ?.RareItem as Equipment,
 
             ERarity.Common or _ => GameController
                 .Instance.ItemManager.Equipments.Find(x => x.BaseItem?.ID == id)
-                ?.BaseItem as global::Equipment,
+                ?.BaseItem as Equipment,
         };
     }
 
-    public static global::Equipment Get(string name, ERarity rarity)
+    public static Equipment Get(string name, ERarity rarity)
     {
         return rarity switch
         {
             ERarity.Epic => GameController
                 .Instance.ItemManager.Equipments.Find(x => x.EpicItem?.Name == name)
-                ?.BaseItem as global::Equipment,
+                ?.BaseItem as Equipment,
 
             ERarity.Rare => GameController
                 .Instance.ItemManager.Equipments.Find(x => x.RareItem?.Name == name)
-                ?.RareItem as global::Equipment,
+                ?.RareItem as Equipment,
 
             ERarity.Common or _ => GameController
                 .Instance.ItemManager.Equipments.Find(x => x.BaseItem?.Name == name)
-                ?.BaseItem as global::Equipment,
+                ?.BaseItem as Equipment,
         };
     }
 
-    public static bool TryGet(int id, ERarity rarity, out global::Equipment result)
+    public static bool TryGet(int id, ERarity rarity, out Equipment result)
     {
         if (!IsReady)
             result = null;
@@ -120,7 +120,7 @@ public static class Equipment
         return result != null;
     }
 
-    public static bool TryGet(string name, ERarity rarity, out global::Equipment result)
+    public static bool TryGet(string name, ERarity rarity, out Equipment result)
     {
         if (!IsReady)
             result = null;
@@ -166,13 +166,13 @@ public static class Equipment
 
         GameObject go = new($"Equipment{objectName}_{descriptor.rarity}");
 
-        global::Equipment equipment = new()
+        Equipment equipment = new()
         {
             ID = descriptor.id,
             Name = descriptor.name,
             Icon = descriptor.icon,
             Price = descriptor.price,
-            EquipmentType = descriptor.type ?? global::Equipment.EEquipmentType.Accessory,
+            EquipmentType = descriptor.type ?? Equipment.EEquipmentType.Accessory,
             EquipmentRarity = descriptor.rarity ?? ERarity.Common,
             AutomaticallySetPrice = descriptor.automaticPricing ?? false,
             Aura = descriptor.aura ?? false,
@@ -184,7 +184,7 @@ public static class Equipment
         equipment.Icon.texture.name = objectName;
 
         Utils.Converter.CopyToGameObject(ref go, equipment);
-        go.GetComponent<global::Equipment>().name = go.name;
+        go.GetComponent<Equipment>().name = go.name;
 
         foreach (PassiveEffect passive in descriptor.passiveEffects)
         {
@@ -192,19 +192,19 @@ public static class Equipment
         }
 
         // Copy PassiveEffect components into PassiveEffectList
-        go.GetComponent<global::Equipment>().InitializeReferenceable();
+        go.GetComponent<Equipment>().InitializeReferenceable();
 
         ItemManager.EquipmentItemInstance equItemInst = new()
         {
-            BaseItem = go.GetComponent<global::Equipment>(),
-            RareItem = go.GetComponent<global::Equipment>(),
-            EpicItem = go.GetComponent<global::Equipment>(),
+            BaseItem = go.GetComponent<Equipment>(),
+            RareItem = go.GetComponent<Equipment>(),
+            EpicItem = go.GetComponent<Equipment>(),
         };
 
         equItemInst.Validate();
 
         GameController.Instance.ItemManager.Equipments.Add(equItemInst);
-        WorldData.Instance.Referenceables.Add(go.GetComponent<global::Equipment>());
+        WorldData.Instance.Referenceables.Add(go.GetComponent<Equipment>());
 
         Localisation.AddLocalisedText(localisationData);
 
@@ -259,7 +259,7 @@ public static class Equipment
             Update(equipment, descriptor);
     }
 
-    private static void Update(global::Equipment equipment, EquipmentDescriptor descriptor)
+    private static void Update(Equipment equipment, EquipmentDescriptor descriptor)
     {
         if (descriptor.name != string.Empty)
             equipment.Name = descriptor.name;

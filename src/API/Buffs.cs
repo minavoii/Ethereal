@@ -15,11 +15,11 @@ public static class Buffs
     {
         IsReady = true;
 
-        while (QueueUpdate.TryDequeue(out var res))
-            UpdateIcon(res.id, res.icon);
+        while (QueueUpdate.TryDequeue(out var item))
+            UpdateIcon(item.id, item.icon);
 
-        while (QueueUpdateByName.TryDequeue(out var res))
-            UpdateIcon(res.name, res.icon);
+        while (QueueUpdateByName.TryDequeue(out var item))
+            UpdateIcon(item.name, item.icon);
     }
 
     public static Buff Get(int id)

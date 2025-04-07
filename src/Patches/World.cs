@@ -9,7 +9,7 @@ internal static class World
     private static void BuildCache()
     {
         API.Artifacts.ReadQueue();
-        API.Equipment.ReadQueue();
+        API.Equipments.ReadQueue();
         API.Mementos.ReadQueue();
     }
 }

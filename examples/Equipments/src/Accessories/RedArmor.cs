@@ -9,11 +9,11 @@ internal static class RedArmor
 
     internal const string Name = "Red Armor";
 
-    internal static readonly Ethereal.API.Equipment.EquipmentDescriptor descriptor = new()
+    internal static readonly Ethereal.API.Equipments.EquipmentDescriptor descriptor = new()
     {
         id = Id,
         name = Name,
-        icon = Ethereal.API.Icon.LoadFromAsset(
+        icon = Ethereal.API.Sprites.LoadFromAsset(
             Path.Join(Plugin.EquipmentsPath, "RedArmor"),
             "Assets/Textures/Item/Item.prefab"
         ),

@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Ethereal.API;
 
-public static class Icon
+public static class Sprites
 {
     public enum IconType
     {
@@ -150,7 +150,7 @@ public static class Icon
 
     private static void ReplaceIconAction(string name, Sprite icon, string iconPath = "")
     {
-        Action.ActionDescriptor descriptor = new();
+        Actions.ActionDescriptor descriptor = new();
 
         if (name.EndsWith("Small"))
         {
@@ -165,7 +165,7 @@ public static class Icon
         else
             descriptor.icon = icon ?? LoadFromImage(IconType.Action, iconPath);
 
-        Action.Update(name, descriptor);
+        Actions.Update(name, descriptor);
     }
 
     private static void ReplaceIconArtifact(string name, Sprite icon, string iconPath = "")
@@ -233,7 +233,7 @@ public static class Icon
             rarity = ERarity.Rare;
         }
 
-        Equipment.Update(name, rarity, new() { icon = icon });
+        Equipments.Update(name, rarity, new() { icon = icon });
     }
 
     private static void ReplaceIconMemento(string name, Sprite icon)
@@ -246,7 +246,7 @@ public static class Icon
 
     private static void ReplaceIconTrait(string name, Sprite icon)
     {
-        Trait.Update(name, new() { icon = icon });
+        Traits.Update(name, new() { icon = icon });
     }
 
     private static void ReplaceIconType(string name, Sprite icon)
@@ -285,18 +285,6 @@ public static class Icon
             filterMode = FilterMode.Point,
         };
 
-        Sprite sprite = Sprite.CreateSprite(
-            texture,
-            new Rect(0, 0, size.width, size.height),
-            new Vector2(0.5f, 0.5f),
-            1,
-            1,
-            SpriteMeshType.FullRect,
-            new Vector4(0, 0, 0, 0),
-            true,
-            []
-        );
-
-        return sprite;
+        return CreateBySize(size, texture);
     }
 }

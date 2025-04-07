@@ -14,16 +14,16 @@ internal static class TrucePact
         id = Id,
         name = Name,
         targetType = ETargetType.SingleAlly,
-        icon = Ethereal.API.Icon.LoadFromImage(
-            Ethereal.API.Icon.IconType.Artifact,
+        icon = Ethereal.API.Sprites.LoadFromImage(
+            Ethereal.API.Sprites.IconType.Artifact,
             Path.Join(Plugin.EquipmentsPath, "Artifact_TrucePact.png")
         ),
-        actionIconBig = Ethereal.API.Icon.LoadFromImage(
-            Ethereal.API.Icon.IconType.Action,
+        actionIconBig = Ethereal.API.Sprites.LoadFromImage(
+            Ethereal.API.Sprites.IconType.Action,
             Path.Join(Plugin.EquipmentsPath, "ActionIcon_TrucePact_Big.png")
         ),
-        actionIconSmall = Ethereal.API.Icon.LoadFromImage(
-            Ethereal.API.Icon.IconType.ActionSmall,
+        actionIconSmall = Ethereal.API.Sprites.LoadFromImage(
+            Ethereal.API.Sprites.IconType.ActionSmall,
             Path.Join(Plugin.EquipmentsPath, "ActionIcon_TrucePact_Small.png")
         ),
         actions =
