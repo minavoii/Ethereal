@@ -30,7 +30,7 @@ public static class Buffs
     /// </summary>
     /// <param name="id"></param>
     /// <returns>a buff if one was found; otherwise null.</returns>
-    public static Buff Get(int id)
+    private static Buff Get(int id)
     {
         return Prefabs.Instance.AllBuffs.Find(x => x.ID == id)
             ?? Prefabs.Instance.AllDebuffs.Find(x => x.ID == id);
@@ -41,7 +41,7 @@ public static class Buffs
     /// </summary>
     /// <param name="name"></param>
     /// <returns>a buff if one was found; otherwise null.</returns>
-    public static Buff Get(string name)
+    private static Buff Get(string name)
     {
         return Prefabs.Instance.AllBuffs.Find(x => x.Name == name)
             ?? Prefabs.Instance.AllDebuffs.Find(x => x.Name == name);

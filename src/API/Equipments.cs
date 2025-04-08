@@ -86,7 +86,7 @@ public static class Equipments
     /// <param name="id"></param>
     /// <param name="rarity"></param>
     /// <returns>an equipment if one was found; otherwise null.</returns>
-    public static Equipment Get(int id, ERarity rarity)
+    private static Equipment Get(int id, ERarity rarity)
     {
         return rarity switch
         {
@@ -110,7 +110,7 @@ public static class Equipments
     /// <param name="name"></param>
     /// <param name="rarity"></param>
     /// <returns>an equipment if one was found; otherwise null.</returns>
-    public static Equipment Get(string name, ERarity rarity)
+    private static Equipment Get(string name, ERarity rarity)
     {
         return rarity switch
         {

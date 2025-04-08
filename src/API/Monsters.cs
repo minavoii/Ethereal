@@ -59,7 +59,7 @@ public static class Monsters
     /// </summary>
     /// <param name="id"></param>
     /// <returns>an action if one was found; otherwise null.</returns>
-    public static Monster Get(int id)
+    private static Monster Get(int id)
     {
         return GameController
             .Instance.CompleteMonsterList.Find(x => x?.GetComponent<Monster>()?.MonID == id)
@@ -71,7 +71,7 @@ public static class Monsters
     /// </summary>
     /// <param name="name"></param>
     /// <returns>an action if one was found; otherwise null.</returns>
-    public static Monster Get(string name)
+    private static Monster Get(string name)
     {
         return GameController
             .Instance.CompleteMonsterList.Find(x => x?.GetComponent<Monster>()?.Name == name)
@@ -198,9 +198,7 @@ public static class Monsters
 
         if (descriptor.signatureTrait != string.Empty)
         {
-            Trait trait = Traits.Get(descriptor.signatureTrait);
-
-            if (trait != null)
+            if (Traits.TryGet(descriptor.signatureTrait, out var trait))
                 monster.GetComponent<SkillManager>().SignatureTrait = trait.gameObject;
         }
 
@@ -210,9 +208,7 @@ public static class Monsters
 
             foreach (string actionName in descriptor.startingActions)
             {
-                BaseAction action = Actions.Get(actionName);
-
-                if (action != null)
+                if (Actions.TryGet(actionName, out var action))
                     monster.GetComponent<SkillManager>().StartActions.Add(action.gameObject);
             }
         }
