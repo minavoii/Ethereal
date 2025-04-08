@@ -7,6 +7,9 @@ namespace Ethereal.API;
 
 public static class Traits
 {
+    /// <summary>
+    /// A helper class that describes a trait's properties.
+    /// </summary>
     public class TraitDescriptor()
     {
         public int id;
@@ -42,6 +45,9 @@ public static class Traits
 
     private static bool IsReady = false;
 
+    /// <summary>
+    /// Mark the API as ready and run all deferred methods.
+    /// </summary>
     internal static void ReadQueue()
     {
         IsReady = true;
@@ -56,12 +62,17 @@ public static class Traits
             Update(item.name, item.descriptor);
     }
 
-    public static global::Trait Get(int id)
+    /// <summary>
+    /// Get a trait by id.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns>a trait if one was found; otherwise null.</returns>
+    public static Trait Get(int id)
     {
         // Find trait by monster type
         foreach (MonsterType type in GameController.Instance.MonsterTypes)
         {
-            global::Trait trait = type.Traits.Find(x => x.ID == id);
+            Trait trait = type.Traits.Find(x => x.ID == id);
 
             if (trait != null)
                 return trait;
@@ -73,9 +84,9 @@ public static class Traits
             if (monster == null)
                 continue;
 
-            global::Trait trait = monster
+            Trait trait = monster
                 .GetComponent<SkillManager>()
-                ?.SignatureTrait?.GetComponent<global::Trait>();
+                ?.SignatureTrait?.GetComponent<Trait>();
 
             if (trait.ID == id)
                 return trait;
@@ -84,12 +95,17 @@ public static class Traits
         return null;
     }
 
-    public static global::Trait Get(string name)
+    /// <summary>
+    /// Get a trait by name.
+    /// </summary>
+    /// <param name="name"></param>
+    /// <returns>a trait if one was found; otherwise null.</returns>
+    public static Trait Get(string name)
     {
         // Find trait by monster type
         foreach (MonsterType type in GameController.Instance.MonsterTypes)
         {
-            global::Trait trait = type.Traits.Find(x => x.Name == name);
+            Trait trait = type.Traits.Find(x => x.Name == name);
 
             if (trait != null)
                 return trait;
@@ -101,9 +117,9 @@ public static class Traits
             if (monster == null)
                 continue;
 
-            global::Trait trait = monster
+            Trait trait = monster
                 .GetComponent<SkillManager>()
-                ?.SignatureTrait?.GetComponent<global::Trait>();
+                ?.SignatureTrait?.GetComponent<Trait>();
 
             if (trait.Name == name)
                 return trait;
@@ -112,7 +128,13 @@ public static class Traits
         return null;
     }
 
-    public static bool TryGet(int id, out global::Trait result)
+    /// <summary>
+    /// Get a trait by id.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="result"></param>
+    /// <returns>true if the API is ready and a trait was found; otherwise, false.</returns>
+    public static bool TryGet(int id, out Trait result)
     {
         if (!IsReady)
             result = null;
@@ -122,7 +144,13 @@ public static class Traits
         return result != null;
     }
 
-    public static bool TryGet(string name, out global::Trait result)
+    /// <summary>
+    /// Get a trait by name.
+    /// </summary>
+    /// <param name="name"></param>
+    /// <param name="result"></param>
+    /// <returns>true if the API is ready and a trait was found; otherwise, false.</returns>
+    public static bool TryGet(string name, out Trait result)
     {
         if (!IsReady)
             result = null;
@@ -132,16 +160,20 @@ public static class Traits
         return result != null;
     }
 
+    /// <summary>
+    /// Create a new trait and add it to the game's data.
+    /// </summary>
+    /// <param name="descriptor"></param>
     public static void Add(TraitDescriptor descriptor)
     {
         // Defer loading until ready
-        if (GameController.Instance?.CompleteMonsterList == null || !IsReady)
+        if (!IsReady)
         {
             Queue.Enqueue(descriptor);
             return;
         }
 
-        var trait = new global::Trait()
+        var trait = new Trait()
         {
             ID = descriptor.id,
             Name = descriptor.name,
@@ -168,16 +200,21 @@ public static class Traits
                 x?.Type == monsterType
             );
 
-            type.Traits.Add(go.GetComponent<global::Trait>());
+            type.Traits.Add(go.GetComponent<Trait>());
         }
 
-        WorldData.Instance.Referenceables.Add(go.GetComponent<global::Trait>());
+        WorldData.Instance.Referenceables.Add(go.GetComponent<Trait>());
     }
 
+    /// <summary>
+    /// Overwrite a trait's properties with values from a descriptor.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="descriptor"></param>
     public static void Update(int id, TraitDescriptor descriptor)
     {
         // Defer loading until ready
-        if (GameController.Instance?.CompleteMonsterList == null || !IsReady)
+        if (!IsReady)
         {
             QueueUpdate.Enqueue((id, descriptor));
             return;
@@ -187,10 +224,15 @@ public static class Traits
             Update(trait, descriptor);
     }
 
+    /// <summary>
+    /// Overwrite a trait's properties with values from a descriptor.
+    /// </summary>
+    /// <param name="name"></param>
+    /// <param name="descriptor"></param>
     public static void Update(string name, TraitDescriptor descriptor)
     {
         // Defer loading until ready
-        if (GameController.Instance?.CompleteMonsterList == null || !IsReady)
+        if (!IsReady)
         {
             QueueUpdateByName.Enqueue((name, descriptor));
             return;
@@ -200,7 +242,12 @@ public static class Traits
             Update(trait, descriptor);
     }
 
-    private static void Update(global::Trait trait, TraitDescriptor descriptor)
+    /// <summary>
+    /// Overwrite a trait's properties with values from a descriptor.
+    /// </summary>
+    /// <param name="trait"></param>
+    /// <param name="descriptor"></param>
+    private static void Update(Trait trait, TraitDescriptor descriptor)
     {
         if (descriptor.name != string.Empty)
             trait.Name = descriptor.name;

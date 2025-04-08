@@ -6,6 +6,9 @@ namespace Ethereal.API;
 
 public static class Equipments
 {
+    /// <summary>
+    /// A helper class that describes an equipment's properties.
+    /// </summary>
     public class EquipmentDescriptor
     {
         public int id;
@@ -46,6 +49,9 @@ public static class Equipments
         EquipmentDescriptor descriptor
     )> QueueUpdateByName = new();
 
+    /// <summary>
+    /// Mark the API as ready and run all deferred methods.
+    /// </summary>
     internal static void ReadQueue()
     {
         IsReady = true;
@@ -74,6 +80,12 @@ public static class Equipments
         }
     }
 
+    /// <summary>
+    /// Get an equipment by id.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="rarity"></param>
+    /// <returns>an equipment if one was found; otherwise null.</returns>
     public static Equipment Get(int id, ERarity rarity)
     {
         return rarity switch
@@ -92,6 +104,12 @@ public static class Equipments
         };
     }
 
+    /// <summary>
+    /// Get an equipment by name.
+    /// </summary>
+    /// <param name="name"></param>
+    /// <param name="rarity"></param>
+    /// <returns>an equipment if one was found; otherwise null.</returns>
     public static Equipment Get(string name, ERarity rarity)
     {
         return rarity switch
@@ -110,6 +128,13 @@ public static class Equipments
         };
     }
 
+    /// <summary>
+    /// Get an equipment by id.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="rarity"></param>
+    /// <param name="result"></param>
+    /// <returns>true if the API is ready and an equipment was found; otherwise, false.</returns>
     public static bool TryGet(int id, ERarity rarity, out Equipment result)
     {
         if (!IsReady)
@@ -120,6 +145,13 @@ public static class Equipments
         return result != null;
     }
 
+    /// <summary>
+    /// Get an equipment by name.
+    /// </summary>
+    /// <param name="name"></param>
+    /// <param name="rarity"></param>
+    /// <param name="result"></param>
+    /// <returns>true if the API is ready and an equipment was found; otherwise, false.</returns>
     public static bool TryGet(string name, ERarity rarity, out Equipment result)
     {
         if (!IsReady)
@@ -130,6 +162,10 @@ public static class Equipments
         return result != null;
     }
 
+    /// <summary>
+    /// Create a new equipment and add it to the game's data.
+    /// </summary>
+    /// <param name="descriptor"></param>
     public static void Add(EquipmentDescriptor descriptor)
     {
         LocalisationData.LocalisationDataEntry defaultLocalisation = new()
@@ -140,7 +176,7 @@ public static class Equipments
         };
 
         // Defer loading until ready
-        if (GameController.Instance?.ItemManager == null || !IsReady)
+        if (!IsReady)
         {
             // Queue2.Enqueue((descriptor, defaultLocalisation));
             QueueAdd.Enqueue((descriptor, null, null));
@@ -150,13 +186,18 @@ public static class Equipments
         Add(descriptor, defaultLocalisation);
     }
 
+    /// <summary>
+    /// Create a new equipment and add it to the game's data alongside localisation data.
+    /// </summary>
+    /// <param name="descriptor"></param>
+    /// <param name="localisationData"></param>
     public static void Add(
         EquipmentDescriptor descriptor,
         LocalisationData.LocalisationDataEntry localisationData
     )
     {
         // Defer loading until ready
-        if (GameController.Instance?.ItemManager == null || !IsReady)
+        if (!IsReady)
         {
             QueueAdd.Enqueue((descriptor, localisationData, null));
             return;
@@ -211,6 +252,13 @@ public static class Equipments
         Log.API.LogInfo($"Loaded item: {descriptor.name}");
     }
 
+    /// <summary>
+    /// Create a new artifact and add it to the game's data alongside localisation data,
+    /// with translations for the provided custom languages.
+    /// </summary>
+    /// <param name="descriptor"></param>
+    /// <param name="localisationData"></param>
+    /// <param name="customLanguageEntries"></param>
     public static void Add(
         EquipmentDescriptor descriptor,
         LocalisationData.LocalisationDataEntry localisationData,
@@ -218,7 +266,7 @@ public static class Equipments
     )
     {
         // Defer loading until ready
-        if (GameController.Instance?.ItemManager == null || !IsReady)
+        if (!IsReady)
         {
             QueueAdd.Enqueue((descriptor, localisationData, customLanguageEntries));
             return;
@@ -229,6 +277,11 @@ public static class Equipments
         Localisation.AddLocalisedText(localisationData, customLanguageEntries);
     }
 
+    /// <summary>
+    /// Overwrite an equipment's properties with values from a descriptor.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="descriptor"></param>
     public static void Update(int id, EquipmentDescriptor descriptor)
     {
         // Defer loading until ready
@@ -246,6 +299,12 @@ public static class Equipments
             Update(epic, descriptor);
     }
 
+    /// <summary>
+    /// Overwrite an equipment's properties with values from a descriptor.
+    /// </summary>
+    /// <param name="name"></param>
+    /// <param name="rarity"></param>
+    /// <param name="descriptor"></param>
     public static void Update(string name, ERarity rarity, EquipmentDescriptor descriptor)
     {
         // Defer loading until ready
@@ -259,6 +318,11 @@ public static class Equipments
             Update(equipment, descriptor);
     }
 
+    /// <summary>
+    /// Overwrite an equipment's properties with values from a descriptor.
+    /// </summary>
+    /// <param name="equipment"></param>
+    /// <param name="descriptor"></param>
     private static void Update(Equipment equipment, EquipmentDescriptor descriptor)
     {
         if (descriptor.name != string.Empty)

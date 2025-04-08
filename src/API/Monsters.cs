@@ -6,6 +6,9 @@ namespace Ethereal.API;
 
 public static class Monsters
 {
+    /// <summary>
+    /// A helper class that describes a monster's properties.
+    /// </summary>
     public class MonsterDescriptor
     {
         public string name = "";
@@ -37,6 +40,9 @@ public static class Monsters
         MonsterDescriptor descriptor
     )> QueueUpdateByName = new();
 
+    /// <summary>
+    /// Mark the API as ready and run all deferred methods.
+    /// </summary>
     internal static void ReadQueue()
     {
         IsReady = true;
@@ -48,6 +54,11 @@ public static class Monsters
             Update(item.name, item.descriptor);
     }
 
+    /// <summary>
+    /// Get a monster by id.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns>an action if one was found; otherwise null.</returns>
     public static Monster Get(int id)
     {
         return GameController
@@ -55,6 +66,11 @@ public static class Monsters
             .GetComponent<Monster>();
     }
 
+    /// <summary>
+    /// Get a memento by name.
+    /// </summary>
+    /// <param name="name"></param>
+    /// <returns>an action if one was found; otherwise null.</returns>
     public static Monster Get(string name)
     {
         return GameController
@@ -62,6 +78,12 @@ public static class Monsters
             .GetComponent<Monster>();
     }
 
+    /// <summary>
+    /// Get a memento by id.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="result"></param>
+    /// <returns>true if the API is ready and an artifact was found; otherwise, false.</returns>
     public static bool TryGet(int id, out Monster result)
     {
         if (!IsReady)
@@ -72,6 +94,12 @@ public static class Monsters
         return result != null;
     }
 
+    /// <summary>
+    /// Get a memento by name.
+    /// </summary>
+    /// <param name="name"></param>
+    /// <param name="result"></param>
+    /// <returns>true if the API is ready and an artifact was found; otherwise, false.</returns>
     public static bool TryGet(string name, out Monster result)
     {
         if (!IsReady)
@@ -82,6 +110,11 @@ public static class Monsters
         return result != null;
     }
 
+    /// <summary>
+    /// Overwrite a monster's properties with values from a descriptor.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="descriptor"></param>
     public static void Update(int id, MonsterDescriptor descriptor)
     {
         // Defer loading until ready
@@ -95,6 +128,11 @@ public static class Monsters
             Update(monster, descriptor);
     }
 
+    /// <summary>
+    /// Overwrite a monster's properties with values from a descriptor.
+    /// </summary>
+    /// <param name="name"></param>
+    /// <param name="descriptor"></param>
     public static void Update(string name, MonsterDescriptor descriptor)
     {
         // Defer loading until ready
@@ -108,6 +146,11 @@ public static class Monsters
             Update(monster, descriptor);
     }
 
+    /// <summary>
+    /// Overwrite a monster's properties with values from a descriptor.
+    /// </summary>
+    /// <param name="monster"></param>
+    /// <param name="descriptor"></param>
     private static void Update(Monster monster, MonsterDescriptor descriptor)
     {
         if (descriptor.name != string.Empty)
