@@ -66,7 +66,7 @@ public static class Actions
     /// </summary>
     /// <param name="id"></param>
     /// <returns>an action if one was found; otherwise null.</returns>
-    public static BaseAction Get(int id)
+    private static BaseAction Get(int id)
     {
         // Find trait by monster type
         foreach (MonsterType type in GameController.Instance.MonsterTypes)
@@ -85,7 +85,7 @@ public static class Actions
     /// </summary>
     /// <param name="name"></param>
     /// <returns>an action if one was found; otherwise null.</returns>
-    public static BaseAction Get(string name)
+    private static BaseAction Get(string name)
     {
         // Find trait by monster type
         foreach (MonsterType type in GameController.Instance.MonsterTypes)

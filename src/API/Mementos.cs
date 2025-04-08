@@ -30,7 +30,7 @@ public static class Mementos
     /// </summary>
     /// <param name="id"></param>
     /// <returns>an action if one was found; otherwise null.</returns>
-    public static MonsterMemento Get(int id)
+    private static MonsterMemento Get(int id)
     {
         return GameController
                 .Instance.ItemManager.MonsterMementos.Find(x => x?.BaseItem.ID == id)
@@ -42,7 +42,7 @@ public static class Mementos
     /// </summary>
     /// <param name="name"></param>
     /// <returns>an action if one was found; otherwise null.</returns>
-    public static MonsterMemento Get(string name)
+    private static MonsterMemento Get(string name)
     {
         return GameController
                 .Instance.ItemManager.MonsterMementos.Find(x => x?.BaseItem.Name == name)

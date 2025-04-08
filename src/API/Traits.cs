@@ -67,7 +67,7 @@ public static class Traits
     /// </summary>
     /// <param name="id"></param>
     /// <returns>a trait if one was found; otherwise null.</returns>
-    public static Trait Get(int id)
+    private static Trait Get(int id)
     {
         // Find trait by monster type
         foreach (MonsterType type in GameController.Instance.MonsterTypes)
@@ -100,7 +100,7 @@ public static class Traits
     /// </summary>
     /// <param name="name"></param>
     /// <returns>a trait if one was found; otherwise null.</returns>
-    public static Trait Get(string name)
+    private static Trait Get(string name)
     {
         // Find trait by monster type
         foreach (MonsterType type in GameController.Instance.MonsterTypes)
@@ -185,8 +185,10 @@ public static class Traits
             Types =
             [
                 .. descriptor.types.Select(x =>
-                    GameController.Instance.MonsterTypes.Find(y => y?.Type == x)?.gameObject
-                ),
+                {
+                    MonsterTypes.TryGet(x, out var type);
+                    return type?.gameObject;
+                }),
             ],
             Icon = descriptor.icon,
             SkillType = descriptor.skillType ?? ESkillType.Shared,

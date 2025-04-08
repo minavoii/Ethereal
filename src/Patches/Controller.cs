@@ -12,10 +12,10 @@ internal static class Controller
         API.Localisation.LoadLanguages();
         API.Localisation.ReadQueue();
 
-        API.Monsters.ReadQueue();
-        API.Traits.ReadQueue();
-        API.Actions.ReadQueue();
         API.MonsterTypes.ReadQueue();
+        API.Actions.ReadQueue();
+        API.Traits.ReadQueue();
+        API.Monsters.ReadQueue();
     }
 
     [HarmonyPatch(typeof(GameController), "Initialize")]

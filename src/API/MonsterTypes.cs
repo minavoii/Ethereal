@@ -26,7 +26,7 @@ public static class MonsterTypes
     /// </summary>
     /// <param name="monsterType"></param>
     /// <returns>a monster type if one was found; otherwise null.</returns>
-    public static MonsterType Get(EMonsterType monsterType)
+    private static MonsterType Get(EMonsterType monsterType)
     {
         return GameController.Instance.MonsterTypes.Find(x => x?.Type == monsterType);
     }

@@ -78,7 +78,7 @@ public static class Artifacts
     /// </summary>
     /// <param name="id"></param>
     /// <returns>an artifact if one was found; otherwise null.</returns>
-    public static Consumable Get(int id)
+    private static Consumable Get(int id)
     {
         return GameController
                 .Instance.ItemManager.Consumables.Find(x => x?.BaseItem.ID == id)
@@ -90,7 +90,7 @@ public static class Artifacts
     /// </summary>
     /// <param name="name"></param>
     /// <returns>an artifact if one was found; otherwise null.</returns>
-    public static Consumable Get(string name)
+    private static Consumable Get(string name)
     {
         return GameController
                 .Instance.ItemManager.Consumables.Find(x => x?.BaseItem.Name == name)
