@@ -11,6 +11,9 @@ public static class Buffs
 
     private static bool IsReady = false;
 
+    /// <summary>
+    /// Mark the API as ready and run all deferred methods.
+    /// </summary>
     internal static void ReadQueue()
     {
         IsReady = true;
@@ -22,18 +25,34 @@ public static class Buffs
             UpdateIcon(item.name, item.icon);
     }
 
+    /// <summary>
+    /// Get a buff by id.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns>a buff if one was found; otherwise null.</returns>
     public static Buff Get(int id)
     {
         return Prefabs.Instance.AllBuffs.Find(x => x.ID == id)
             ?? Prefabs.Instance.AllDebuffs.Find(x => x.ID == id);
     }
 
+    /// <summary>
+    /// Get a buff by name.
+    /// </summary>
+    /// <param name="name"></param>
+    /// <returns>a buff if one was found; otherwise null.</returns>
     public static Buff Get(string name)
     {
         return Prefabs.Instance.AllBuffs.Find(x => x.Name == name)
             ?? Prefabs.Instance.AllDebuffs.Find(x => x.Name == name);
     }
 
+    /// <summary>
+    /// Get a buff by id.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="result"></param>
+    /// <returns>true if the API is ready and a buff was found; otherwise, false.</returns>
     public static bool TryGet(int id, out Buff result)
     {
         if (!IsReady)
@@ -44,6 +63,12 @@ public static class Buffs
         return result != null;
     }
 
+    /// <summary>
+    /// Get a buff by name.
+    /// </summary>
+    /// <param name="name"></param>
+    /// <param name="result"></param>
+    /// <returns>true if the API is ready and a buff was found; otherwise, false.</returns>
     public static bool TryGet(string name, out Buff result)
     {
         if (!IsReady)
@@ -54,10 +79,15 @@ public static class Buffs
         return result != null;
     }
 
+    /// <summary>
+    /// Set a buff's icon.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="icon"></param>
     public static void UpdateIcon(int id, Sprite icon)
     {
         // Defer loading until ready
-        if (GameController.Instance?.CompleteMonsterList == null || !IsReady)
+        if (!IsReady)
         {
             QueueUpdate.Enqueue((id, icon));
             return;
@@ -67,10 +97,15 @@ public static class Buffs
             UpdateIcon(buff, icon);
     }
 
+    /// <summary>
+    /// Set a buff's icon.
+    /// </summary>
+    /// <param name="name"></param>
+    /// <param name="icon"></param>
     public static void UpdateIcon(string name, Sprite icon)
     {
         // Defer loading until ready
-        if (GameController.Instance?.CompleteMonsterList == null || !IsReady)
+        if (!IsReady)
         {
             QueueUpdateByName.Enqueue((name, icon));
             return;
@@ -80,6 +115,11 @@ public static class Buffs
             UpdateIcon(buff, icon);
     }
 
+    /// <summary>
+    /// Set a buff's icon.
+    /// </summary>
+    /// <param name="buff"></param>
+    /// <param name="icon"></param>
     private static void UpdateIcon(Buff buff, Sprite icon)
     {
         buff.MonsterHUDIconSmall = icon;

@@ -6,6 +6,9 @@ namespace Ethereal.API;
 
 public static class Artifacts
 {
+    /// <summary>
+    /// A helper class that describes an artifact's properties.
+    /// </summary>
     public class ArtifactDescriptor
     {
         public int id;
@@ -43,6 +46,9 @@ public static class Artifacts
         ArtifactDescriptor descriptor
     )> QueueUpdateByName = new();
 
+    /// <summary>
+    /// Mark the API as ready and run all deferred methods.
+    /// </summary>
     internal static void ReadQueue()
     {
         IsReady = true;
@@ -67,6 +73,11 @@ public static class Artifacts
             Update(item.name, item.descriptor);
     }
 
+    /// <summary>
+    /// Get an artifact by id.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns>an artifact if one was found; otherwise null.</returns>
     public static Consumable Get(int id)
     {
         return GameController
@@ -74,6 +85,11 @@ public static class Artifacts
                 ?.BaseItem as Consumable;
     }
 
+    /// <summary>
+    /// Get an artifact by id.
+    /// </summary>
+    /// <param name="name"></param>
+    /// <returns>an artifact if one was found; otherwise null.</returns>
     public static Consumable Get(string name)
     {
         return GameController
@@ -81,6 +97,12 @@ public static class Artifacts
                 ?.BaseItem as Consumable;
     }
 
+    /// <summary>
+    /// Get an artifact by id.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="result"></param>
+    /// <returns>true if the API is ready and an artifact was found; otherwise, false.</returns>
     public static bool TryGet(int id, out Consumable result)
     {
         if (!IsReady)
@@ -91,6 +113,12 @@ public static class Artifacts
         return result != null;
     }
 
+    /// <summary>
+    /// Get an artifact by name.
+    /// </summary>
+    /// <param name="name"></param>
+    /// <param name="result"></param>
+    /// <returns>true if the API is ready and an artifact was found; otherwise, false.</returns>
     public static bool TryGet(string name, out Consumable result)
     {
         if (!IsReady)
@@ -101,6 +129,10 @@ public static class Artifacts
         return result != null;
     }
 
+    /// <summary>
+    /// Create a new artifact and add it to the game's data.
+    /// </summary>
+    /// <param name="descriptor"></param>
     public static void Add(ArtifactDescriptor descriptor)
     {
         LocalisationData.LocalisationDataEntry defaultLocalisation = new()
@@ -111,7 +143,7 @@ public static class Artifacts
         };
 
         // Defer loading until ready
-        if (GameController.Instance?.ItemManager == null || !IsReady)
+        if (!IsReady)
         {
             QueueAdd.Enqueue((descriptor, null, null));
             return;
@@ -120,13 +152,18 @@ public static class Artifacts
         Add(descriptor, defaultLocalisation);
     }
 
+    /// <summary>
+    /// Create a new artifact and add it to the game's data alongside localisation data.
+    /// </summary>
+    /// <param name="descriptor"></param>
+    /// <param name="localisationData"></param>
     public static void Add(
         ArtifactDescriptor descriptor,
         LocalisationData.LocalisationDataEntry localisationData
     )
     {
         // Defer loading until ready
-        if (GameController.Instance?.ItemManager == null || !IsReady)
+        if (!IsReady)
         {
             QueueAdd.Enqueue((descriptor, localisationData, null));
             return;
@@ -135,7 +172,7 @@ public static class Artifacts
         // Instantiating a BaseAction will call its `Update()` method,
         //   preventing us from running `AddComponent<BaseAction>()`,
         //   which instantiates the object by default
-        // We clone an existing prefab and edit it to prevent this behavior
+        // We clone an existing prefab and modify it to prevent this behavior
         Consumable original = (Consumable)
             GameController.Instance.ItemManager.Consumables.Find(x => x != null).BaseItem;
 
@@ -157,6 +194,13 @@ public static class Artifacts
         Log.API.LogInfo($"Loaded artifact: {descriptor.name}");
     }
 
+    /// <summary>
+    /// Create a new artifact and add it to the game's data alongside localisation data,
+    /// with translations for the provided custom languages.
+    /// </summary>
+    /// <param name="descriptor"></param>
+    /// <param name="localisationData"></param>
+    /// <param name="customLanguageEntries"></param>
     public static void Add(
         ArtifactDescriptor descriptor,
         LocalisationData.LocalisationDataEntry localisationData,
@@ -164,7 +208,7 @@ public static class Artifacts
     )
     {
         // Defer loading until ready
-        if (GameController.Instance?.ItemManager == null || !IsReady)
+        if (!IsReady)
         {
             QueueAdd.Enqueue((descriptor, localisationData, customLanguageEntries));
             return;
@@ -175,6 +219,11 @@ public static class Artifacts
         Localisation.AddLocalisedText(localisationData, customLanguageEntries);
     }
 
+    /// <summary>
+    /// Overwrite an artifact's properties with values from a descriptor.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="descriptor"></param>
     public static void Update(int id, ArtifactDescriptor descriptor)
     {
         // Defer loading until ready
@@ -188,6 +237,11 @@ public static class Artifacts
             Update(artifact, descriptor);
     }
 
+    /// <summary>
+    /// Overwrite an artifact's properties with values from a descriptor.
+    /// </summary>
+    /// <param name="name"></param>
+    /// <param name="descriptor"></param>
     public static void Update(string name, ArtifactDescriptor descriptor)
     {
         // Defer loading until ready
@@ -201,6 +255,11 @@ public static class Artifacts
             Update(artifact, descriptor);
     }
 
+    /// <summary>
+    /// Overwrite an artifact's properties with values from a descriptor.
+    /// </summary>
+    /// <param name="artifact"></param>
+    /// <param name="descriptor"></param>
     private static void Update(Consumable artifact, ArtifactDescriptor descriptor)
     {
         BaseAction action = artifact.Action.GetComponent<BaseAction>();

@@ -11,6 +11,9 @@ public static class Mementos
 
     private static readonly ConcurrentQueue<(string name, Sprite icon)> QueueUpdateByName = new();
 
+    /// <summary>
+    /// Mark the API as ready and run all deferred methods.
+    /// </summary>
     internal static void ReadQueue()
     {
         IsReady = true;
@@ -22,6 +25,11 @@ public static class Mementos
             UpdateIcon(item.name, item.icon);
     }
 
+    /// <summary>
+    /// Get a memento by id.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns>an action if one was found; otherwise null.</returns>
     public static MonsterMemento Get(int id)
     {
         return GameController
@@ -29,6 +37,11 @@ public static class Mementos
                 ?.BaseItem as MonsterMemento;
     }
 
+    /// <summary>
+    /// Get a memento by name.
+    /// </summary>
+    /// <param name="name"></param>
+    /// <returns>an action if one was found; otherwise null.</returns>
     public static MonsterMemento Get(string name)
     {
         return GameController
@@ -36,6 +49,12 @@ public static class Mementos
                 ?.BaseItem as MonsterMemento;
     }
 
+    /// <summary>
+    /// Get a memento by id.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="result"></param>
+    /// <returns>true if the API is ready and an artifact was found; otherwise, false.</returns>
     public static bool TryGet(int id, out MonsterMemento result)
     {
         if (!IsReady)
@@ -46,6 +65,12 @@ public static class Mementos
         return result != null;
     }
 
+    /// <summary>
+    /// Get a memento by name.
+    /// </summary>
+    /// <param name="name"></param>
+    /// <param name="result"></param>
+    /// <returns>true if the API is ready and an artifact was found; otherwise, false.</returns>
     public static bool TryGet(string name, out MonsterMemento result)
     {
         if (!IsReady)
@@ -56,6 +81,11 @@ public static class Mementos
         return result != null;
     }
 
+    /// <summary>
+    /// Set a memento's icon.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="icon"></param>
     public static void UpdateIcon(int id, Sprite icon)
     {
         // Defer loading until ready
@@ -69,6 +99,11 @@ public static class Mementos
             UpdateIcon(memento, icon);
     }
 
+    /// <summary>
+    /// Set a memento's icon.
+    /// </summary>
+    /// <param name="name"></param>
+    /// <param name="icon"></param>
     public static void UpdateIcon(string name, Sprite icon)
     {
         // Defer loading until ready
@@ -82,6 +117,11 @@ public static class Mementos
             UpdateIcon(memento, icon);
     }
 
+    /// <summary>
+    /// Set a memento's icon.
+    /// </summary>
+    /// <param name="memento"></param>
+    /// <param name="icon"></param>
     private static void UpdateIcon(MonsterMemento memento, Sprite icon)
     {
         memento.Icon = icon;

@@ -5,19 +5,36 @@ namespace Ethereal.Utils;
 
 internal static class Converter
 {
+    /// <summary>
+    /// Copy a component to the inside of a GameObject, and return the component.
+    /// </summary>
+    /// <param name="instance"></param>
+    /// <param name="name"></param>
+    /// <returns></returns>
     internal static Component WithinGameObject(Component instance, string name = "")
     {
         return IntoGameObject(instance, name).GetComponent<Component>();
     }
 
+    /// <summary>
+    /// Copy a component to the inside of a GameObject, and return the GameObject.
+    /// </summary>
+    /// <param name="component"></param>
+    /// <param name="name"></param>
+    /// <returns></returns>
     internal static GameObject IntoGameObject(Component component, string name = "")
     {
-        GameObject gameObject = new() { name = name };
+        GameObject gameObject = new(name);
         CopyToGameObject(ref gameObject, component);
 
         return gameObject;
     }
 
+    /// <summary>
+    /// Copy a component to the inside of a GameObject.
+    /// </summary>
+    /// <param name="gameObject"></param>
+    /// <param name="component"></param>
     internal static void CopyToGameObject(ref GameObject gameObject, Component component)
     {
         Type type = component.GetType();

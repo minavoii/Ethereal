@@ -7,6 +7,9 @@ namespace Ethereal.API;
 
 public static class Actions
 {
+    /// <summary>
+    /// A helper class that describes an action's properties.
+    /// </summary>
     public class ActionDescriptor
     {
         public string name = "";
@@ -44,6 +47,9 @@ public static class Actions
 
     private static bool IsReady = false;
 
+    /// <summary>
+    /// Mark the API as ready and run all deferred methods.
+    /// </summary>
     internal static void ReadQueue()
     {
         IsReady = true;
@@ -55,6 +61,11 @@ public static class Actions
             Update(item.name, item.descriptor);
     }
 
+    /// <summary>
+    /// Get an action by id.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns>an action if one was found; otherwise null.</returns>
     public static BaseAction Get(int id)
     {
         // Find trait by monster type
@@ -69,6 +80,11 @@ public static class Actions
         return null;
     }
 
+    /// <summary>
+    /// Get an action by name.
+    /// </summary>
+    /// <param name="name"></param>
+    /// <returns>an action if one was found; otherwise null.</returns>
     public static BaseAction Get(string name)
     {
         // Find trait by monster type
@@ -83,6 +99,12 @@ public static class Actions
         return null;
     }
 
+    /// <summary>
+    /// Get an action by id.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="result"></param>
+    /// <returns>true if the API is ready and an action was found; otherwise, false.</returns>
     public static bool TryGet(int id, out BaseAction result)
     {
         if (!IsReady)
@@ -93,6 +115,12 @@ public static class Actions
         return result != null;
     }
 
+    /// <summary>
+    /// Get an action by name.
+    /// </summary>
+    /// <param name="name"></param>
+    /// <param name="result"></param>
+    /// <returns>true if the API is ready and an action was found; otherwise, false.</returns>
     public static bool TryGet(string name, out BaseAction result)
     {
         if (!IsReady)
@@ -103,6 +131,11 @@ public static class Actions
         return result != null;
     }
 
+    /// <summary>
+    /// Overwrite an action's properties with values from a descriptor.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="descriptor"></param>
     public static void Update(int id, ActionDescriptor descriptor)
     {
         // Defer loading until ready
@@ -116,6 +149,11 @@ public static class Actions
             Update(action, descriptor);
     }
 
+    /// <summary>
+    /// Overwrite an action's properties with values from a descriptor.
+    /// </summary>
+    /// <param name="name"></param>
+    /// <param name="descriptor"></param>
     public static void Update(string name, ActionDescriptor descriptor)
     {
         // Defer loading until ready
@@ -129,6 +167,11 @@ public static class Actions
             Update(action, descriptor);
     }
 
+    /// <summary>
+    /// Overwrite an action's properties with values from a descriptor.
+    /// </summary>
+    /// <param name="action"></param>
+    /// <param name="descriptor"></param>
     private static void Update(BaseAction action, ActionDescriptor descriptor)
     {
         if (descriptor.name != string.Empty)

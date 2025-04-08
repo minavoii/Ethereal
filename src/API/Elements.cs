@@ -5,6 +5,9 @@ namespace Ethereal.API;
 
 public static class Elements
 {
+    /// <summary>
+    /// A helper class that describes an element's properties.
+    /// </summary>
     public class ElementIcons()
     {
         public Sprite icon;
@@ -21,6 +24,9 @@ public static class Elements
 
     private static bool IsReady = false;
 
+    /// <summary>
+    /// Mark the API as ready and run all deferred methods.
+    /// </summary>
     internal static void ReadQueue()
     {
         IsReady = true;
@@ -32,6 +38,11 @@ public static class Elements
             UpdateIcon(item.element, item.icons);
     }
 
+    /// <summary>
+    /// Set an element's icon.
+    /// </summary>
+    /// <param name="element"></param>
+    /// <param name="icons"></param>
     public static void UpdateIcon(EElement element, ElementIcons icons)
     {
         // Defer loading until ready
