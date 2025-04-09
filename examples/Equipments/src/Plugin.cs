@@ -2,9 +2,9 @@
 using System.Reflection;
 using BepInEx;
 using BepInEx.Logging;
-using Equipments.Weapons;
+using Ethereal.API;
 
-namespace Equipments;
+namespace ExampleEquipments;
 
 [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
 [BepInProcess("Aethermancer.exe")]
@@ -24,12 +24,12 @@ public class Plugin : BaseUnityPlugin
     {
         Logger = base.Logger;
 
-        Ethereal.API.Equipments.Add(
-            Accessories.RedArmor.descriptor,
-            Accessories.RedArmor.localisationData,
-            Accessories.RedArmor.customLanguageEntries
+        Equipments.Add(
+            Accessory.RedArmor.descriptor,
+            Accessory.RedArmor.localisationData,
+            Accessory.RedArmor.customLanguageEntries
         );
 
-        Ethereal.API.Equipments.Update("Blade", ERarity.Common, BlueBlade.descriptor);
+        Equipments.Update("Blade", ERarity.Common, Weapon.BlueBlade.descriptor);
     }
 }

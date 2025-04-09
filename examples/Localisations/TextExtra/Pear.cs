@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Localisations.TextExtra;
+namespace ExampleLocalisations.TextExtra;
 
 internal static class Pear
 {

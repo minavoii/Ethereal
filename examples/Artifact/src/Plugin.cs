@@ -2,8 +2,9 @@
 using System.Reflection;
 using BepInEx;
 using BepInEx.Logging;
+using Ethereal.API;
 
-namespace Artifacts;
+namespace ExampleArtifacts;
 
 [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
 [BepInProcess("Aethermancer.exe")]
@@ -23,10 +24,10 @@ public class Plugin : BaseUnityPlugin
     {
         Logger = base.Logger;
 
-        Ethereal.API.Artifacts.Add(
-            Artifacts.TrucePact.descriptor,
-            Artifacts.TrucePact.localisationData,
-            Artifacts.TrucePact.customLanguageEntries
+        Artifacts.Add(
+            Artifact.TrucePact.descriptor,
+            Artifact.TrucePact.localisationData,
+            Artifact.TrucePact.customLanguageEntries
         );
     }
 }

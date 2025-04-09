@@ -1,16 +1,17 @@
 using System.IO;
+using Ethereal.API;
 
-namespace Equipments.Weapons;
+namespace ExampleEquipments.Weapon;
 
 internal static class BlueBlade
 {
     internal const string Name = "Blue Blade";
 
-    internal static readonly Ethereal.API.Equipments.EquipmentDescriptor descriptor = new()
+    internal static readonly Equipments.EquipmentDescriptor descriptor = new()
     {
         name = Name,
-        icon = Ethereal.API.Sprites.LoadFromImage(
-            Ethereal.API.Sprites.SpriteType.Equipment,
+        icon = Sprites.LoadFromImage(
+            Sprites.SpriteType.Equipment,
             Path.Join(Plugin.EquipmentsPath, "Equipment_Blade_Blue.png")
         ),
         price = 100,
