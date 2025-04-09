@@ -7,7 +7,7 @@ namespace Ethereal.API;
 
 public static class Sprites
 {
-    public enum IconType
+    public enum SpriteType
     {
         Action,
         ActionSmall,
@@ -42,7 +42,7 @@ public static class Sprites
     /// <param name="iconType"></param>
     /// <param name="path"></param>
     /// <returns>a Sprite if the file was found; otherwise null.</returns>
-    public static Sprite LoadFromImage(IconType iconType, string path)
+    public static Sprite LoadFromImage(SpriteType iconType, string path)
     {
         if (!File.Exists(path))
         {
@@ -53,14 +53,14 @@ public static class Sprites
         Sprite sprite = CreateBySize(
             iconType switch
             {
-                IconType.Action => (18, 18),
-                IconType.ActionSmall => (12, 12),
-                IconType.ActionCutSmall => (12, 8),
-                IconType.Artifact or IconType.Equipment or IconType.Trait => (48, 48),
-                IconType.Element => (8, 8),
-                IconType.ElementSmall => (4, 4),
-                IconType.Memento => (38, 38),
-                IconType.MonsterType or IconType.Buff => (7, 7),
+                SpriteType.Action => (18, 18),
+                SpriteType.ActionSmall => (12, 12),
+                SpriteType.ActionCutSmall => (12, 8),
+                SpriteType.Artifact or SpriteType.Equipment or SpriteType.Trait => (48, 48),
+                SpriteType.Element => (8, 8),
+                SpriteType.ElementSmall => (4, 4),
+                SpriteType.Memento => (38, 38),
+                SpriteType.MonsterType or SpriteType.Buff => (7, 7),
                 _ => (0, 0),
             }
         );
@@ -97,7 +97,7 @@ public static class Sprites
 
         // Buffs
         foreach (FileInfo file in new DirectoryInfo(PathBuffs).EnumerateFiles())
-            ReplaceIconBuff(ToTitleCase(file.Name), LoadFromImage(IconType.Buff, file.FullName));
+            ReplaceIconBuff(ToTitleCase(file.Name), LoadFromImage(SpriteType.Buff, file.FullName));
 
         // Elements
         foreach (FileInfo file in new DirectoryInfo(PathElements).EnumerateFiles())
@@ -107,25 +107,28 @@ public static class Sprites
         foreach (FileInfo file in new DirectoryInfo(PathEquipments).EnumerateFiles())
             ReplaceIconEquipment(
                 ToTitleCase(file.Name),
-                LoadFromImage(IconType.Equipment, file.FullName)
+                LoadFromImage(SpriteType.Equipment, file.FullName)
             );
 
         // Mementos
         foreach (FileInfo file in new DirectoryInfo(PathMementos).EnumerateFiles())
             ReplaceIconMemento(
                 ToTitleCase(file.Name),
-                LoadFromImage(IconType.Memento, file.FullName)
+                LoadFromImage(SpriteType.Memento, file.FullName)
             );
 
         // Traits
         foreach (FileInfo file in new DirectoryInfo(PathTraits).EnumerateFiles())
-            ReplaceIconTrait(ToTitleCase(file.Name), LoadFromImage(IconType.Trait, file.FullName));
+            ReplaceIconTrait(
+                ToTitleCase(file.Name),
+                LoadFromImage(SpriteType.Trait, file.FullName)
+            );
 
         // Types
         foreach (FileInfo file in new DirectoryInfo(PathTypes).EnumerateFiles())
             ReplaceIconType(
                 ToTitleCase(file.Name),
-                LoadFromImage(IconType.MonsterType, file.FullName)
+                LoadFromImage(SpriteType.MonsterType, file.FullName)
             );
     }
 
@@ -185,15 +188,15 @@ public static class Sprites
         if (name.EndsWith("Small"))
         {
             name = name[..(name.Length - 6)];
-            descriptor.iconSmall = icon ?? LoadFromImage(IconType.ActionSmall, iconPath);
+            descriptor.iconSmall = icon ?? LoadFromImage(SpriteType.ActionSmall, iconPath);
         }
         else if (name.EndsWith("Cut"))
         {
             name = name[..(name.Length - 4)];
-            descriptor.iconCutSmall = icon ?? LoadFromImage(IconType.ActionCutSmall, iconPath);
+            descriptor.iconCutSmall = icon ?? LoadFromImage(SpriteType.ActionCutSmall, iconPath);
         }
         else
-            descriptor.icon = icon ?? LoadFromImage(IconType.Action, iconPath);
+            descriptor.icon = icon ?? LoadFromImage(SpriteType.Action, iconPath);
 
         Actions.Update(name, descriptor);
     }
@@ -211,15 +214,15 @@ public static class Sprites
         if (name.EndsWith("Big"))
         {
             name = name[..(name.Length - 4)];
-            descriptor.actionIconBig = icon ?? LoadFromImage(IconType.Action, iconPath);
+            descriptor.actionIconBig = icon ?? LoadFromImage(SpriteType.Action, iconPath);
         }
         else if (name.EndsWith("Small"))
         {
             name = name[..(name.Length - 6)];
-            descriptor.actionIconSmall = icon ?? LoadFromImage(IconType.ActionSmall, iconPath);
+            descriptor.actionIconSmall = icon ?? LoadFromImage(SpriteType.ActionSmall, iconPath);
         }
         else
-            descriptor.icon = icon ?? LoadFromImage(IconType.Artifact, iconPath);
+            descriptor.icon = icon ?? LoadFromImage(SpriteType.Artifact, iconPath);
 
         Artifacts.Update(name, descriptor);
     }
@@ -247,20 +250,20 @@ public static class Sprites
         if (name.EndsWith("Empty"))
         {
             name = name[..(name.Length - 6)];
-            descriptor.iconSmallEmpty = icon ?? LoadFromImage(IconType.ElementSmall, iconPath);
+            descriptor.iconSmallEmpty = icon ?? LoadFromImage(SpriteType.ElementSmall, iconPath);
         }
         else if (name.EndsWith("Filled"))
         {
             name = name[..(name.Length - 7)];
-            descriptor.iconSmallFilled = icon ?? LoadFromImage(IconType.ElementSmall, iconPath);
+            descriptor.iconSmallFilled = icon ?? LoadFromImage(SpriteType.ElementSmall, iconPath);
         }
         else if (name.EndsWith("Normal"))
         {
             name = name[..(name.Length - 7)];
-            descriptor.iconSmall = icon ?? LoadFromImage(IconType.ElementSmall, iconPath);
+            descriptor.iconSmall = icon ?? LoadFromImage(SpriteType.ElementSmall, iconPath);
         }
         else
-            descriptor.icon = icon ?? LoadFromImage(IconType.Element, iconPath);
+            descriptor.icon = icon ?? LoadFromImage(SpriteType.Element, iconPath);
 
         Elements.Update(Enum.Parse<EElement>(name), descriptor);
     }

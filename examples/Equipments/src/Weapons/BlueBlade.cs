@@ -10,7 +10,7 @@ internal static class BlueBlade
     {
         name = Name,
         icon = Ethereal.API.Sprites.LoadFromImage(
-            Ethereal.API.Sprites.IconType.Equipment,
+            Ethereal.API.Sprites.SpriteType.Equipment,
             Path.Join(Plugin.EquipmentsPath, "Equipment_Blade_Blue.png")
         ),
         price = 100,
