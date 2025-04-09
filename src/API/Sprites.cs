@@ -242,27 +242,27 @@ public static class Sprites
     /// <param name="iconPath"></param>
     private static void ReplaceIconElement(string name, Sprite icon, string iconPath = "")
     {
-        Elements.ElementIcons elementIcons = new();
+        Elements.ElementDescriptor descriptor = new();
 
         if (name.EndsWith("Empty"))
         {
             name = name[..(name.Length - 6)];
-            elementIcons.iconSmallEmpty = icon ?? LoadFromImage(IconType.ElementSmall, iconPath);
+            descriptor.iconSmallEmpty = icon ?? LoadFromImage(IconType.ElementSmall, iconPath);
         }
         else if (name.EndsWith("Filled"))
         {
             name = name[..(name.Length - 7)];
-            elementIcons.iconSmallFilled = icon ?? LoadFromImage(IconType.ElementSmall, iconPath);
+            descriptor.iconSmallFilled = icon ?? LoadFromImage(IconType.ElementSmall, iconPath);
         }
         else if (name.EndsWith("Normal"))
         {
             name = name[..(name.Length - 7)];
-            elementIcons.iconSmall = icon ?? LoadFromImage(IconType.ElementSmall, iconPath);
+            descriptor.iconSmall = icon ?? LoadFromImage(IconType.ElementSmall, iconPath);
         }
         else
-            elementIcons.icon = icon ?? LoadFromImage(IconType.Element, iconPath);
+            descriptor.icon = icon ?? LoadFromImage(IconType.Element, iconPath);
 
-        Elements.UpdateIcon(Enum.Parse<EElement>(name), elementIcons);
+        Elements.Update(Enum.Parse<EElement>(name), descriptor);
     }
 
     /// <summary>
