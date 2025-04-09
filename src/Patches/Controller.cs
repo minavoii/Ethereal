@@ -12,6 +12,7 @@ internal static class Controller
         API.MonsterTypes.SetReady();
         API.Actions.SetReady();
         API.Traits.SetReady();
+        API.Perks.SetReady();
         API.Monsters.SetReady();
     }
 
