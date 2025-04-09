@@ -1,7 +1,8 @@
 using System.Collections.Generic;
 using System.IO;
+using Ethereal.API;
 
-namespace Equipments.Accessories;
+namespace ExampleEquipments.Accessory;
 
 internal static class RedArmor
 {
@@ -9,11 +10,11 @@ internal static class RedArmor
 
     internal const string Name = "Red Armor";
 
-    internal static readonly Ethereal.API.Equipments.EquipmentDescriptor descriptor = new()
+    internal static readonly Equipments.EquipmentDescriptor descriptor = new()
     {
         id = Id,
         name = Name,
-        icon = Ethereal.API.Sprites.LoadFromAsset(
+        icon = Sprites.LoadFromAsset(
             Path.Join(Plugin.EquipmentsPath, "RedArmor"),
             "Assets/Textures/Item/Item.prefab"
         ),

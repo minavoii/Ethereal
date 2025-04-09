@@ -1,8 +1,9 @@
 ﻿using System.Timers;
 using BepInEx;
 using BepInEx.Logging;
+using Ethereal.API;
 
-namespace Localisations;
+namespace ExampleLocalisations;
 
 [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
 [BepInProcess("Aethermancer.exe")]
@@ -17,8 +18,8 @@ public class Plugin : BaseUnityPlugin
     {
         Logger = base.Logger;
 
-        Ethereal.API.Localisation.AddLocalisedText(Text.Apple.entry);
-        Ethereal.API.Localisation.AddLocalisedText(TextExtra.Pear.entry, TextExtra.Pear.extras);
+        Localisation.AddLocalisedText(Text.Apple.entry);
+        Localisation.AddLocalisedText(TextExtra.Pear.entry, TextExtra.Pear.extras);
 
         // We're using a timer here because GameController may not be initialized yet
         // We are only calling `Loca.Localize()` here to check that it worked,

@@ -43,7 +43,7 @@ public static class Monsters
     /// <summary>
     /// Mark the API as ready and run all deferred methods.
     /// </summary>
-    internal static void ReadQueue()
+    internal static void SetReady()
     {
         IsReady = true;
 
@@ -219,33 +219,15 @@ public static class Monsters
 
             foreach ((string perkName, int multiplier) in descriptor.perks)
             {
-                PerkInfos perk = GetPerk(perkName);
-                perk.Multiplier = multiplier;
-
-                if (perk != null)
+                if (Perks.TryGet(perkName, out var perk))
+                {
+                    perk.Multiplier = multiplier;
                     monster.GetComponent<MonsterStats>().PerkInfosList.Add(perk);
+                }
             }
         }
 
         if (descriptor.baseMaxHealth.HasValue)
             monster.GetComponent<MonsterStats>().BaseMaxHealth = descriptor.baseMaxHealth.Value;
-    }
-
-    private static PerkInfos GetPerk(string name)
-    {
-        // Find perk by monster
-        foreach (GameObject monster in GameController.Instance.CompleteMonsterList)
-        {
-            if (monster == null)
-                continue;
-
-            foreach (PerkInfos perk in monster.GetComponent<MonsterStats>().PerkInfosList)
-            {
-                if (perk.Perk.GetComponent<Perk>().Name == name)
-                    return perk;
-            }
-        }
-
-        return null;
     }
 }

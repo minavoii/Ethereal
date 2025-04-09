@@ -8,8 +8,8 @@ internal static class World
     [HarmonyPrefix]
     private static void BuildCache()
     {
-        API.Artifacts.ReadQueue();
-        API.Equipments.ReadQueue();
-        API.Mementos.ReadQueue();
+        API.Artifacts.SetReady();
+        API.Equipments.SetReady();
+        API.Mementos.SetReady();
     }
 }

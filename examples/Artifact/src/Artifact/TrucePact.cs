@@ -1,7 +1,8 @@
 using System.Collections.Generic;
 using System.IO;
+using Ethereal.API;
 
-namespace Artifacts.Artifacts;
+namespace ExampleArtifacts.Artifact;
 
 internal static class TrucePact
 {
@@ -9,21 +10,21 @@ internal static class TrucePact
 
     internal const string Name = "Truce Pact";
 
-    internal static readonly Ethereal.API.Artifacts.ArtifactDescriptor descriptor = new()
+    internal static readonly Artifacts.ArtifactDescriptor descriptor = new()
     {
         id = Id,
         name = Name,
         targetType = ETargetType.SingleAlly,
-        icon = Ethereal.API.Sprites.LoadFromImage(
-            Ethereal.API.Sprites.IconType.Artifact,
+        icon = Sprites.LoadFromImage(
+            Sprites.SpriteType.Artifact,
             Path.Join(Plugin.EquipmentsPath, "Artifact_TrucePact.png")
         ),
-        actionIconBig = Ethereal.API.Sprites.LoadFromImage(
-            Ethereal.API.Sprites.IconType.Action,
+        actionIconBig = Sprites.LoadFromImage(
+            Sprites.SpriteType.Action,
             Path.Join(Plugin.EquipmentsPath, "ActionIcon_TrucePact_Big.png")
         ),
-        actionIconSmall = Ethereal.API.Sprites.LoadFromImage(
-            Ethereal.API.Sprites.IconType.ActionSmall,
+        actionIconSmall = Sprites.LoadFromImage(
+            Sprites.SpriteType.ActionSmall,
             Path.Join(Plugin.EquipmentsPath, "ActionIcon_TrucePact_Small.png")
         ),
         actions =

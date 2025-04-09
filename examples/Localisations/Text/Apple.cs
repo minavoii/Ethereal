@@ -1,4 +1,4 @@
-namespace Localisations.Text;
+namespace ExampleLocalisations.Text;
 
 internal static class Apple
 {

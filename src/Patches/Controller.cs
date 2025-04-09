@@ -8,21 +8,19 @@ internal static class Controller
     [HarmonyPrefix]
     private static void Prefix()
     {
-        API.Localisation.GenerateTemplate();
-        API.Localisation.LoadLanguages();
-        API.Localisation.ReadQueue();
-
-        API.MonsterTypes.ReadQueue();
-        API.Actions.ReadQueue();
-        API.Traits.ReadQueue();
-        API.Monsters.ReadQueue();
+        API.Localisation.SetReady();
+        API.MonsterTypes.SetReady();
+        API.Actions.SetReady();
+        API.Traits.SetReady();
+        API.Perks.SetReady();
+        API.Monsters.SetReady();
     }
 
     [HarmonyPatch(typeof(GameController), "Initialize")]
     [HarmonyPostfix]
     private static void Postfix()
     {
-        API.Buffs.ReadQueue();
-        API.Elements.ReadQueue();
+        API.Buffs.SetReady();
+        API.Elements.SetReady();
     }
 }

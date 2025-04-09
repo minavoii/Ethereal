@@ -40,6 +40,11 @@ public static class Localisation
         public Dictionary<int, string> localisations = [];
     }
 
+    /// <summary>
+    /// Localisation data for custom languages.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="data"></param>
     internal class CustomLocaleData(int id, Dictionary<ELanguage, string> data)
     {
         public readonly int id = id;
@@ -76,8 +81,11 @@ public static class Localisation
     /// <summary>
     /// Mark the API as ready and run all deferred methods.
     /// </summary>
-    internal static void ReadQueue()
+    internal static void SetReady()
     {
+        GenerateTemplate();
+        LoadLanguages();
+
         IsReady = true;
 
         while (Queue.TryDequeue(out var item))
@@ -209,7 +217,7 @@ public static class Localisation
     /// <summary>
     /// Load languages files from the Ethereal directory.
     /// </summary>
-    internal static void LoadLanguages()
+    private static void LoadLanguages()
     {
         List<Language> languageList = [];
 
@@ -381,7 +389,7 @@ public static class Localisation
     /// Generate a JSON file which includes untranslated localisation data.<para/>
     /// This file can then easily be modified to add or edit language data.
     /// </summary>
-    internal static void GenerateTemplate()
+    private static void GenerateTemplate()
     {
         // Only regenerate the template after updating to a new version
         //  or if it wasn't found
