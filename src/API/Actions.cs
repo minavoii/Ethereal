@@ -50,7 +50,7 @@ public static class Actions
     /// <summary>
     /// Mark the API as ready and run all deferred methods.
     /// </summary>
-    internal static void ReadQueue()
+    internal static void SetReady()
     {
         IsReady = true;
 
