@@ -25,7 +25,7 @@ public static class Monsters
 
         public List<string> startingActions = [];
 
-        public List<(string name, int multiplier)> perks = [];
+        public List<PerkInfos> perks = [];
 
         public int? baseMaxHealth;
     }
@@ -63,7 +63,7 @@ public static class Monsters
     {
         return GameController
             .Instance.CompleteMonsterList.Find(x => x?.GetComponent<Monster>()?.MonID == id)
-            .GetComponent<Monster>();
+            ?.GetComponent<Monster>();
     }
 
     /// <summary>
@@ -75,7 +75,7 @@ public static class Monsters
     {
         return GameController
             .Instance.CompleteMonsterList.Find(x => x?.GetComponent<Monster>()?.Name == name)
-            .GetComponent<Monster>();
+            ?.GetComponent<Monster>();
     }
 
     /// <summary>
@@ -217,14 +217,8 @@ public static class Monsters
         {
             monster.GetComponent<MonsterStats>().PerkInfosList.Clear();
 
-            foreach ((string perkName, int multiplier) in descriptor.perks)
-            {
-                if (Perks.TryGet(perkName, out var perk))
-                {
-                    perk.Multiplier = multiplier;
-                    monster.GetComponent<MonsterStats>().PerkInfosList.Add(perk);
-                }
-            }
+            foreach (PerkInfos perk in descriptor.perks)
+                monster.GetComponent<MonsterStats>().PerkInfosList.Add(perk);
         }
 
         if (descriptor.baseMaxHealth.HasValue)
