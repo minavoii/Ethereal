@@ -52,7 +52,7 @@ public static class Perks
 
             foreach (PerkInfos perk in monster.GetComponent<MonsterStats>().PerkInfosList)
             {
-                if (perk.Perk.GetComponent<Perk>().name == name)
+                if (perk.Perk.GetComponent<Perk>().Name == name)
                     return perk;
             }
         }
