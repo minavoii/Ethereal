@@ -28,6 +28,8 @@ public static class Monsters
         public List<PerkInfos> perks = [];
 
         public int? baseMaxHealth;
+
+        public List<MonsterAIAction> scripting = [];
     }
 
     private static bool IsReady = false;
@@ -175,11 +177,7 @@ public static class Monsters
         {
             for (int i = 0; i < 3; i++)
             {
-                MonsterType type = GameController.Instance.MonsterTypes.Find(x =>
-                    x?.Type == descriptor.types[i]
-                );
-
-                GameObject go = Utils.Converter.IntoGameObject(type);
+                GameObject go = MonsterTypes.NativeTypes[descriptor.types[i]];
                 monster.GetComponent<SkillManager>().MonsterTypes[i] = go;
             }
         }
@@ -223,5 +221,14 @@ public static class Monsters
 
         if (descriptor.baseMaxHealth.HasValue)
             monster.GetComponent<MonsterStats>().BaseMaxHealth = descriptor.baseMaxHealth.Value;
+
+        if (descriptor.scripting.Count != 0)
+        {
+            MonsterAI ai = monster.GetComponent<MonsterAI>();
+            ai.Scripting.Clear();
+
+            foreach (MonsterAIAction action in descriptor.scripting)
+                ai.Scripting.Add(action);
+        }
     }
 }
