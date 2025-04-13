@@ -79,7 +79,7 @@ public static class Traits
         }
 
         // Find signature trait
-        foreach (GameObject monster in GameController.Instance.CompleteMonsterList)
+        foreach (GameObject monster in GameController.Instance.ActiveMonsterList)
         {
             if (monster == null)
                 continue;
@@ -112,7 +112,7 @@ public static class Traits
         }
 
         // Find signature trait
-        foreach (GameObject monster in GameController.Instance.CompleteMonsterList)
+        foreach (GameObject monster in GameController.Instance.ActiveMonsterList)
         {
             if (monster == null)
                 continue;

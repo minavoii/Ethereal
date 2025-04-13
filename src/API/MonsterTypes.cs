@@ -47,7 +47,7 @@ public static class MonsterTypes
     /// <returns>a monster type's GameObject if one was found, otherwise null.</returns>
     public static GameObject GetObject(EMonsterType monsterType)
     {
-        foreach (var monster in GameController.Instance.CompleteMonsterList)
+        foreach (var monster in GameController.Instance.ActiveMonsterList)
         {
             if (monster == null)
                 continue;

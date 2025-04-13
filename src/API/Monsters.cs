@@ -68,7 +68,7 @@ public static class Monsters
     private static Monster Get(int id)
     {
         return GameController
-            .Instance.CompleteMonsterList.Find(x => x?.GetComponent<Monster>()?.MonID == id)
+            .Instance.ActiveMonsterList.Find(x => x?.GetComponent<Monster>()?.MonID == id)
             ?.GetComponent<Monster>();
     }
 
@@ -80,7 +80,7 @@ public static class Monsters
     private static Monster Get(string name)
     {
         return GameController
-            .Instance.CompleteMonsterList.Find(x => x?.GetComponent<Monster>()?.Name == name)
+            .Instance.ActiveMonsterList.Find(x => x?.GetComponent<Monster>()?.Name == name)
             ?.GetComponent<Monster>();
     }
 
