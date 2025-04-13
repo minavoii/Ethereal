@@ -32,6 +32,8 @@ public static class Monsters
         public List<MonsterAIAction> scripting = [];
 
         public List<MonsterAI.MonsterAITrait> wildTraits = [];
+
+        public Trait eliteTrait;
     }
 
     private static bool IsReady = false;
@@ -241,5 +243,8 @@ public static class Monsters
             foreach (MonsterAI.MonsterAITrait trait in descriptor.wildTraits)
                 ai.Traits.Add(trait);
         }
+
+        if (descriptor.eliteTrait != null)
+            monster.GetComponent<SkillManager>().EliteTrait = descriptor.eliteTrait.gameObject;
     }
 }
