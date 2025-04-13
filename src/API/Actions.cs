@@ -68,7 +68,7 @@ public static class Actions
     /// <returns>an action if one was found; otherwise null.</returns>
     private static BaseAction Get(int id)
     {
-        // Find trait by monster type
+        // Find action by monster type
         foreach (MonsterType type in GameController.Instance.MonsterTypes)
         {
             BaseAction action = type.Actions.Find(x => x.ID == id);
@@ -87,7 +87,7 @@ public static class Actions
     /// <returns>an action if one was found; otherwise null.</returns>
     private static BaseAction Get(string name)
     {
-        // Find trait by monster type
+        // Find action by monster type
         foreach (MonsterType type in GameController.Instance.MonsterTypes)
         {
             BaseAction action = type.Actions.Find(x => x.Name == name);

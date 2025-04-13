@@ -30,6 +30,8 @@ public static class Monsters
         public int? baseMaxHealth;
 
         public List<MonsterAIAction> scripting = [];
+
+        public List<MonsterAI.MonsterAITrait> wildTraits = [];
     }
 
     private static bool IsReady = false;
@@ -229,6 +231,15 @@ public static class Monsters
 
             foreach (MonsterAIAction action in descriptor.scripting)
                 ai.Scripting.Add(action);
+        }
+
+        if (descriptor.wildTraits.Count != 0)
+        {
+            MonsterAI ai = monster.GetComponent<MonsterAI>();
+            ai.Traits.Clear();
+
+            foreach (MonsterAI.MonsterAITrait trait in descriptor.wildTraits)
+                ai.Traits.Add(trait);
         }
     }
 }
