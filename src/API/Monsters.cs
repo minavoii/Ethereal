@@ -21,9 +21,9 @@ public static class Monsters
 
         public List<(EElement element, int hits)> staggers = [];
 
-        public string signatureTrait = "";
+        public Trait signatureTrait;
 
-        public List<string> startingActions = [];
+        public List<BaseAction> startingActions = [];
 
         public List<PerkInfos> perks = [];
 
@@ -198,21 +198,17 @@ public static class Monsters
             }
         }
 
-        if (descriptor.signatureTrait != string.Empty)
-        {
-            if (Traits.TryGet(descriptor.signatureTrait, out var trait))
-                monster.GetComponent<SkillManager>().SignatureTrait = trait.gameObject;
-        }
+        if (descriptor.signatureTrait != null)
+            monster.GetComponent<SkillManager>().SignatureTrait = descriptor
+                .signatureTrait
+                .gameObject;
 
         if (descriptor.startingActions.Count != 0)
         {
             monster.GetComponent<SkillManager>().StartActions.Clear();
 
-            foreach (string actionName in descriptor.startingActions)
-            {
-                if (Actions.TryGet(actionName, out var action))
-                    monster.GetComponent<SkillManager>().StartActions.Add(action.gameObject);
-            }
+            foreach (BaseAction action in descriptor.startingActions)
+                monster.GetComponent<SkillManager>().StartActions.Add(action.gameObject);
         }
 
         if (descriptor.perks.Count == 3)
