@@ -22,7 +22,7 @@ public static class Perks
     private static PerkInfos Get(int id)
     {
         // Find perk by monster
-        foreach (GameObject monster in GameController.Instance.CompleteMonsterList)
+        foreach (GameObject monster in GameController.Instance.ActiveMonsterList)
         {
             if (monster == null)
                 continue;
@@ -45,14 +45,14 @@ public static class Perks
     private static PerkInfos Get(string name)
     {
         // Find perk by monster
-        foreach (GameObject monster in GameController.Instance.CompleteMonsterList)
+        foreach (GameObject monster in GameController.Instance.ActiveMonsterList)
         {
             if (monster == null)
                 continue;
 
             foreach (PerkInfos perk in monster.GetComponent<MonsterStats>().PerkInfosList)
             {
-                if (perk.Perk.GetComponent<Perk>().name == name)
+                if (perk.Perk.GetComponent<Perk>().Name == name)
                     return perk;
             }
         }
