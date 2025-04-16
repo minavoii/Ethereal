@@ -249,7 +249,7 @@ public static class Equipments
 
         Localisation.AddLocalisedText(localisationData);
 
-        Log.API.LogInfo($"Loaded item: {descriptor.name}");
+        Log.API.LogInfo($"Loaded equipment: {descriptor.name}");
     }
 
     /// <summary>
