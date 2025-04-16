@@ -17,15 +17,15 @@ internal static class TrucePact
         targetType = ETargetType.SingleAlly,
         icon = Sprites.LoadFromImage(
             Sprites.SpriteType.Artifact,
-            Path.Join(Plugin.EquipmentsPath, "Artifact_TrucePact.png")
+            Path.Join(Plugin.ArtifactsPath, "Artifact_TrucePact.png")
         ),
         actionIconBig = Sprites.LoadFromImage(
             Sprites.SpriteType.Action,
-            Path.Join(Plugin.EquipmentsPath, "ActionIcon_TrucePact_Big.png")
+            Path.Join(Plugin.ArtifactsPath, "ActionIcon_TrucePact_Big.png")
         ),
         actionIconSmall = Sprites.LoadFromImage(
             Sprites.SpriteType.ActionSmall,
-            Path.Join(Plugin.EquipmentsPath, "ActionIcon_TrucePact_Small.png")
+            Path.Join(Plugin.ArtifactsPath, "ActionIcon_TrucePact_Small.png")
         ),
         actions =
         [

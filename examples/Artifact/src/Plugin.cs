@@ -18,7 +18,7 @@ public class Plugin : BaseUnityPlugin
         "Ethereal.Examples"
     );
 
-    internal static readonly string EquipmentsPath = Path.Join(ExamplesPath, "Artifacts");
+    internal static readonly string ArtifactsPath = Path.Join(ExamplesPath, "Artifacts");
 
     private void Awake()
     {
