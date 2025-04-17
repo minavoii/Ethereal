@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Ethereal.Utils;
 
-internal static class Converter
+public static class GameObjects
 {
     /// <summary>
     /// Copy a component to the inside of a GameObject, and return the component.
@@ -11,9 +11,10 @@ internal static class Converter
     /// <param name="instance"></param>
     /// <param name="name"></param>
     /// <returns></returns>
-    internal static Component WithinGameObject(Component instance, string name = "")
+    public static T WithinGameObject<T>(T instance, string name = "")
+        where T : Component
     {
-        return IntoGameObject(instance, name).GetComponent<Component>();
+        return IntoGameObject(instance, name).GetComponent<T>();
     }
 
     /// <summary>
@@ -22,7 +23,7 @@ internal static class Converter
     /// <param name="component"></param>
     /// <param name="name"></param>
     /// <returns></returns>
-    internal static GameObject IntoGameObject(Component component, string name = "")
+    public static GameObject IntoGameObject(Component component, string name = "")
     {
         GameObject gameObject = new(name);
         CopyToGameObject(ref gameObject, component);
@@ -35,7 +36,7 @@ internal static class Converter
     /// </summary>
     /// <param name="gameObject"></param>
     /// <param name="component"></param>
-    internal static void CopyToGameObject(ref GameObject gameObject, Component component)
+    public static void CopyToGameObject(ref GameObject gameObject, Component component)
     {
         Type type = component.GetType();
         Component innerComponent = gameObject.AddComponent(type);

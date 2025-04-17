@@ -224,12 +224,12 @@ public static class Equipments
         equipment.Icon.name = objectName;
         equipment.Icon.texture.name = objectName;
 
-        Utils.Converter.CopyToGameObject(ref go, equipment);
+        Utils.GameObjects.CopyToGameObject(ref go, equipment);
         go.GetComponent<Equipment>().name = go.name;
 
         foreach (PassiveEffect passive in descriptor.passiveEffects)
         {
-            Utils.Converter.CopyToGameObject(ref go, passive);
+            Utils.GameObjects.CopyToGameObject(ref go, passive);
         }
 
         // Copy PassiveEffect components into PassiveEffectList
@@ -360,7 +360,7 @@ public static class Equipments
 
             foreach (PassiveEffect passive in descriptor.passiveEffects)
             {
-                Utils.Converter.CopyToGameObject(ref go, passive);
+                Utils.GameObjects.CopyToGameObject(ref go, passive);
             }
 
             equipment.InitializeReferenceable();
