@@ -169,24 +169,30 @@ public static class Artifacts
             return;
         }
 
-        // Instantiating a BaseAction will call its `Update()` method,
-        //   preventing us from running `AddComponent<BaseAction>()`,
-        //   which instantiates the object by default
-        // We clone an existing prefab and modify it to prevent this behavior
-        Consumable original = (Consumable)
-            GameController.Instance.ItemManager.Consumables.Find(x => x != null).BaseItem;
-
-        Consumable artifact = Object.Instantiate(original);
-        artifact.ID = descriptor.id;
-
-        // We need the description to be empty if the user didn't provide any,
-        //   so the default description can show up
-        artifact.Description = descriptor.description;
-        artifact.Action.GetComponent<BaseAction>().DescriptionOverride = descriptor.description;
+        GameObject parent = new();
+        BaseAction action = Utils.GameObjects.WithinGameObject(
+            new BaseAction()
+            {
+                Name = descriptor.name,
+                DescriptionOverride = descriptor.description,
+                SkillType = ESkillType.Shared,
+                Types = [],
+            }
+        );
+        Consumable artifact = Utils.GameObjects.WithinGameObject(
+            new Consumable()
+            {
+                ID = descriptor.id,
+                Name = descriptor.name,
+                Description = descriptor.description,
+            }
+        );
+        action.transform.parent = parent.transform;
+        artifact.Action = action.gameObject;
+        parent.SetActive(false);
 
         GameController.Instance.ItemManager.Consumables.Add(new() { BaseItem = artifact });
         WorldData.Instance.Referenceables.Add(artifact);
-
         Localisation.AddLocalisedText(localisationData);
 
         Update(descriptor.id, descriptor);
