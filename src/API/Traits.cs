@@ -194,7 +194,7 @@ public static class Traits
             SkillType = descriptor.skillType ?? ESkillType.Shared,
         };
 
-        var go = Utils.Converter.IntoGameObject(trait);
+        var go = Utils.GameObjects.IntoGameObject(trait);
 
         foreach (EMonsterType monsterType in descriptor.types)
         {
@@ -277,7 +277,7 @@ public static class Traits
 
             foreach (PassiveEffect passive in descriptor.passiveEffects)
             {
-                Utils.Converter.CopyToGameObject(ref go, passive);
+                Utils.GameObjects.CopyToGameObject(ref go, passive);
             }
 
             trait.InitializeReferenceable();
@@ -292,7 +292,7 @@ public static class Traits
                 MonsterType type = GameController.Instance.MonsterTypes.Find(x =>
                     x?.Type == monsterType
                 );
-                GameObject go = Utils.Converter.IntoGameObject(type);
+                GameObject go = Utils.GameObjects.IntoGameObject(type);
 
                 trait.Types.Add(go);
             }

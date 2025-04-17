@@ -291,12 +291,12 @@ public static class Artifacts
         if (descriptor.actions.Count != 0)
         {
             foreach (ActionModifier modifier in action.GetComponents<ActionModifier>())
-                Object.DestroyImmediate(modifier);
+                GameObject.DestroyImmediate(modifier);
 
             GameObject go = action.gameObject;
 
             foreach (ActionModifier modifier in descriptor.actions)
-                Utils.Converter.CopyToGameObject(ref go, modifier);
+                Utils.GameObjects.CopyToGameObject(ref go, modifier);
 
             action.InitializeReferenceable();
         }

@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Ethereal.Utils;
 
-public static class Converter
+public static class GameObjects
 {
     /// <summary>
     /// Copy a component to the inside of a GameObject, and return the component.
