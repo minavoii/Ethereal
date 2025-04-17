@@ -11,9 +11,10 @@ internal static class Converter
     /// <param name="instance"></param>
     /// <param name="name"></param>
     /// <returns></returns>
-    internal static Component WithinGameObject(Component instance, string name = "")
+    internal static T WithinGameObject<T>(T instance, string name = "")
+        where T : Component
     {
-        return IntoGameObject(instance, name).GetComponent<Component>();
+        return IntoGameObject(instance, name).GetComponent<T>();
     }
 
     /// <summary>
