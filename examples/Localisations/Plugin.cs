@@ -12,20 +12,20 @@ public class Plugin : BaseUnityPlugin
 {
     internal static new ManualLogSource Logger;
 
-    internal static System.Timers.Timer timer = new() { Interval = 5000 };
+    internal static System.Timers.Timer Timer = new() { Interval = 5000 };
 
     private void Awake()
     {
         Logger = base.Logger;
 
-        Localisation.AddLocalisedText(Text.Apple.entry);
-        Localisation.AddLocalisedText(TextExtra.Pear.entry, TextExtra.Pear.extras);
+        Localisation.AddLocalisedText(Text.Apple.Entry);
+        Localisation.AddLocalisedText(TextExtra.Pear.Entry, TextExtra.Pear.Extras);
 
         // We're using a timer here because GameController may not be initialized yet
         // We are only calling `Loca.Localize()` here to check that it worked,
         //   but you only have to call `AddLocalisedText()`
-        timer.Elapsed += new ElapsedEventHandler(TestLocalisations);
-        timer.Start();
+        Timer.Elapsed += new ElapsedEventHandler(TestLocalisations);
+        Timer.Start();
     }
 
     /// <summary>
@@ -48,7 +48,7 @@ public class Plugin : BaseUnityPlugin
                 $"French localisation test: {TextExtra.Pear.Original} -> {Loca.Localize(TextExtra.Pear.Original)}"
             );
 
-            timer.Stop();
+            Timer.Stop();
 
             GameSettingsController.Instance.CurrentLanguage = currentLanguage;
         }

@@ -188,15 +188,15 @@ public static class Sprites
         if (name.EndsWith("Small"))
         {
             name = name[..(name.Length - 6)];
-            descriptor.iconSmall = icon ?? LoadFromImage(SpriteType.ActionSmall, iconPath);
+            descriptor.IconSmall = icon ?? LoadFromImage(SpriteType.ActionSmall, iconPath);
         }
         else if (name.EndsWith("Cut"))
         {
             name = name[..(name.Length - 4)];
-            descriptor.iconCutSmall = icon ?? LoadFromImage(SpriteType.ActionCutSmall, iconPath);
+            descriptor.IconCutSmall = icon ?? LoadFromImage(SpriteType.ActionCutSmall, iconPath);
         }
         else
-            descriptor.icon = icon ?? LoadFromImage(SpriteType.Action, iconPath);
+            descriptor.Icon = icon ?? LoadFromImage(SpriteType.Action, iconPath);
 
         Actions.Update(name, descriptor);
     }
@@ -214,15 +214,15 @@ public static class Sprites
         if (name.EndsWith("Big"))
         {
             name = name[..(name.Length - 4)];
-            descriptor.actionIconBig = icon ?? LoadFromImage(SpriteType.Action, iconPath);
+            descriptor.ActionIconBig = icon ?? LoadFromImage(SpriteType.Action, iconPath);
         }
         else if (name.EndsWith("Small"))
         {
             name = name[..(name.Length - 6)];
-            descriptor.actionIconSmall = icon ?? LoadFromImage(SpriteType.ActionSmall, iconPath);
+            descriptor.ActionIconSmall = icon ?? LoadFromImage(SpriteType.ActionSmall, iconPath);
         }
         else
-            descriptor.icon = icon ?? LoadFromImage(SpriteType.Artifact, iconPath);
+            descriptor.Icon = icon ?? LoadFromImage(SpriteType.Artifact, iconPath);
 
         Artifacts.Update(name, descriptor);
     }
@@ -250,20 +250,20 @@ public static class Sprites
         if (name.EndsWith("Empty"))
         {
             name = name[..(name.Length - 6)];
-            descriptor.iconSmallEmpty = icon ?? LoadFromImage(SpriteType.ElementSmall, iconPath);
+            descriptor.IconSmallEmpty = icon ?? LoadFromImage(SpriteType.ElementSmall, iconPath);
         }
         else if (name.EndsWith("Filled"))
         {
             name = name[..(name.Length - 7)];
-            descriptor.iconSmallFilled = icon ?? LoadFromImage(SpriteType.ElementSmall, iconPath);
+            descriptor.IconSmallFilled = icon ?? LoadFromImage(SpriteType.ElementSmall, iconPath);
         }
         else if (name.EndsWith("Normal"))
         {
             name = name[..(name.Length - 7)];
-            descriptor.iconSmall = icon ?? LoadFromImage(SpriteType.ElementSmall, iconPath);
+            descriptor.IconSmall = icon ?? LoadFromImage(SpriteType.ElementSmall, iconPath);
         }
         else
-            descriptor.icon = icon ?? LoadFromImage(SpriteType.Element, iconPath);
+            descriptor.Icon = icon ?? LoadFromImage(SpriteType.Element, iconPath);
 
         Elements.Update(Enum.Parse<EElement>(name), descriptor);
     }
@@ -288,7 +288,7 @@ public static class Sprites
             rarity = ERarity.Rare;
         }
 
-        Equipments.Update(name, rarity, new() { icon = icon });
+        Equipments.Update(name, rarity, new() { Icon = icon });
     }
 
     /// <summary>
@@ -311,7 +311,7 @@ public static class Sprites
     /// <param name="icon"></param>
     private static void ReplaceIconTrait(string name, Sprite icon)
     {
-        Traits.Update(name, new() { icon = icon });
+        Traits.Update(name, new() { Icon = icon });
     }
 
     /// <summary>

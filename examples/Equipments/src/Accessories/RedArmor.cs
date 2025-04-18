@@ -10,22 +10,22 @@ internal static class RedArmor
 
     internal const string Name = "Red Armor";
 
-    internal static readonly Equipments.EquipmentDescriptor descriptor = new()
+    internal static readonly Equipments.EquipmentDescriptor Descriptor = new()
     {
-        id = Id,
-        name = Name,
-        icon = Sprites.LoadFromAsset(
+        Id = Id,
+        Name = Name,
+        Description =
+            "At the start of your turn: {Shields} self for {0;2} x {0;1} and heals self for {1;2} x {1;1}.",
+        Type = Equipment.EEquipmentType.Accessory,
+        Rarity = ERarity.Common,
+        Aura = false,
+        Price = 100,
+        AutomaticPricing = false,
+        Icon = Sprites.LoadFromAsset(
             Path.Join(Plugin.EquipmentsPath, "RedArmor"),
             "Assets/Textures/Item/Item.prefab"
         ),
-        price = 100,
-        aura = false,
-        type = Equipment.EEquipmentType.Accessory,
-        rarity = ERarity.Common,
-        automaticPricing = false,
-        description =
-            "At the start of your turn: {Shields} self for {0;2} x {0;1} and heals self for {1;2} x {1;1}.",
-        passiveEffects =
+        PassiveEffects =
         [
             new PassiveGrantShield()
             {
@@ -56,7 +56,7 @@ internal static class RedArmor
         ],
     };
 
-    internal static readonly LocalisationData.LocalisationDataEntry localisationData = new()
+    internal static readonly LocalisationData.LocalisationDataEntry LocalisationData = new()
     {
         ID = Id,
         StringContent = Name,
@@ -64,7 +64,7 @@ internal static class RedArmor
         StringContentFrench = "Armure Rouge",
     };
 
-    internal static readonly Dictionary<string, string> customLanguageEntries = new()
+    internal static readonly Dictionary<string, string> CustomLanguageEntries = new()
     {
         // Assuming a custom language named `Newlang` exists
         { "Newlang", "Armor Red" },

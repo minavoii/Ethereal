@@ -79,7 +79,7 @@ internal static class Localisation
             ELanguage.Chinese => __instance.StringContentSimplifiedChinese,
             ELanguage.Japanese => __instance.StringContentJapanese,
             ELanguage customLang => (
-                CustomLocalisations.Get(__instance.StringContent ?? "")?.data.Get(customLang)
+                CustomLocalisations.Get(__instance.StringContent ?? "")?.Data.Get(customLang)
             ) ?? __instance.StringContentEnglish,
         };
 

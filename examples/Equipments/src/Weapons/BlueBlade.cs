@@ -7,13 +7,13 @@ internal static class BlueBlade
 {
     internal const string Name = "Blue Blade";
 
-    internal static readonly Equipments.EquipmentDescriptor descriptor = new()
+    internal static readonly Equipments.EquipmentDescriptor Descriptor = new()
     {
-        name = Name,
-        icon = Sprites.LoadFromImage(
+        Name = Name,
+        Price = 100,
+        Icon = Sprites.LoadFromImage(
             Sprites.SpriteType.Equipment,
             Path.Join(Plugin.EquipmentsPath, "Equipment_Blade_Blue.png")
         ),
-        price = 100,
     };
 }

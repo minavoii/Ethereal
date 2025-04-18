@@ -11,23 +11,23 @@ public static class Artifacts
     /// </summary>
     public class ArtifactDescriptor
     {
-        public int id;
+        public int Id { get; set; }
 
-        public string name = "";
+        public string Name { get; set; } = "";
 
-        public string description = "";
+        public string Description { get; set; } = "";
 
-        public ETargetType? targetType;
+        public ETargetType? TargetType { get; set; }
 
-        public Sprite icon;
+        public Sprite Icon { get; set; }
 
-        public Sprite actionIconBig;
+        public Sprite ActionIconBig { get; set; }
 
-        public Sprite actionIconSmall;
+        public Sprite ActionIconSmall { get; set; }
 
-        public List<ActionModifier> actions = [];
+        public List<ActionModifier> Actions { get; set; } = [];
 
-        public List<EElement> elements = [];
+        public List<EElement> Elements { get; set; } = [];
     }
 
     private static bool IsReady = false;
@@ -137,9 +137,9 @@ public static class Artifacts
     {
         LocalisationData.LocalisationDataEntry defaultLocalisation = new()
         {
-            ID = descriptor.id,
-            StringContent = descriptor.name,
-            StringContentEnglish = descriptor.name,
+            ID = descriptor.Id,
+            StringContent = descriptor.Name,
+            StringContentEnglish = descriptor.Name,
         };
 
         // Defer loading until ready
@@ -173,8 +173,8 @@ public static class Artifacts
         BaseAction action = Utils.GameObjects.WithinGameObject(
             new BaseAction()
             {
-                Name = descriptor.name,
-                DescriptionOverride = descriptor.description,
+                Name = descriptor.Name,
+                DescriptionOverride = descriptor.Description,
                 SkillType = ESkillType.Shared,
                 Types = [],
             }
@@ -182,9 +182,9 @@ public static class Artifacts
         Consumable artifact = Utils.GameObjects.WithinGameObject(
             new Consumable()
             {
-                ID = descriptor.id,
-                Name = descriptor.name,
-                Description = descriptor.description,
+                ID = descriptor.Id,
+                Name = descriptor.Name,
+                Description = descriptor.Description,
             }
         );
         action.transform.parent = parent.transform;
@@ -195,9 +195,9 @@ public static class Artifacts
         WorldData.Instance.Referenceables.Add(artifact);
         Localisation.AddLocalisedText(localisationData);
 
-        Update(descriptor.id, descriptor);
+        Update(descriptor.Id, descriptor);
 
-        Log.API.LogInfo($"Loaded artifact: {descriptor.name}");
+        Log.API.LogInfo($"Loaded artifact: {descriptor.Name}");
     }
 
     /// <summary>
@@ -270,44 +270,44 @@ public static class Artifacts
     {
         BaseAction action = artifact.Action.GetComponent<BaseAction>();
 
-        if (descriptor.name != string.Empty)
+        if (descriptor.Name != string.Empty)
         {
-            artifact.Name = descriptor.name;
-            action.Name = descriptor.name;
+            artifact.Name = descriptor.Name;
+            action.Name = descriptor.Name;
         }
 
-        if (descriptor.description != string.Empty)
+        if (descriptor.Description != string.Empty)
         {
-            artifact.Description = descriptor.description;
-            action.DescriptionOverride = descriptor.description;
+            artifact.Description = descriptor.Description;
+            action.DescriptionOverride = descriptor.Description;
         }
 
-        if (descriptor.targetType.HasValue)
-            action.TargetType = descriptor.targetType.Value;
+        if (descriptor.TargetType.HasValue)
+            action.TargetType = descriptor.TargetType.Value;
 
-        if (descriptor.icon != null)
-            artifact.Icon = descriptor.icon;
+        if (descriptor.Icon != null)
+            artifact.Icon = descriptor.Icon;
 
-        if (descriptor.actionIconBig != null)
-            artifact.ActionIconBig = descriptor.actionIconBig;
+        if (descriptor.ActionIconBig != null)
+            artifact.ActionIconBig = descriptor.ActionIconBig;
 
-        if (descriptor.actionIconSmall != null)
-            artifact.ActionIconSmall = descriptor.actionIconSmall;
+        if (descriptor.ActionIconSmall != null)
+            artifact.ActionIconSmall = descriptor.ActionIconSmall;
 
-        if (descriptor.actions.Count != 0)
+        if (descriptor.Actions.Count != 0)
         {
             foreach (ActionModifier modifier in action.GetComponents<ActionModifier>())
                 GameObject.DestroyImmediate(modifier);
 
             GameObject go = action.gameObject;
 
-            foreach (ActionModifier modifier in descriptor.actions)
+            foreach (ActionModifier modifier in descriptor.Actions)
                 Utils.GameObjects.CopyToGameObject(ref go, modifier);
 
             action.InitializeReferenceable();
         }
 
-        if (descriptor.elements.Count != 0)
-            action.ElementsOverride = descriptor.elements;
+        if (descriptor.Elements.Count != 0)
+            action.ElementsOverride = descriptor.Elements;
     }
 }

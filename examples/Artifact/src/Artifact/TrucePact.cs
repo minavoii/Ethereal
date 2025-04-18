@@ -10,24 +10,24 @@ internal static class TrucePact
 
     internal const string Name = "Truce Pact";
 
-    internal static readonly Artifacts.ArtifactDescriptor descriptor = new()
+    internal static readonly Artifacts.ArtifactDescriptor Descriptor = new()
     {
-        id = Id,
-        name = Name,
-        targetType = ETargetType.SingleAlly,
-        icon = Sprites.LoadFromImage(
+        Id = Id,
+        Name = Name,
+        TargetType = ETargetType.SingleAlly,
+        Icon = Sprites.LoadFromImage(
             Sprites.SpriteType.Artifact,
             Path.Join(Plugin.ArtifactsPath, "Artifact_TrucePact.png")
         ),
-        actionIconBig = Sprites.LoadFromImage(
+        ActionIconBig = Sprites.LoadFromImage(
             Sprites.SpriteType.Action,
             Path.Join(Plugin.ArtifactsPath, "ActionIcon_TrucePact_Big.png")
         ),
-        actionIconSmall = Sprites.LoadFromImage(
+        ActionIconSmall = Sprites.LoadFromImage(
             Sprites.SpriteType.ActionSmall,
             Path.Join(Plugin.ArtifactsPath, "ActionIcon_TrucePact_Small.png")
         ),
-        actions =
+        Actions =
         [
             new ActionHeal()
             {
@@ -46,7 +46,7 @@ internal static class TrucePact
         ],
     };
 
-    internal static readonly LocalisationData.LocalisationDataEntry localisationData = new()
+    internal static readonly LocalisationData.LocalisationDataEntry LocalisationData = new()
     {
         ID = Id,
         StringContent = Name,
@@ -54,7 +54,7 @@ internal static class TrucePact
         StringContentFrench = "Pacte de Trêve",
     };
 
-    internal static readonly Dictionary<string, string> customLanguageEntries = new()
+    internal static readonly Dictionary<string, string> CustomLanguageEntries = new()
     {
         // Assuming a custom language named `Newlang` exists
         { "Newlang", "Pact" },
