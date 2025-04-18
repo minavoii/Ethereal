@@ -7,7 +7,7 @@ internal static class BlueBlade
 {
     internal const string Name = "Blue Blade";
 
-    internal static readonly Equipments.EquipmentDescriptor descriptor = new()
+    internal static readonly Equipments.EquipmentDescriptor Descriptor = new()
     {
         Name = Name,
         Price = 100,

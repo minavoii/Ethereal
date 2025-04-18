@@ -81,7 +81,7 @@ internal class SerializableDescriptor()
 
         foreach (int id in Perks)
         {
-            PerkInfos perk = Data.allPerks.Find(x => x.Perk.GetComponent<Perk>().ID == id);
+            PerkInfos perk = Data.AllPerks.Find(x => x.Perk.GetComponent<Perk>().ID == id);
 
             if (perk != null)
                 descriptor.Perks.Add(perk);

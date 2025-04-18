@@ -6,7 +6,7 @@ internal static class Apple
 
     internal const string Original = "Apple";
 
-    internal static readonly LocalisationData.LocalisationDataEntry entry = new()
+    internal static readonly LocalisationData.LocalisationDataEntry Entry = new()
     {
         ID = Id,
         StringContent = Original,

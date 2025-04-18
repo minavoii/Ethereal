@@ -10,7 +10,7 @@ internal static class RedArmor
 
     internal const string Name = "Red Armor";
 
-    internal static readonly Equipments.EquipmentDescriptor descriptor = new()
+    internal static readonly Equipments.EquipmentDescriptor Descriptor = new()
     {
         Id = Id,
         Name = Name,
@@ -56,7 +56,7 @@ internal static class RedArmor
         ],
     };
 
-    internal static readonly LocalisationData.LocalisationDataEntry localisationData = new()
+    internal static readonly LocalisationData.LocalisationDataEntry LocalisationData = new()
     {
         ID = Id,
         StringContent = Name,
@@ -64,7 +64,7 @@ internal static class RedArmor
         StringContentFrench = "Armure Rouge",
     };
 
-    internal static readonly Dictionary<string, string> customLanguageEntries = new()
+    internal static readonly Dictionary<string, string> CustomLanguageEntries = new()
     {
         // Assuming a custom language named `Newlang` exists
         { "Newlang", "Armor Red" },

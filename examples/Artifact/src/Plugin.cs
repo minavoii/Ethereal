@@ -25,9 +25,9 @@ public class Plugin : BaseUnityPlugin
         Logger = base.Logger;
 
         Artifacts.Add(
-            Artifact.TrucePact.descriptor,
-            Artifact.TrucePact.localisationData,
-            Artifact.TrucePact.customLanguageEntries
+            Artifact.TrucePact.Descriptor,
+            Artifact.TrucePact.LocalisationData,
+            Artifact.TrucePact.CustomLanguageEntries
         );
     }
 }

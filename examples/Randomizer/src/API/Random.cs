@@ -59,9 +59,9 @@ internal class Random
     /// <returns></returns>
     internal static List<PerkInfos> GetRandomPerks()
     {
-        int[] perks = Shuffle(0, Data.allPerks.Count);
+        int[] perks = Shuffle(0, Data.AllPerks.Count);
 
-        return [Data.allPerks[perks[0]], Data.allPerks[perks[1]], Data.allPerks[perks[2]]];
+        return [Data.AllPerks[perks[0]], Data.AllPerks[perks[1]], Data.AllPerks[perks[2]]];
     }
 
     /// <summary>
@@ -76,7 +76,7 @@ internal class Random
         [
             .. types
                 .SelectMany(x => MonsterTypes.NativeTypes[x].GetComponent<MonsterType>().Traits)
-                .Concat(Data.signatureTraits)
+                .Concat(Data.SignatureTraits)
                 .Distinct()
                 .Where(x => allowMaverick || x.MaverickSkill == false),
         ];

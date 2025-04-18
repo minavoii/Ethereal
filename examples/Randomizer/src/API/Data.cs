@@ -7,9 +7,9 @@ namespace Randomizer.API;
 
 internal static class Data
 {
-    internal static List<PerkInfos> allPerks = [];
+    internal static List<PerkInfos> AllPerks = [];
 
-    internal static List<Trait> signatureTraits = [];
+    internal static List<Trait> SignatureTraits = [];
 
     /// <summary>
     /// Get all buffs related to the selected monster types.

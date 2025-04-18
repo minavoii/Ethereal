@@ -25,11 +25,11 @@ public class Plugin : BaseUnityPlugin
         Logger = base.Logger;
 
         Equipments.Add(
-            Accessory.RedArmor.descriptor,
-            Accessory.RedArmor.localisationData,
-            Accessory.RedArmor.customLanguageEntries
+            Accessory.RedArmor.Descriptor,
+            Accessory.RedArmor.LocalisationData,
+            Accessory.RedArmor.CustomLanguageEntries
         );
 
-        Equipments.Update("Blade", ERarity.Common, Weapon.BlueBlade.descriptor);
+        Equipments.Update("Blade", ERarity.Common, Weapon.BlueBlade.Descriptor);
     }
 }

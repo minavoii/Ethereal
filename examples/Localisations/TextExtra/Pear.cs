@@ -8,7 +8,7 @@ internal static class Pear
 
     internal const string Original = "Pear";
 
-    internal static readonly LocalisationData.LocalisationDataEntry entry = new()
+    internal static readonly LocalisationData.LocalisationDataEntry Entry = new()
     {
         ID = Id,
         StringContent = Original,
@@ -16,7 +16,7 @@ internal static class Pear
         StringContentFrench = "Poire",
     };
 
-    internal static readonly Dictionary<string, string> extras = new()
+    internal static readonly Dictionary<string, string> Extras = new()
     {
         // Assuming a custom language named `Newlang` exists
         { "Newlang", "Raep" },
