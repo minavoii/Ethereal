@@ -191,7 +191,7 @@ public static class Artifacts
         artifact.Action = action.gameObject;
         parent.SetActive(false);
 
-        GameController.Instance.ItemManager.Consumables.Add(new() { BaseItem = artifact });
+        GameController.Instance.ItemManager.Consumables.Insert(0, new() { BaseItem = artifact });
         WorldData.Instance.Referenceables.Add(artifact);
         Localisation.AddLocalisedText(localisationData);
 
