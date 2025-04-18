@@ -10,13 +10,13 @@ public static class Elements
     /// </summary>
     public class ElementDescriptor()
     {
-        public Sprite icon;
+        public Sprite Icon { get; set; }
 
-        public Sprite iconSmall;
+        public Sprite IconSmall { get; set; }
 
-        public Sprite iconSmallEmpty;
+        public Sprite IconSmallEmpty { get; set; }
 
-        public Sprite iconSmallFilled;
+        public Sprite IconSmallFilled { get; set; }
     }
 
     private static readonly ConcurrentQueue<(
@@ -54,16 +54,16 @@ public static class Elements
             return;
         }
 
-        if (descriptor.icon != null)
-            Prefabs.Instance.ElementIcons[(int)element] = descriptor.icon;
+        if (descriptor.Icon != null)
+            Prefabs.Instance.ElementIcons[(int)element] = descriptor.Icon;
 
-        if (descriptor.iconSmall != null)
-            Prefabs.Instance.ElementIconsSmall[(int)element] = descriptor.iconSmall;
+        if (descriptor.IconSmall != null)
+            Prefabs.Instance.ElementIconsSmall[(int)element] = descriptor.IconSmall;
 
-        if (descriptor.iconSmallEmpty != null)
-            Prefabs.Instance.ElementIconsSmallEmpty[(int)element] = descriptor.iconSmallEmpty;
+        if (descriptor.IconSmallEmpty != null)
+            Prefabs.Instance.ElementIconsSmallEmpty[(int)element] = descriptor.IconSmallEmpty;
 
-        if (descriptor.iconSmallFilled != null)
-            Prefabs.Instance.ElementIconsSmallFilled[(int)element] = descriptor.iconSmallFilled;
+        if (descriptor.IconSmallFilled != null)
+            Prefabs.Instance.ElementIconsSmallFilled[(int)element] = descriptor.IconSmallFilled;
     }
 }

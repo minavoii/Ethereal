@@ -11,29 +11,30 @@ public static class Monsters
     /// </summary>
     public class MonsterDescriptor
     {
-        public string name = "";
+        public string Name { get; set; } = "";
 
-        public EMonsterMainType? mainType;
+        public EMonsterMainType? MainType { get; set; }
 
-        public List<EMonsterType> types = [];
+        public List<EMonsterType> Types { get; set; } = [];
 
-        public (EElement first, EElement second) elements = (EElement.None, EElement.None);
+        public (EElement first, EElement second) Elements { get; set; } =
+            (EElement.None, EElement.None);
 
-        public List<(EElement element, int hits)> staggers = [];
+        public List<(EElement element, int hits)> Staggers { get; set; } = [];
 
-        public Trait signatureTrait;
+        public Trait SignatureTrait { get; set; }
 
-        public List<BaseAction> startingActions = [];
+        public List<BaseAction> StartingActions { get; set; } = [];
 
-        public List<PerkInfos> perks = [];
+        public List<PerkInfos> Perks { get; set; } = [];
 
-        public int? baseMaxHealth;
+        public int? BaseMaxHealth { get; set; }
 
-        public List<MonsterAIAction> scripting = [];
+        public List<MonsterAIAction> Scripting { get; set; } = [];
 
-        public List<MonsterAI.MonsterAITrait> wildTraits = [];
+        public List<MonsterAI.MonsterAITrait> WildTraits { get; set; } = [];
 
-        public Trait eliteTrait;
+        public Trait EliteTrait { get; set; }
     }
 
     private static bool IsReady = false;
@@ -159,38 +160,38 @@ public static class Monsters
     /// <param name="descriptor"></param>
     private static void Update(Monster monster, MonsterDescriptor descriptor)
     {
-        if (descriptor.name != string.Empty)
+        if (descriptor.Name != string.Empty)
         {
-            monster.Name = descriptor.name;
-            monster.name = "Monster" + descriptor.name;
+            monster.Name = descriptor.Name;
+            monster.name = "Monster" + descriptor.Name;
         }
 
         if (
-            descriptor.elements.first != EElement.None
-            && descriptor.elements.second != EElement.None
+            descriptor.Elements.first != EElement.None
+            && descriptor.Elements.second != EElement.None
         )
         {
-            monster.GetComponent<SkillManager>().Elements[0] = descriptor.elements.first;
-            monster.GetComponent<SkillManager>().Elements[1] = descriptor.elements.second;
+            monster.GetComponent<SkillManager>().Elements[0] = descriptor.Elements.first;
+            monster.GetComponent<SkillManager>().Elements[1] = descriptor.Elements.second;
         }
 
-        if (descriptor.mainType.HasValue)
-            monster.GetComponent<SkillManager>().MainType = descriptor.mainType.Value;
+        if (descriptor.MainType.HasValue)
+            monster.GetComponent<SkillManager>().MainType = descriptor.MainType.Value;
 
-        if (descriptor.types.Count == 3)
+        if (descriptor.Types.Count == 3)
         {
             for (int i = 0; i < 3; i++)
             {
-                GameObject go = MonsterTypes.NativeTypes[descriptor.types[i]];
+                GameObject go = MonsterTypes.NativeTypes[descriptor.Types[i]];
                 monster.GetComponent<SkillManager>().MonsterTypes[i] = go;
             }
         }
 
-        if (descriptor.staggers.Count != 0)
+        if (descriptor.Staggers.Count != 0)
         {
             monster.GetComponent<SkillManager>().StaggerDefines.Clear();
 
-            foreach (var (element, hits) in descriptor.staggers)
+            foreach (var (element, hits) in descriptor.Staggers)
             {
                 monster
                     .GetComponent<SkillManager>()
@@ -198,49 +199,49 @@ public static class Monsters
             }
         }
 
-        if (descriptor.signatureTrait != null)
+        if (descriptor.SignatureTrait != null)
             monster.GetComponent<SkillManager>().SignatureTrait = descriptor
-                .signatureTrait
+                .SignatureTrait
                 .gameObject;
 
-        if (descriptor.startingActions.Count != 0)
+        if (descriptor.StartingActions.Count != 0)
         {
             monster.GetComponent<SkillManager>().StartActions.Clear();
 
-            foreach (BaseAction action in descriptor.startingActions)
+            foreach (BaseAction action in descriptor.StartingActions)
                 monster.GetComponent<SkillManager>().StartActions.Add(action.gameObject);
         }
 
-        if (descriptor.perks.Count == 3)
+        if (descriptor.Perks.Count == 3)
         {
             monster.GetComponent<MonsterStats>().PerkInfosList.Clear();
 
-            foreach (PerkInfos perk in descriptor.perks)
+            foreach (PerkInfos perk in descriptor.Perks)
                 monster.GetComponent<MonsterStats>().PerkInfosList.Add(perk);
         }
 
-        if (descriptor.baseMaxHealth.HasValue)
-            monster.GetComponent<MonsterStats>().BaseMaxHealth = descriptor.baseMaxHealth.Value;
+        if (descriptor.BaseMaxHealth.HasValue)
+            monster.GetComponent<MonsterStats>().BaseMaxHealth = descriptor.BaseMaxHealth.Value;
 
-        if (descriptor.scripting.Count != 0)
+        if (descriptor.Scripting.Count != 0)
         {
             MonsterAI ai = monster.GetComponent<MonsterAI>();
             ai.Scripting.Clear();
 
-            foreach (MonsterAIAction action in descriptor.scripting)
+            foreach (MonsterAIAction action in descriptor.Scripting)
                 ai.Scripting.Add(action);
         }
 
-        if (descriptor.wildTraits.Count != 0)
+        if (descriptor.WildTraits.Count != 0)
         {
             MonsterAI ai = monster.GetComponent<MonsterAI>();
             ai.Traits.Clear();
 
-            foreach (MonsterAI.MonsterAITrait trait in descriptor.wildTraits)
+            foreach (MonsterAI.MonsterAITrait trait in descriptor.WildTraits)
                 ai.Traits.Add(trait);
         }
 
-        if (descriptor.eliteTrait != null)
-            monster.GetComponent<SkillManager>().EliteTrait = descriptor.eliteTrait.gameObject;
+        if (descriptor.EliteTrait != null)
+            monster.GetComponent<SkillManager>().EliteTrait = descriptor.EliteTrait.gameObject;
     }
 }

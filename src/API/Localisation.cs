@@ -19,25 +19,25 @@ public static class Localisation
     [Serializable]
     private class Language()
     {
-        public string name = "Custom Language";
+        public string Name { get; set; } = "Custom Language";
 
         /// <summary>
         /// The language code used for formatting numbers and such.
         /// </summary>
-        public string code = "en-US";
+        public string Code { get; set; } = "en-US";
 
         /// <summary>
         /// The version of the game this data was made for.
         /// </summary>
-        public string game_version = "0.0.0.0";
+        public string GameVersion { get; set; } = "0.0.0.0";
 
         /// <summary>
         /// Addons are loaded after other localisations files.<para/>
         /// They can be used to add localisations to another language (custom or native).
         /// </summary>
-        public bool addon = false;
+        public bool Addon { get; set; } = false;
 
-        public Dictionary<int, string> localisations = [];
+        public Dictionary<int, string> Localisations { get; set; } = [];
     }
 
     /// <summary>
@@ -47,9 +47,9 @@ public static class Localisation
     /// <param name="data"></param>
     internal class CustomLocaleData(int id, Dictionary<ELanguage, string> data)
     {
-        public readonly int id = id;
+        public int Id { get; init; } = id;
 
-        public Dictionary<ELanguage, string> data = data;
+        public Dictionary<ELanguage, string> Data { get; set; } = data;
     }
 
     /// <summary>
@@ -161,9 +161,9 @@ public static class Localisation
                 {
                     CustomLocalisations.Add(entry.StringContent, new(entry.ID, []));
 
-                    foreach (var (langId, original) in CustomLocalisations[pair.Key].data)
+                    foreach (var (langId, original) in CustomLocalisations[pair.Key].Data)
                     {
-                        CustomLocalisations[entry.StringContent].data.Add(langId, original);
+                        CustomLocalisations[entry.StringContent].Data.Add(langId, original);
                     }
 
                     CustomLocalisations.Remove(pair.Key);
@@ -204,7 +204,7 @@ public static class Localisation
 
             // Update text
             if (CustomLocalisations.TryGetValue(entry.StringContent, out var localisation))
-                localisation.data[lang.Key] = text;
+                localisation.Data[lang.Key] = text;
             // Add text
             else
                 CustomLocalisations.Add(
@@ -231,15 +231,15 @@ public static class Localisation
 
             // Remove the "don't edit this file" warning from the template
             //   in case a modder forgot to remove it
-            language.localisations.Remove(-1);
+            language.Localisations.Remove(-1);
             languageList.Add(language);
         }
 
-        foreach (Language language in languageList.OrderBy(x => x.addon))
+        foreach (Language language in languageList.OrderBy(x => x.Addon))
         {
-            Log.API.LogInfo($"Loaded locale: {language.name}{(language.addon ? " (Addon)" : "")}");
+            Log.API.LogInfo($"Loaded locale: {language.Name}{(language.Addon ? " (Addon)" : "")}");
 
-            if (AllLanguageNames.Contains(language.name))
+            if (AllLanguageNames.Contains(language.Name))
                 UpdateLanguage(language);
             else
                 CreateLanguage(language);
@@ -262,10 +262,10 @@ public static class Localisation
             Enum.GetValues(typeof(ELanguage)).Cast<ELanguage>().Max() + 1 + CustomLanguages.Count;
 
         availableLanguages.Add(langId);
-        AllLanguageNames.Add(language.name);
-        CustomLanguages.Add(langId, language.name);
+        AllLanguageNames.Add(language.Name);
+        CustomLanguages.Add(langId, language.Name);
 
-        foreach (var (locaId, text) in language.localisations)
+        foreach (var (locaId, text) in language.Localisations)
         {
             if (
                 !LocalisationData.Instance.LocaEntries.TryGetKey(
@@ -289,7 +289,7 @@ public static class Localisation
 
             // Already localised in another custom language
             if (CustomLocalisations.TryGetValue(original, out var localisation1))
-                localisation1.data[langId] = text;
+                localisation1.Data[langId] = text;
             // Not localised in any custom language yet
             else
                 CustomLocalisations.Add(original, new(locaId, new() { { langId, text } }));
@@ -319,7 +319,7 @@ public static class Localisation
 
         try
         {
-            CultureInfos.Add(langId, CultureInfo.CreateSpecificCulture(language.code));
+            CultureInfos.Add(langId, CultureInfo.CreateSpecificCulture(language.Code));
         }
         catch (CultureNotFoundException)
         {
@@ -333,7 +333,7 @@ public static class Localisation
     /// <param name="language"></param>
     private static void UpdateLanguage(Language language)
     {
-        foreach (var (locaId, text) in language.localisations)
+        foreach (var (locaId, text) in language.Localisations)
         {
             var (original, entry) = LocalisationData.Instance.LocaEntries.FirstOrDefault(x =>
                 x.Value.ID == locaId
@@ -354,30 +354,30 @@ public static class Localisation
             }
 
             // Native languages
-            if (language.name == Loca.GetLanguageString(ELanguage.English))
+            if (language.Name == Loca.GetLanguageString(ELanguage.English))
                 entry.StringContentEnglish = text;
-            else if (language.name == Loca.GetLanguageString(ELanguage.German))
+            else if (language.Name == Loca.GetLanguageString(ELanguage.German))
                 entry.StringContentGerman = text;
-            else if (language.name == Loca.GetLanguageString(ELanguage.Spanish))
+            else if (language.Name == Loca.GetLanguageString(ELanguage.Spanish))
                 entry.StringContentSpanish = text;
-            else if (language.name == Loca.GetLanguageString(ELanguage.Portuguese))
+            else if (language.Name == Loca.GetLanguageString(ELanguage.Portuguese))
                 entry.StringContentPortuguese = text;
-            else if (language.name == Loca.GetLanguageString(ELanguage.French))
+            else if (language.Name == Loca.GetLanguageString(ELanguage.French))
                 entry.StringContentFrench = text;
-            else if (language.name == Loca.GetLanguageString(ELanguage.Italian))
+            else if (language.Name == Loca.GetLanguageString(ELanguage.Italian))
                 entry.StringContentItalian = text;
-            else if (language.name == Loca.GetLanguageString(ELanguage.Russian))
+            else if (language.Name == Loca.GetLanguageString(ELanguage.Russian))
                 entry.StringContentRussian = text;
-            else if (language.name == Loca.GetLanguageString(ELanguage.Japanese))
+            else if (language.Name == Loca.GetLanguageString(ELanguage.Japanese))
                 entry.StringContentJapanese = text;
-            else if (language.name == Loca.GetLanguageString(ELanguage.Chinese))
+            else if (language.Name == Loca.GetLanguageString(ELanguage.Chinese))
                 entry.StringContentSimplifiedChinese = text;
             // Custom languages
-            else if (CustomLanguages.TryGetKey(x => x.Value == language.name, out var langId))
+            else if (CustomLanguages.TryGetKey(x => x.Value == language.Name, out var langId))
             {
                 // Update text
-                if (CustomLocalisations.TryGetKey(x => x.Value.id == locaId, out var key))
-                    CustomLocalisations[key].data[langId] = text;
+                if (CustomLocalisations.TryGetKey(x => x.Value.Id == locaId, out var key))
+                    CustomLocalisations[key].Data[langId] = text;
                 // Add text
                 else
                     CustomLocalisations.Add(original, new(locaId, new() { { langId, text } }));
@@ -396,12 +396,12 @@ public static class Localisation
         if (GetTemplateVersion() == Application.version)
             return;
 
-        Language lang = new() { name = "English", game_version = Application.version };
-        lang.localisations.Add(-1, TemplateWarning);
+        Language lang = new() { Name = "English", GameVersion = Application.version };
+        lang.Localisations.Add(-1, TemplateWarning);
 
         foreach (var (text, loca) in LocalisationData.Instance.LocaEntries.OrderBy(x => x.Value.ID))
         {
-            lang.localisations.Add(loca.ID, text);
+            lang.Localisations.Add(loca.ID, text);
         }
 
         string json = JsonConvert.SerializeObject(lang, Formatting.Indented);
@@ -420,7 +420,7 @@ public static class Localisation
             string template_json = File.ReadAllText(Path.Join(LocalesPath, TemplateName));
             Language lang = JsonConvert.DeserializeObject<Language>(template_json);
 
-            return lang.game_version ?? "0.0.0.0";
+            return lang.GameVersion ?? "0.0.0.0";
         }
         catch
         {

@@ -12,22 +12,22 @@ internal static class TrucePact
 
     internal static readonly Artifacts.ArtifactDescriptor descriptor = new()
     {
-        id = Id,
-        name = Name,
-        targetType = ETargetType.SingleAlly,
-        icon = Sprites.LoadFromImage(
+        Id = Id,
+        Name = Name,
+        TargetType = ETargetType.SingleAlly,
+        Icon = Sprites.LoadFromImage(
             Sprites.SpriteType.Artifact,
             Path.Join(Plugin.ArtifactsPath, "Artifact_TrucePact.png")
         ),
-        actionIconBig = Sprites.LoadFromImage(
+        ActionIconBig = Sprites.LoadFromImage(
             Sprites.SpriteType.Action,
             Path.Join(Plugin.ArtifactsPath, "ActionIcon_TrucePact_Big.png")
         ),
-        actionIconSmall = Sprites.LoadFromImage(
+        ActionIconSmall = Sprites.LoadFromImage(
             Sprites.SpriteType.ActionSmall,
             Path.Join(Plugin.ArtifactsPath, "ActionIcon_TrucePact_Small.png")
         ),
-        actions =
+        Actions =
         [
             new ActionHeal()
             {

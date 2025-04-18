@@ -44,12 +44,12 @@ internal class Randomizer
 
             Monsters.MonsterDescriptor descriptor = new()
             {
-                elements = elements,
-                types = types,
-                mainType = Random.GetRandomMainType(),
-                perks = Random.GetRandomPerks(),
-                scripting = Random.GetRandomScripting(elements, types, monster.Name == "Mephisto"),
-                wildTraits =
+                Elements = elements,
+                Types = types,
+                MainType = Random.GetRandomMainType(),
+                Perks = Random.GetRandomPerks(),
+                Scripting = Random.GetRandomScripting(elements, types, monster.Name == "Mephisto"),
+                WildTraits =
                 [
                     new()
                     {
@@ -57,15 +57,15 @@ internal class Randomizer
                         MinDifficulty = EDifficulty.Heroic,
                     },
                 ],
-                eliteTrait = Random.GetRandomTrait(types, true),
-                startingActions = Random.GetRandomStartingActions(elements, types),
-                signatureTrait = Random.GetRandomTrait(types, false),
+                EliteTrait = Random.GetRandomTrait(types, true),
+                StartingActions = Random.GetRandomStartingActions(elements, types),
+                SignatureTrait = Random.GetRandomTrait(types, false),
             };
 
-            while (usedSignatureTraits.Contains(descriptor.signatureTrait.ID))
-                descriptor.signatureTrait = Random.GetRandomTrait(types, false);
+            while (usedSignatureTraits.Contains(descriptor.SignatureTrait.ID))
+                descriptor.SignatureTrait = Random.GetRandomTrait(types, false);
 
-            usedSignatureTraits.Add(descriptor.signatureTrait.ID);
+            usedSignatureTraits.Add(descriptor.SignatureTrait.ID);
 
             randomized.Add(monster.MonID, descriptor);
         }

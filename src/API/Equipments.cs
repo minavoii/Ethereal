@@ -11,25 +11,25 @@ public static class Equipments
     /// </summary>
     public class EquipmentDescriptor
     {
-        public int id;
+        public int Id { get; set; }
 
-        public string name = "";
+        public string Name { get; set; } = "";
 
-        public Sprite icon;
+        public string Description { get; set; } = "";
 
-        public int price = 0;
+        public Equipment.EEquipmentType? Type { get; set; }
 
-        public bool? automaticPricing = true;
+        public ERarity? Rarity { get; set; }
 
-        public Equipment.EEquipmentType? type;
+        public bool? Aura { get; set; } = false;
 
-        public ERarity? rarity;
+        public int Price { get; set; } = 0;
 
-        public bool? aura = false;
+        public bool? AutomaticPricing { get; set; } = true;
 
-        public string description = "";
+        public Sprite Icon { get; set; }
 
-        public List<PassiveEffect> passiveEffects = [];
+        public List<PassiveEffect> PassiveEffects { get; set; } = [];
     }
 
     private static bool IsReady = false;
@@ -170,9 +170,9 @@ public static class Equipments
     {
         LocalisationData.LocalisationDataEntry defaultLocalisation = new()
         {
-            ID = descriptor.id,
-            StringContent = descriptor.name,
-            StringContentEnglish = descriptor.name,
+            ID = descriptor.Id,
+            StringContent = descriptor.Name,
+            StringContentEnglish = descriptor.Name,
         };
 
         // Defer loading until ready
@@ -203,21 +203,21 @@ public static class Equipments
             return;
         }
 
-        string objectName = descriptor.name.Replace(" ", "");
+        string objectName = descriptor.Name.Replace(" ", "");
 
-        GameObject go = new($"Equipment{objectName}_{descriptor.rarity}");
+        GameObject go = new($"Equipment{objectName}_{descriptor.Rarity}");
 
         Equipment equipment = new()
         {
-            ID = descriptor.id,
-            Name = descriptor.name,
-            Icon = descriptor.icon,
-            Price = descriptor.price,
-            EquipmentType = descriptor.type ?? Equipment.EEquipmentType.Accessory,
-            EquipmentRarity = descriptor.rarity ?? ERarity.Common,
-            AutomaticallySetPrice = descriptor.automaticPricing ?? false,
-            Aura = descriptor.aura ?? false,
-            DescriptionOverride = descriptor.description,
+            ID = descriptor.Id,
+            Name = descriptor.Name,
+            Icon = descriptor.Icon,
+            Price = descriptor.Price,
+            EquipmentType = descriptor.Type ?? Equipment.EEquipmentType.Accessory,
+            EquipmentRarity = descriptor.Rarity ?? ERarity.Common,
+            AutomaticallySetPrice = descriptor.AutomaticPricing ?? false,
+            Aura = descriptor.Aura ?? false,
+            DescriptionOverride = descriptor.Description,
             PassiveEffectList = [],
         };
 
@@ -227,7 +227,7 @@ public static class Equipments
         Utils.GameObjects.CopyToGameObject(ref go, equipment);
         go.GetComponent<Equipment>().name = go.name;
 
-        foreach (PassiveEffect passive in descriptor.passiveEffects)
+        foreach (PassiveEffect passive in descriptor.PassiveEffects)
         {
             Utils.GameObjects.CopyToGameObject(ref go, passive);
         }
@@ -249,7 +249,7 @@ public static class Equipments
 
         Localisation.AddLocalisedText(localisationData);
 
-        Log.API.LogInfo($"Loaded equipment: {descriptor.name}");
+        Log.API.LogInfo($"Loaded equipment: {descriptor.Name}");
     }
 
     /// <summary>
@@ -325,31 +325,31 @@ public static class Equipments
     /// <param name="descriptor"></param>
     private static void Update(Equipment equipment, EquipmentDescriptor descriptor)
     {
-        if (descriptor.name != string.Empty)
-            equipment.Name = descriptor.name;
+        if (descriptor.Name != string.Empty)
+            equipment.Name = descriptor.Name;
 
-        if (descriptor.icon != null)
-            equipment.Icon = descriptor.icon;
+        if (descriptor.Icon != null)
+            equipment.Icon = descriptor.Icon;
 
-        if (descriptor.price != 0)
-            equipment.Price = descriptor.price;
+        if (descriptor.Price != 0)
+            equipment.Price = descriptor.Price;
 
-        if (descriptor.automaticPricing.HasValue)
-            equipment.AutomaticallySetPrice = descriptor.automaticPricing.Value;
+        if (descriptor.AutomaticPricing.HasValue)
+            equipment.AutomaticallySetPrice = descriptor.AutomaticPricing.Value;
 
-        if (descriptor.type.HasValue)
-            equipment.EquipmentType = descriptor.type.Value;
+        if (descriptor.Type.HasValue)
+            equipment.EquipmentType = descriptor.Type.Value;
 
-        if (descriptor.rarity.HasValue)
-            equipment.EquipmentRarity = descriptor.rarity.Value;
+        if (descriptor.Rarity.HasValue)
+            equipment.EquipmentRarity = descriptor.Rarity.Value;
 
-        if (descriptor.aura.HasValue)
-            equipment.Aura = descriptor.aura.Value;
+        if (descriptor.Aura.HasValue)
+            equipment.Aura = descriptor.Aura.Value;
 
-        if (descriptor.description != string.Empty)
-            equipment.DescriptionOverride = descriptor.description;
+        if (descriptor.Description != string.Empty)
+            equipment.DescriptionOverride = descriptor.Description;
 
-        if (descriptor.passiveEffects.Count != 0)
+        if (descriptor.PassiveEffects.Count != 0)
         {
             foreach (PassiveEffect comp in equipment.GetComponents<PassiveEffect>())
             {
@@ -358,7 +358,7 @@ public static class Equipments
 
             GameObject go = equipment.gameObject;
 
-            foreach (PassiveEffect passive in descriptor.passiveEffects)
+            foreach (PassiveEffect passive in descriptor.PassiveEffects)
             {
                 Utils.GameObjects.CopyToGameObject(ref go, passive);
             }

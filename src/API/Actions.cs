@@ -12,29 +12,29 @@ public static class Actions
     /// </summary>
     public class ActionDescriptor
     {
-        public string name = "";
+        public string Name { get; set; } = "";
 
-        public string description = "";
+        public string Description { get; set; } = "";
 
-        public Aether cost;
+        public Aether Cost { get; set; }
 
-        public ETargetType? targetType;
+        public ETargetType? TargetType { get; set; }
 
-        public EActionType? actionType;
+        public EActionType? ActionType { get; set; }
 
-        public bool? freeAction;
+        public bool? FreeAction { get; set; }
 
-        public List<EElement> elements = [];
+        public List<EElement> Elements { get; set; } = [];
 
-        public List<EActionSubType> subTypes = [];
+        public List<EActionSubType> SubTypes { get; set; } = [];
 
-        public Sprite icon;
+        public Sprite Icon { get; set; }
 
-        public Sprite iconSmall;
+        public Sprite IconSmall { get; set; }
 
-        public Sprite iconCutSmall;
+        public Sprite IconCutSmall { get; set; }
 
-        public ESkillType? skillType;
+        public ESkillType? SkillType { get; set; }
     }
 
     private static readonly ConcurrentQueue<(int id, ActionDescriptor descriptor)> QueueUpdate =
@@ -174,43 +174,43 @@ public static class Actions
     /// <param name="descriptor"></param>
     private static void Update(BaseAction action, ActionDescriptor descriptor)
     {
-        if (descriptor.name != string.Empty)
-            action.Name = descriptor.name;
+        if (descriptor.Name != string.Empty)
+            action.Name = descriptor.Name;
 
-        if (descriptor.description != string.Empty)
-            action.DescriptionOverride = descriptor.description;
+        if (descriptor.Description != string.Empty)
+            action.DescriptionOverride = descriptor.Description;
 
-        if (descriptor.cost != null)
-            action.Cost = descriptor.cost;
+        if (descriptor.Cost != null)
+            action.Cost = descriptor.Cost;
 
-        if (descriptor.targetType.HasValue)
-            action.TargetType = descriptor.targetType.Value;
+        if (descriptor.TargetType.HasValue)
+            action.TargetType = descriptor.TargetType.Value;
 
-        if (descriptor.actionType.HasValue)
-            action.ActionType = descriptor.actionType.Value;
+        if (descriptor.ActionType.HasValue)
+            action.ActionType = descriptor.ActionType.Value;
 
-        if (descriptor.freeAction.HasValue)
-            action.FreeAction = descriptor.freeAction.Value;
+        if (descriptor.FreeAction.HasValue)
+            action.FreeAction = descriptor.FreeAction.Value;
 
-        if (descriptor.elements.Count != 0)
-            action.SetElements(descriptor.elements);
+        if (descriptor.Elements.Count != 0)
+            action.SetElements(descriptor.Elements);
 
-        if (descriptor.subTypes.Count != 0)
-            AccessTools.Field(typeof(BaseAction), "subTypes").SetValue(action, descriptor.subTypes);
+        if (descriptor.SubTypes.Count != 0)
+            AccessTools.Field(typeof(BaseAction), "subTypes").SetValue(action, descriptor.SubTypes);
 
-        if (descriptor.icon != null)
+        if (descriptor.Icon != null)
         {
-            action.Icon = descriptor.icon;
-            action.ActionIconBig = descriptor.icon;
+            action.Icon = descriptor.Icon;
+            action.ActionIconBig = descriptor.Icon;
         }
 
-        if (descriptor.iconSmall != null)
-            action.ActionIconSmall = descriptor.iconSmall;
+        if (descriptor.IconSmall != null)
+            action.ActionIconSmall = descriptor.IconSmall;
 
-        if (descriptor.iconCutSmall != null)
-            action.ActionIconCutSmall = descriptor.iconCutSmall;
+        if (descriptor.IconCutSmall != null)
+            action.ActionIconCutSmall = descriptor.IconCutSmall;
 
-        if (descriptor.skillType.HasValue)
-            action.SkillType = descriptor.skillType.Value;
+        if (descriptor.SkillType.HasValue)
+            action.SkillType = descriptor.SkillType.Value;
     }
 }

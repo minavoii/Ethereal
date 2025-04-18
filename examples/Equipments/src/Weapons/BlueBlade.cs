@@ -9,11 +9,11 @@ internal static class BlueBlade
 
     internal static readonly Equipments.EquipmentDescriptor descriptor = new()
     {
-        name = Name,
-        icon = Sprites.LoadFromImage(
+        Name = Name,
+        Price = 100,
+        Icon = Sprites.LoadFromImage(
             Sprites.SpriteType.Equipment,
             Path.Join(Plugin.EquipmentsPath, "Equipment_Blade_Blue.png")
         ),
-        price = 100,
     };
 }

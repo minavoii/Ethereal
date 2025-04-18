@@ -12,25 +12,25 @@ public static class Traits
     /// </summary>
     public class TraitDescriptor()
     {
-        public int id;
+        public int Id { get; set; }
 
-        public string name = "";
+        public string Name { get; set; } = "";
 
-        public string description = "";
+        public string Description { get; set; } = "";
 
-        public string sidenote = "";
+        public string Sidenote { get; set; } = "";
 
-        public bool? aura;
+        public bool? Aura { get; set; }
 
-        public bool? maverickSkill;
+        public bool? MaverickSkill { get; set; }
 
-        public List<PassiveEffect> passiveEffects = [];
+        public List<PassiveEffect> PassiveEffects { get; set; } = [];
 
-        public List<EMonsterType> types = [];
+        public List<EMonsterType> Types { get; set; } = [];
 
-        public Sprite icon;
+        public Sprite Icon { get; set; }
 
-        public ESkillType? skillType;
+        public ESkillType? SkillType { get; set; }
     }
 
     private static readonly ConcurrentQueue<TraitDescriptor> Queue = new();
@@ -175,28 +175,28 @@ public static class Traits
 
         var trait = new Trait()
         {
-            ID = descriptor.id,
-            Name = descriptor.name,
-            Description = descriptor.description,
-            Sidenote = descriptor.sidenote,
-            Aura = descriptor.aura ?? false,
-            MaverickSkill = descriptor.maverickSkill ?? false,
-            PassiveEffectList = descriptor.passiveEffects,
+            ID = descriptor.Id,
+            Name = descriptor.Name,
+            Description = descriptor.Description,
+            Sidenote = descriptor.Sidenote,
+            Aura = descriptor.Aura ?? false,
+            MaverickSkill = descriptor.MaverickSkill ?? false,
+            PassiveEffectList = descriptor.PassiveEffects,
             Types =
             [
-                .. descriptor.types.Select(x =>
+                .. descriptor.Types.Select(x =>
                 {
                     MonsterTypes.TryGet(x, out var type);
                     return type?.gameObject;
                 }),
             ],
-            Icon = descriptor.icon,
-            SkillType = descriptor.skillType ?? ESkillType.Shared,
+            Icon = descriptor.Icon,
+            SkillType = descriptor.SkillType ?? ESkillType.Shared,
         };
 
         var go = Utils.GameObjects.IntoGameObject(trait);
 
-        foreach (EMonsterType monsterType in descriptor.types)
+        foreach (EMonsterType monsterType in descriptor.Types)
         {
             MonsterType type = GameController.Instance.MonsterTypes.Find(x =>
                 x?.Type == monsterType
@@ -251,22 +251,22 @@ public static class Traits
     /// <param name="descriptor"></param>
     private static void Update(Trait trait, TraitDescriptor descriptor)
     {
-        if (descriptor.name != string.Empty)
-            trait.Name = descriptor.name;
+        if (descriptor.Name != string.Empty)
+            trait.Name = descriptor.Name;
 
-        if (descriptor.description != string.Empty)
-            trait.Description = descriptor.description;
+        if (descriptor.Description != string.Empty)
+            trait.Description = descriptor.Description;
 
-        if (descriptor.sidenote != string.Empty)
-            trait.Sidenote = descriptor.sidenote;
+        if (descriptor.Sidenote != string.Empty)
+            trait.Sidenote = descriptor.Sidenote;
 
-        if (descriptor.aura.HasValue)
-            trait.Aura = descriptor.aura.Value;
+        if (descriptor.Aura.HasValue)
+            trait.Aura = descriptor.Aura.Value;
 
-        if (descriptor.maverickSkill.HasValue)
-            trait.MaverickSkill = descriptor.maverickSkill.Value;
+        if (descriptor.MaverickSkill.HasValue)
+            trait.MaverickSkill = descriptor.MaverickSkill.Value;
 
-        if (descriptor.passiveEffects.Count != 0)
+        if (descriptor.PassiveEffects.Count != 0)
         {
             foreach (PassiveEffect comp in trait.GetComponents<PassiveEffect>())
             {
@@ -275,7 +275,7 @@ public static class Traits
 
             GameObject go = trait.gameObject;
 
-            foreach (PassiveEffect passive in descriptor.passiveEffects)
+            foreach (PassiveEffect passive in descriptor.PassiveEffects)
             {
                 Utils.GameObjects.CopyToGameObject(ref go, passive);
             }
@@ -283,11 +283,11 @@ public static class Traits
             trait.InitializeReferenceable();
         }
 
-        if (descriptor.types.Count != 0)
+        if (descriptor.Types.Count != 0)
         {
             trait.Types.Clear();
 
-            foreach (var monsterType in descriptor.types)
+            foreach (var monsterType in descriptor.Types)
             {
                 MonsterType type = GameController.Instance.MonsterTypes.Find(x =>
                     x?.Type == monsterType
@@ -298,10 +298,10 @@ public static class Traits
             }
         }
 
-        if (descriptor.icon != null)
-            trait.Icon = descriptor.icon;
+        if (descriptor.Icon != null)
+            trait.Icon = descriptor.Icon;
 
-        if (descriptor.skillType.HasValue)
-            trait.SkillType = descriptor.skillType.Value;
+        if (descriptor.SkillType.HasValue)
+            trait.SkillType = descriptor.SkillType.Value;
     }
 }

@@ -12,20 +12,20 @@ internal static class RedArmor
 
     internal static readonly Equipments.EquipmentDescriptor descriptor = new()
     {
-        id = Id,
-        name = Name,
-        icon = Sprites.LoadFromAsset(
+        Id = Id,
+        Name = Name,
+        Description =
+            "At the start of your turn: {Shields} self for {0;2} x {0;1} and heals self for {1;2} x {1;1}.",
+        Type = Equipment.EEquipmentType.Accessory,
+        Rarity = ERarity.Common,
+        Aura = false,
+        Price = 100,
+        AutomaticPricing = false,
+        Icon = Sprites.LoadFromAsset(
             Path.Join(Plugin.EquipmentsPath, "RedArmor"),
             "Assets/Textures/Item/Item.prefab"
         ),
-        price = 100,
-        aura = false,
-        type = Equipment.EEquipmentType.Accessory,
-        rarity = ERarity.Common,
-        automaticPricing = false,
-        description =
-            "At the start of your turn: {Shields} self for {0;2} x {0;1} and heals self for {1;2} x {1;1}.",
-        passiveEffects =
+        PassiveEffects =
         [
             new PassiveGrantShield()
             {
