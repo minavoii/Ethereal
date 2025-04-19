@@ -14,6 +14,7 @@ internal static class Controller
         API.Traits.SetReady();
         API.Perks.SetReady();
         API.Monsters.SetReady();
+        API.Sprites.SetReady();
     }
 
     [HarmonyPatch(typeof(GameController), "Initialize")]
