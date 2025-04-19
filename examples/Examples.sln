@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Equipments", "Equipments\Eq
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Localisations", "Localisations\Localisations.csproj", "{D4194D66-6A72-429B-B66A-2DA544716CDA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Randomizer", "examples\Randomizer\Randomizer.csproj", "{8C9CD8A6-700A-4114-8296-F5C94CAC2F44}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Randomizer", "Randomizer\Randomizer.csproj", "{8C9CD8A6-700A-4114-8296-F5C94CAC2F44}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
