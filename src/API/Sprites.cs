@@ -88,48 +88,91 @@ public static class Sprites
         string PathTypes = Path.Join(spritesPath, "Types");
 
         // Actions
-        foreach (FileInfo file in new DirectoryInfo(PathActions).EnumerateFiles())
-            ReplaceIconAction(ToTitleCase(file.Name), null, file.FullName);
+        try
+        {
+            foreach (FileInfo file in new DirectoryInfo(PathActions).EnumerateFiles())
+                ReplaceIconAction(ToTitleCase(file.Name), null, file.FullName);
+        }
+        catch (Exception e)
+            when (e is DirectoryNotFoundException || e is System.Security.SecurityException) { }
 
         // Artifacts
-        foreach (FileInfo file in new DirectoryInfo(PathArtifacts).EnumerateFiles())
-            ReplaceIconArtifact(ToTitleCase(file.Name), null, file.FullName);
+        try
+        {
+            foreach (FileInfo file in new DirectoryInfo(PathArtifacts).EnumerateFiles())
+                ReplaceIconArtifact(ToTitleCase(file.Name), null, file.FullName);
+        }
+        catch (Exception e)
+            when (e is DirectoryNotFoundException || e is System.Security.SecurityException) { }
 
         // Buffs
-        foreach (FileInfo file in new DirectoryInfo(PathBuffs).EnumerateFiles())
-            ReplaceIconBuff(ToTitleCase(file.Name), LoadFromImage(SpriteType.Buff, file.FullName));
+        try
+        {
+            foreach (FileInfo file in new DirectoryInfo(PathBuffs).EnumerateFiles())
+                ReplaceIconBuff(
+                    ToTitleCase(file.Name),
+                    LoadFromImage(SpriteType.Buff, file.FullName)
+                );
+        }
+        catch (Exception e)
+            when (e is DirectoryNotFoundException || e is System.Security.SecurityException) { }
 
         // Elements
-        foreach (FileInfo file in new DirectoryInfo(PathElements).EnumerateFiles())
-            ReplaceIconElement(ToTitleCase(file.Name), null, file.FullName);
+        try
+        {
+            foreach (FileInfo file in new DirectoryInfo(PathElements).EnumerateFiles())
+                ReplaceIconElement(ToTitleCase(file.Name), null, file.FullName);
+        }
+        catch (Exception e)
+            when (e is DirectoryNotFoundException || e is System.Security.SecurityException) { }
 
         // Equipments
-        foreach (FileInfo file in new DirectoryInfo(PathEquipments).EnumerateFiles())
-            ReplaceIconEquipment(
-                ToTitleCase(file.Name),
-                LoadFromImage(SpriteType.Equipment, file.FullName)
-            );
+        try
+        {
+            foreach (FileInfo file in new DirectoryInfo(PathEquipments).EnumerateFiles())
+                ReplaceIconEquipment(
+                    ToTitleCase(file.Name),
+                    LoadFromImage(SpriteType.Equipment, file.FullName)
+                );
+        }
+        catch (Exception e)
+            when (e is DirectoryNotFoundException || e is System.Security.SecurityException) { }
 
         // Mementos
-        foreach (FileInfo file in new DirectoryInfo(PathMementos).EnumerateFiles())
-            ReplaceIconMemento(
-                ToTitleCase(file.Name),
-                LoadFromImage(SpriteType.Memento, file.FullName)
-            );
+        try
+        {
+            foreach (FileInfo file in new DirectoryInfo(PathMementos).EnumerateFiles())
+                ReplaceIconMemento(
+                    ToTitleCase(file.Name),
+                    LoadFromImage(SpriteType.Memento, file.FullName)
+                );
+        }
+        catch (Exception e)
+            when (e is DirectoryNotFoundException || e is System.Security.SecurityException) { }
 
         // Traits
-        foreach (FileInfo file in new DirectoryInfo(PathTraits).EnumerateFiles())
-            ReplaceIconTrait(
-                ToTitleCase(file.Name),
-                LoadFromImage(SpriteType.Trait, file.FullName)
-            );
+        try
+        {
+            foreach (FileInfo file in new DirectoryInfo(PathTraits).EnumerateFiles())
+                ReplaceIconTrait(
+                    ToTitleCase(file.Name),
+                    LoadFromImage(SpriteType.Trait, file.FullName)
+                );
+        }
+        catch (Exception e)
+            when (e is DirectoryNotFoundException || e is System.Security.SecurityException) { }
 
         // Types
-        foreach (FileInfo file in new DirectoryInfo(PathTypes).EnumerateFiles())
-            ReplaceIconType(
-                ToTitleCase(file.Name),
-                LoadFromImage(SpriteType.MonsterType, file.FullName)
-            );
+        try
+        {
+            foreach (FileInfo file in new DirectoryInfo(PathTypes).EnumerateFiles())
+                ReplaceIconType(
+                    ToTitleCase(file.Name),
+                    LoadFromImage(SpriteType.MonsterType, file.FullName)
+                );
+        }
+        catch (Exception e)
+            when (e is DirectoryNotFoundException || e is System.Security.SecurityException) { }
     }
 
     /// <summary>
