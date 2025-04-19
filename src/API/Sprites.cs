@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Globalization;
 using System.IO;
 using UnityEngine;
@@ -20,6 +21,30 @@ public static class Sprites
         Memento,
         MonsterType,
         Trait,
+    }
+
+    private static readonly string SpritesPath = Path.Join(Plugin.EtherealPath, "Sprites");
+
+    private static readonly ConcurrentQueue<string> QueueBulkReplaceDirectory = new();
+
+    private static readonly ConcurrentQueue<string> QueueBulkReplaceBundle = new();
+
+    private static bool IsReady = false;
+
+    /// <summary>
+    /// Mark the API as ready and run all deferred methods.
+    /// </summary>
+    internal static void SetReady()
+    {
+        IsReady = true;
+
+        BulkReplaceFromDefaultDirectory();
+
+        while (QueueBulkReplaceDirectory.TryDequeue(out var path))
+            BulkReplaceFromDirectory(path);
+
+        while (QueueBulkReplaceBundle.TryDequeue(out var path))
+            BulkReplaceFromBundle(path);
     }
 
     /// <summary>
@@ -70,6 +95,18 @@ public static class Sprites
         return sprite;
     }
 
+    private static void BulkReplaceFromDefaultDirectory()
+    {
+        Directory.CreateDirectory(SpritesPath);
+
+        // Load from directory
+        BulkReplaceFromDirectory(SpritesPath);
+
+        // Load bundles
+        foreach (FileInfo file in new DirectoryInfo(SpritesPath).EnumerateFiles())
+            BulkReplaceFromBundle(file.FullName);
+    }
+
     /// <summary>
     /// Replace sprites in bulk from images within a directory.<para/>
     /// Inside it, Action sprites need to be stored within an `Actions` folder,
@@ -78,6 +115,13 @@ public static class Sprites
     /// <param name="spritesPath"></param>
     public static void BulkReplaceFromDirectory(string spritesPath)
     {
+        // Defer loading until ready
+        if (!IsReady)
+        {
+            QueueBulkReplaceDirectory.Enqueue(spritesPath);
+            return;
+        }
+
         string PathActions = Path.Join(spritesPath, "Actions");
         string PathArtifacts = Path.Join(spritesPath, "Artifacts");
         string PathBuffs = Path.Join(spritesPath, "Buffs");
@@ -183,6 +227,13 @@ public static class Sprites
     /// <param name="path"></param>
     public static void BulkReplaceFromBundle(string path)
     {
+        // Defer loading until ready
+        if (!IsReady)
+        {
+            QueueBulkReplaceBundle.Enqueue(path);
+            return;
+        }
+
         var bundle = AssetBundle.LoadFromFile(path);
 
         foreach (var assetName in bundle.GetAllAssetNames())
