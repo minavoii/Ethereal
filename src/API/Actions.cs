@@ -132,6 +132,46 @@ public static class Actions
     }
 
     /// <summary>
+    /// Get all actions.
+    /// </summary>
+    /// <returns></returns>
+    private static List<BaseAction> GetAll()
+    {
+        List<BaseAction> actions = [];
+
+        foreach (MonsterType type in GameController.Instance.MonsterTypes)
+        {
+            foreach (BaseAction action in type.Actions)
+            {
+                if (
+                    !actions.Contains(action)
+                    && action.Name != "?????"
+                    && action.Name != "PoiseBreaker"
+                )
+                    actions.Add(action);
+            }
+        }
+
+        return actions;
+    }
+
+    /// <summary>
+    /// Get all actions.
+    /// </summary>
+    /// <param name="name"></param>
+    /// <param name="result"></param>
+    /// <returns>true if the API is ready; otherwise, false.</returns>
+    public static bool TryGetAll(out List<BaseAction> result)
+    {
+        if (!IsReady)
+            result = null;
+        else
+            result = GetAll();
+
+        return result != null;
+    }
+
+    /// <summary>
     /// Overwrite an action's properties with values from a descriptor.
     /// </summary>
     /// <param name="id"></param>

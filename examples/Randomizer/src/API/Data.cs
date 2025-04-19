@@ -31,30 +31,6 @@ internal static class Data
     }
 
     /// <summary>
-    /// Get all available actions for all monster types.
-    /// </summary>
-    /// <returns></returns>
-    internal static List<BaseAction> GetAllActions()
-    {
-        List<BaseAction> actions = [];
-
-        foreach (MonsterType type in GameController.Instance.MonsterTypes)
-        {
-            foreach (BaseAction action in type.Actions)
-            {
-                if (
-                    !actions.Contains(action)
-                    && action.Name != "?????"
-                    && action.Name != "PoiseBreaker"
-                )
-                    actions.Add(action);
-            }
-        }
-
-        return actions;
-    }
-
-    /// <summary>
     /// Get all available monster perks.
     /// </summary>
     /// <returns></returns>

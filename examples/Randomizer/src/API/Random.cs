@@ -216,16 +216,19 @@ internal class Random
     {
         List<Buff> possibleBuffs = Data.GetTypeBuffs(types);
 
-        List<BaseAction> dataset = byType
-            ?
+        List<BaseAction> dataset = [];
+
+        if (byType)
+            dataset =
             [
                 .. types
                     .SelectMany(x =>
                         MonsterTypes.NativeTypes[x]?.GetComponent<MonsterType>().Actions
                     )
                     .Distinct(),
-            ]
-            : [.. Data.GetAllActions()];
+            ];
+        else
+            Actions.TryGetAll(out dataset);
 
         List<BaseAction> actions =
         [
