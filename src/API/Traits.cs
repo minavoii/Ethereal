@@ -198,11 +198,8 @@ public static class Traits
 
         foreach (EMonsterType monsterType in descriptor.Types)
         {
-            MonsterType type = GameController.Instance.MonsterTypes.Find(x =>
-                x?.Type == monsterType
-            );
-
-            type.Traits.Add(go.GetComponent<Trait>());
+            if (MonsterTypes.TryGet(monsterType, out var type))
+                type.Traits.Add(go.GetComponent<Trait>());
         }
 
         WorldData.Instance.Referenceables.Add(go.GetComponent<Trait>());
@@ -269,16 +266,12 @@ public static class Traits
         if (descriptor.PassiveEffects.Count != 0)
         {
             foreach (PassiveEffect comp in trait.GetComponents<PassiveEffect>())
-            {
                 Object.DestroyImmediate(comp);
-            }
 
             GameObject go = trait.gameObject;
 
             foreach (PassiveEffect passive in descriptor.PassiveEffects)
-            {
                 Utils.GameObjects.CopyToGameObject(ref go, passive);
-            }
 
             trait.InitializeReferenceable();
         }
@@ -289,12 +282,8 @@ public static class Traits
 
             foreach (var monsterType in descriptor.Types)
             {
-                MonsterType type = GameController.Instance.MonsterTypes.Find(x =>
-                    x?.Type == monsterType
-                );
-                GameObject go = Utils.GameObjects.IntoGameObject(type);
-
-                trait.Types.Add(go);
+                if (MonsterTypes.TryGet(monsterType, out var type))
+                    trait.Types.Add(Utils.GameObjects.IntoGameObject(type));
             }
         }
 
