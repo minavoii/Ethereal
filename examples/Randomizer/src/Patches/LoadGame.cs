@@ -15,7 +15,9 @@ internal static class LoadGame
         if (Perks.TryGetAll(out var perks))
             API.Data.AllPerks = perks;
 
-        API.Data.SignatureTraits = API.Data.GetAllSignatureTraits();
+        if (Traits.TryGetAllSignature(out var signatureTraits))
+            API.Data.SignatureTraits = signatureTraits;
+
         API.Randomizer.BalanceChanges();
         API.Randomizer.LoadData();
     }

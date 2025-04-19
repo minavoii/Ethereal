@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using Ethereal.API;
 
 namespace Randomizer.API;
@@ -27,21 +26,5 @@ internal static class Data
         }
 
         return possibleBuffs;
-    }
-
-    /// <summary>
-    /// Get signature traits of all monsters.
-    /// </summary>
-    /// <returns></returns>
-    internal static List<Trait> GetAllSignatureTraits()
-    {
-        return
-        [
-            .. GameController
-                .Instance.ActiveMonsterList.Select(x =>
-                    x.GetComponent<SkillManager>()?.SignatureTrait?.GetComponent<Trait>()
-                )
-                .Where(x => x.Name != "?????"),
-        ];
     }
 }
