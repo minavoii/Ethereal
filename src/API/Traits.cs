@@ -161,6 +161,98 @@ public static class Traits
     }
 
     /// <summary>
+    /// Get all traits that can be learned (i.e. non-signature traits).
+    /// </summary>
+    /// <returns></returns>
+    private static List<Trait> GetAllLearnable()
+    {
+        List<Trait> traits = [];
+
+        foreach (MonsterType type in GameController.Instance.MonsterTypes)
+        {
+            foreach (Trait trait in type.Traits)
+            {
+                if (trait != null && !traits.Contains(trait))
+                    traits.Add(trait);
+            }
+        }
+
+        return traits;
+    }
+
+    /// <summary>
+    /// Get all traits that can be learned (i.e. non-signature traits).
+    /// </summary>
+    /// <param name="result"></param>
+    /// <returns>true if the API is ready; otherwise, false.</returns>
+    public static bool TryGetAllLearnable(out List<Trait> result)
+    {
+        if (!IsReady)
+            result = null;
+        else
+            result = GetAllLearnable();
+
+        return result != null;
+    }
+
+    /// <summary>
+    /// Get all signature traits.
+    /// </summary>
+    /// <returns></returns>
+    private static List<Trait> GetAllSignature()
+    {
+        return
+        [
+            .. GameController
+                .Instance.ActiveMonsterList.Select(x =>
+                    x.GetComponent<SkillManager>()?.SignatureTrait?.GetComponent<Trait>()
+                )
+                .Where(x => x.Name != "?????"),
+        ];
+    }
+
+    /// <summary>
+    /// Get all signature traits.
+    /// </summary>
+    /// <param name="result"></param>
+    /// <returns>true if the API is ready; otherwise, false.</returns>
+    public static bool TryGetAllSignature(out List<Trait> result)
+    {
+        if (!IsReady)
+            result = null;
+        else
+            result = GetAllSignature();
+
+        return result != null;
+    }
+
+    /// <summary>
+    /// Get all traits, both learnable and signature ones.
+    /// </summary>
+    /// <returns></returns>
+    private static List<Trait> GetAll()
+    {
+        List<Trait> traits = [.. GetAllLearnable().Concat(GetAllSignature())];
+
+        return traits;
+    }
+
+    /// <summary>
+    /// Get all traits, both learnable and signature ones.
+    /// </summary>
+    /// <param name="result"></param>
+    /// <returns>true if the API is ready; otherwise, false.</returns>
+    public static bool TryGetAll(out List<Trait> result)
+    {
+        if (!IsReady)
+            result = null;
+        else
+            result = GetAll();
+
+        return result != null;
+    }
+
+    /// <summary>
     /// Create a new trait and add it to the game's data.
     /// </summary>
     /// <param name="descriptor"></param>
@@ -198,11 +290,8 @@ public static class Traits
 
         foreach (EMonsterType monsterType in descriptor.Types)
         {
-            MonsterType type = GameController.Instance.MonsterTypes.Find(x =>
-                x?.Type == monsterType
-            );
-
-            type.Traits.Add(go.GetComponent<Trait>());
+            if (MonsterTypes.TryGet(monsterType, out var type))
+                type.Traits.Add(go.GetComponent<Trait>());
         }
 
         WorldData.Instance.Referenceables.Add(go.GetComponent<Trait>());
@@ -269,16 +358,12 @@ public static class Traits
         if (descriptor.PassiveEffects.Count != 0)
         {
             foreach (PassiveEffect comp in trait.GetComponents<PassiveEffect>())
-            {
                 Object.DestroyImmediate(comp);
-            }
 
             GameObject go = trait.gameObject;
 
             foreach (PassiveEffect passive in descriptor.PassiveEffects)
-            {
                 Utils.GameObjects.CopyToGameObject(ref go, passive);
-            }
 
             trait.InitializeReferenceable();
         }
@@ -289,12 +374,8 @@ public static class Traits
 
             foreach (var monsterType in descriptor.Types)
             {
-                MonsterType type = GameController.Instance.MonsterTypes.Find(x =>
-                    x?.Type == monsterType
-                );
-                GameObject go = Utils.GameObjects.IntoGameObject(type);
-
-                trait.Types.Add(go);
+                if (MonsterTypes.TryGet(monsterType, out var type))
+                    trait.Types.Add(Utils.GameObjects.IntoGameObject(type));
             }
         }
 

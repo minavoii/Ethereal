@@ -1,3 +1,4 @@
+using Ethereal.API;
 using HarmonyLib;
 
 namespace Randomizer.Patches;
@@ -11,8 +12,12 @@ internal static class LoadGame
     [HarmonyPrefix]
     private static void Prefix()
     {
-        API.Data.AllPerks = API.Data.GetAllPerks();
-        API.Data.SignatureTraits = API.Data.GetAllSignatureTraits();
+        if (Perks.TryGetAll(out var perks))
+            API.Data.AllPerks = perks;
+
+        if (Traits.TryGetAllSignature(out var signatureTraits))
+            API.Data.SignatureTraits = signatureTraits;
+
         API.Randomizer.BalanceChanges();
         API.Randomizer.LoadData();
     }

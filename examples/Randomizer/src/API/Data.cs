@@ -1,7 +1,5 @@
 using System.Collections.Generic;
-using System.Linq;
 using Ethereal.API;
-using UnityEngine;
 
 namespace Randomizer.API;
 
@@ -28,73 +26,5 @@ internal static class Data
         }
 
         return possibleBuffs;
-    }
-
-    /// <summary>
-    /// Get all available actions for all monster types.
-    /// </summary>
-    /// <returns></returns>
-    internal static List<BaseAction> GetAllActions()
-    {
-        List<BaseAction> actions = [];
-
-        foreach (MonsterType type in GameController.Instance.MonsterTypes)
-        {
-            foreach (BaseAction action in type.Actions)
-            {
-                if (
-                    !actions.Contains(action)
-                    && action.Name != "?????"
-                    && action.Name != "PoiseBreaker"
-                )
-                    actions.Add(action);
-            }
-        }
-
-        return actions;
-    }
-
-    /// <summary>
-    /// Get all available monster perks.
-    /// </summary>
-    /// <returns></returns>
-    internal static List<PerkInfos> GetAllPerks()
-    {
-        List<PerkInfos> perks = [];
-
-        foreach (GameObject monster in GameController.Instance.ActiveMonsterList)
-        {
-            if (monster == null)
-                continue;
-
-            foreach (PerkInfos info in monster.GetComponent<MonsterStats>().PerkInfosList)
-            {
-                int id = info.Perk.GetComponent<Perk>().ID;
-
-                if (
-                    perks.Find(x => x.Perk.GetComponent<Perk>().ID == id) == null
-                    && info.Perk.GetComponent<Perk>().Name != "?????"
-                )
-                    perks.Add(info);
-            }
-        }
-
-        return perks;
-    }
-
-    /// <summary>
-    /// Get signature traits of all monsters.
-    /// </summary>
-    /// <returns></returns>
-    internal static List<Trait> GetAllSignatureTraits()
-    {
-        return
-        [
-            .. GameController
-                .Instance.ActiveMonsterList.Select(x =>
-                    x.GetComponent<SkillManager>()?.SignatureTrait?.GetComponent<Trait>()
-                )
-                .Where(x => x.Name != "?????"),
-        ];
     }
 }

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Ethereal.API;
@@ -88,6 +89,49 @@ public static class Perks
             result = null;
         else
             result = Get(name);
+
+        return result != null;
+    }
+
+    /// <summary>
+    /// Get all perks.
+    /// </summary>
+    /// <returns></returns>
+    private static List<PerkInfos> GetAll()
+    {
+        List<PerkInfos> perks = [];
+
+        foreach (GameObject monster in GameController.Instance.ActiveMonsterList)
+        {
+            if (monster == null)
+                continue;
+
+            foreach (PerkInfos info in monster.GetComponent<MonsterStats>().PerkInfosList)
+            {
+                int id = info.Perk.GetComponent<Perk>().ID;
+
+                if (
+                    perks.Find(x => x.Perk.GetComponent<Perk>().ID == id) == null
+                    && info.Perk.GetComponent<Perk>().Name != "?????"
+                )
+                    perks.Add(info);
+            }
+        }
+
+        return perks;
+    }
+
+    /// <summary>
+    /// Get all actions.
+    /// </summary>
+    /// <param name="result"></param>
+    /// <returns>true if the API is ready; otherwise, false.</returns>
+    public static bool TryGetAll(out List<PerkInfos> result)
+    {
+        if (!IsReady)
+            result = null;
+        else
+            result = GetAll();
 
         return result != null;
     }
