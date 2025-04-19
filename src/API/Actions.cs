@@ -158,7 +158,6 @@ public static class Actions
     /// <summary>
     /// Get all actions.
     /// </summary>
-    /// <param name="name"></param>
     /// <param name="result"></param>
     /// <returns>true if the API is ready; otherwise, false.</returns>
     public static bool TryGetAll(out List<BaseAction> result)
