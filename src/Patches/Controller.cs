@@ -8,6 +8,7 @@ internal static class Controller
     [HarmonyPrefix]
     private static void Prefix()
     {
+        API.Fonts.SetReady();
         API.Localisation.SetReady();
         API.MonsterTypes.SetReady();
         API.Actions.SetReady();

@@ -22,6 +22,7 @@ internal class Plugin : BaseUnityPlugin
         Harmony harmony = new(MyPluginInfo.PLUGIN_GUID);
 
         harmony.PatchAll(typeof(Patches.Controller));
+        harmony.PatchAll(typeof(Patches.Fonts));
         harmony.PatchAll(typeof(Patches.Localisation));
         harmony.PatchAll(typeof(Patches.World));
         harmony.PatchAll(typeof(Patches.Action));
