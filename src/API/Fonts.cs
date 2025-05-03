@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using HarmonyLib;
 using TMPro;
 using UnityEngine;
 
@@ -25,6 +26,8 @@ public static class Fonts
     public static void SetReady()
     {
         LoadFonts();
+        TMP_Settings.useModernHangulLineBreakingRules = true;
+
         IsReady = true;
 
         while (QueueAddFallback.TryDequeue(out var item))
