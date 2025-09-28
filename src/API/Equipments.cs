@@ -1,4 +1,3 @@
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -32,53 +31,9 @@ public static class Equipments
         public List<PassiveEffect> PassiveEffects { get; set; } = [];
     }
 
-    private static bool IsReady = false;
+    private static readonly QueueableAPI API = new();
 
-    private static readonly ConcurrentQueue<(
-        EquipmentDescriptor descriptor,
-        LocalisationData.LocalisationDataEntry localisationData,
-        Dictionary<string, string> customLanguageEntries
-    )> QueueAdd = new();
-
-    private static readonly ConcurrentQueue<(int id, EquipmentDescriptor descriptor)> QueueUpdate =
-        new();
-
-    private static readonly ConcurrentQueue<(
-        string name,
-        ERarity rarity,
-        EquipmentDescriptor descriptor
-    )> QueueUpdateByName = new();
-
-    /// <summary>
-    /// Mark the API as ready and run all deferred methods.
-    /// </summary>
-    internal static void SetReady()
-    {
-        IsReady = true;
-
-        while (QueueAdd.TryDequeue(out var item))
-        {
-            if (item.customLanguageEntries == null)
-            {
-                if (item.localisationData == null)
-                    Add(item.descriptor);
-                else
-                    Add(item.descriptor, item.localisationData);
-            }
-            else
-                Add(item.descriptor, item.localisationData, item.customLanguageEntries);
-        }
-
-        while (QueueUpdate.TryDequeue(out var item))
-        {
-            Update(item.id, item.descriptor);
-        }
-
-        while (QueueUpdateByName.TryDequeue(out var item))
-        {
-            Update(item.name, item.rarity, item.descriptor);
-        }
-    }
+    internal static void SetReady() => API.SetReady();
 
     /// <summary>
     /// Get an equipment by id.
@@ -137,7 +92,7 @@ public static class Equipments
     /// <returns>true if the API is ready and an equipment was found; otherwise, false.</returns>
     public static bool TryGet(int id, ERarity rarity, out Equipment result)
     {
-        if (!IsReady)
+        if (!API.IsReady)
             result = null;
         else
             result = Get(id, rarity);
@@ -154,7 +109,7 @@ public static class Equipments
     /// <returns>true if the API is ready and an equipment was found; otherwise, false.</returns>
     public static bool TryGet(string name, ERarity rarity, out Equipment result)
     {
-        if (!IsReady)
+        if (!API.IsReady)
             result = null;
         else
             result = Get(name, rarity);
@@ -176,10 +131,9 @@ public static class Equipments
         };
 
         // Defer loading until ready
-        if (!IsReady)
+        if (!API.IsReady)
         {
-            // Queue2.Enqueue((descriptor, defaultLocalisation));
-            QueueAdd.Enqueue((descriptor, null, null));
+            API.Enqueue(() => Add(descriptor));
             return;
         }
 
@@ -197,9 +151,9 @@ public static class Equipments
     )
     {
         // Defer loading until ready
-        if (!IsReady)
+        if (!API.IsReady)
         {
-            QueueAdd.Enqueue((descriptor, localisationData, null));
+            API.Enqueue(() => Add(descriptor, localisationData));
             return;
         }
 
@@ -266,9 +220,9 @@ public static class Equipments
     )
     {
         // Defer loading until ready
-        if (!IsReady)
+        if (!API.IsReady)
         {
-            QueueAdd.Enqueue((descriptor, localisationData, customLanguageEntries));
+            API.Enqueue(() => Add(descriptor, localisationData, customLanguageEntries));
             return;
         }
 
@@ -285,9 +239,9 @@ public static class Equipments
     public static void Update(int id, EquipmentDescriptor descriptor)
     {
         // Defer loading until ready
-        if (!IsReady)
+        if (!API.IsReady)
         {
-            QueueUpdate.Enqueue((id, descriptor));
+            API.Enqueue(() => Update(id, descriptor));
             return;
         }
 
@@ -308,9 +262,9 @@ public static class Equipments
     public static void Update(string name, ERarity rarity, EquipmentDescriptor descriptor)
     {
         // Defer loading until ready
-        if (!IsReady)
+        if (!API.IsReady)
         {
-            QueueUpdateByName.Enqueue((name, rarity, descriptor));
+            API.Enqueue(() => Update(name, rarity, descriptor));
             return;
         }
 

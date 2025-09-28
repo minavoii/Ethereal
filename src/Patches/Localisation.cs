@@ -79,6 +79,7 @@ internal static class Localisation
             ELanguage.Russian => __instance.StringContentRussian,
             ELanguage.Chinese => __instance.StringContentSimplifiedChinese,
             ELanguage.Japanese => __instance.StringContentJapanese,
+            ELanguage.Korean => __instance.StringContentKorean,
             ELanguage customLang => (
                 CustomLocalisations.Get(__instance.StringContent ?? "")?.Data.Get(customLang)
             ) ?? __instance.StringContentEnglish,
@@ -87,7 +88,7 @@ internal static class Localisation
         return false;
     }
 
-    [HarmonyPatch(typeof(global::Utils), "GetCultureInfo")]
+    [HarmonyPatch(typeof(global::Utils), nameof(global::Utils.GetCultureInfo))]
     [HarmonyPrefix]
     private static bool GetCultureInfo(ref IFormatProvider __result)
     {
@@ -107,12 +108,13 @@ internal static class Localisation
                 { ELanguage.Russian, CultureInfo.CreateSpecificCulture("ru-RU") },
                 { ELanguage.Spanish, CultureInfo.CreateSpecificCulture("es-ES") },
                 { ELanguage.Japanese, CultureInfo.CreateSpecificCulture("ja-JP") },
+                { ELanguage.Korean, CultureInfo.CreateSpecificCulture("ko-KR") },
             };
 
             AccessTools.Field(typeof(global::Utils), "CultureInfos").SetValue(null, CultureInfos);
         }
 
-        __result = CultureInfos[GameSettingsController.Instance.CurrentLanguage];
+        __result = CultureInfos[OptionsManager.Instance.GetLanguage()];
 
         return false;
     }

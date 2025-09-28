@@ -5,15 +5,9 @@ namespace Ethereal.API;
 
 public static class Perks
 {
-    private static bool IsReady = false;
+    private static readonly BaseAPI API = new();
 
-    /// <summary>
-    /// Mark the API as ready.
-    /// </summary>
-    internal static void SetReady()
-    {
-        IsReady = true;
-    }
+    internal static void SetReady() => API.SetReady();
 
     /// <summary>
     /// Get a perk by id.
@@ -69,7 +63,7 @@ public static class Perks
     /// <returns>true if the API is ready and a perk was found; otherwise, false.</returns>
     public static bool TryGet(int id, out PerkInfos result)
     {
-        if (!IsReady)
+        if (!API.IsReady)
             result = null;
         else
             result = Get(id);
@@ -85,7 +79,7 @@ public static class Perks
     /// <returns>true if the API is ready and a perk was found; otherwise, false.</returns>
     public static bool TryGet(string name, out PerkInfos result)
     {
-        if (!IsReady)
+        if (!API.IsReady)
             result = null;
         else
             result = Get(name);
@@ -128,7 +122,7 @@ public static class Perks
     /// <returns>true if the API is ready; otherwise, false.</returns>
     public static bool TryGetAll(out List<PerkInfos> result)
     {
-        if (!IsReady)
+        if (!API.IsReady)
             result = null;
         else
             result = GetAll();

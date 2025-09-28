@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Concurrent;
 using System.Globalization;
 using System.IO;
 using UnityEngine;
@@ -23,28 +22,18 @@ public static class Sprites
         Trait,
     }
 
+    private static readonly QueueableAPI API = new();
+
     private static readonly string SpritesPath = Path.Join(Plugin.EtherealPath, "Sprites");
-
-    private static readonly ConcurrentQueue<string> QueueBulkReplaceDirectory = new();
-
-    private static readonly ConcurrentQueue<string> QueueBulkReplaceBundle = new();
-
-    private static bool IsReady = false;
 
     /// <summary>
     /// Mark the API as ready and run all deferred methods.
     /// </summary>
     internal static void SetReady()
     {
-        IsReady = true;
-
         BulkReplaceFromDefaultDirectory();
 
-        while (QueueBulkReplaceDirectory.TryDequeue(out var path))
-            BulkReplaceFromDirectory(path);
-
-        while (QueueBulkReplaceBundle.TryDequeue(out var path))
-            BulkReplaceFromBundle(path);
+        API.SetReady();
     }
 
     /// <summary>
@@ -116,9 +105,9 @@ public static class Sprites
     public static void BulkReplaceFromDirectory(string spritesPath)
     {
         // Defer loading until ready
-        if (!IsReady)
+        if (!API.IsReady)
         {
-            QueueBulkReplaceDirectory.Enqueue(spritesPath);
+            API.Enqueue(() => BulkReplaceFromDirectory(spritesPath));
             return;
         }
 
@@ -228,9 +217,9 @@ public static class Sprites
     public static void BulkReplaceFromBundle(string path)
     {
         // Defer loading until ready
-        if (!IsReady)
+        if (!API.IsReady)
         {
-            QueueBulkReplaceBundle.Enqueue(path);
+            API.Enqueue(() => BulkReplaceFromBundle(path));
             return;
         }
 
