@@ -50,6 +50,7 @@ internal static class Localisation
             ELanguage.Japanese => "日本語",
             ELanguage.Spanish => "Español",
             ELanguage.Portuguese => "Português(BR)",
+            ELanguage.Korean => "한국어",
             ELanguage custom => CustomLanguages.Get(custom) ?? "Unknown Language",
         };
 

@@ -229,7 +229,7 @@ public static class Actions
             action.ActionType = descriptor.ActionType.Value;
 
         if (descriptor.FreeAction.HasValue)
-            action.FreeAction = descriptor.FreeAction.Value;
+            action.SetFreeAction(descriptor.FreeAction.Value);
 
         if (descriptor.Elements.Count != 0)
             action.SetElements(descriptor.Elements);

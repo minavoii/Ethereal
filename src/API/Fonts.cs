@@ -15,7 +15,7 @@ public static class Fonts
         TMP_FontAsset fallback
     )> QueueAddFallback = new();
 
-    private static readonly List<TMP_FontAsset> CustomFonts = [];
+    internal static readonly List<TMP_FontAsset> CustomFonts = [];
 
     private static readonly string FontsPath = Path.Join(Plugin.EtherealPath, "Fonts");
 
