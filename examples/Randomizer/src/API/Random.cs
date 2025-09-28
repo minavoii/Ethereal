@@ -261,8 +261,8 @@ internal class Random
                     || (maverick == BoolType.Either)
                 )
                 && (
-                    (freeAction == BoolType.False && x.FreeAction == false)
-                    || (freeAction == BoolType.True && x.FreeAction == true)
+                    (freeAction == BoolType.False && !x.IsFreeAction())
+                    || (freeAction == BoolType.True && x.IsFreeAction())
                     || (freeAction == BoolType.Either)
                 )
             ),

@@ -7,7 +7,11 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/main/Dotnet.gitignore
 
+# Binaries
+[Dd]ist/
+
 # Run scripts
+.vscode/
 *.ps1
 
 # Referenced libs
