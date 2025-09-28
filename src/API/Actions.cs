@@ -1,4 +1,3 @@
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using HarmonyLib;
 using UnityEngine;
@@ -37,29 +36,9 @@ public static class Actions
         public ESkillType? SkillType { get; set; }
     }
 
-    private static readonly ConcurrentQueue<(int id, ActionDescriptor descriptor)> QueueUpdate =
-        new();
+    private static readonly QueueableAPI API = new();
 
-    private static readonly ConcurrentQueue<(
-        string name,
-        ActionDescriptor descriptor
-    )> QueueUpdateByName = new();
-
-    private static bool IsReady = false;
-
-    /// <summary>
-    /// Mark the API as ready and run all deferred methods.
-    /// </summary>
-    internal static void SetReady()
-    {
-        IsReady = true;
-
-        while (QueueUpdate.TryDequeue(out var item))
-            Update(item.id, item.descriptor);
-
-        while (QueueUpdateByName.TryDequeue(out var item))
-            Update(item.name, item.descriptor);
-    }
+    internal static void SetReady() => API.SetReady();
 
     /// <summary>
     /// Get an action by id.
@@ -107,7 +86,7 @@ public static class Actions
     /// <returns>true if the API is ready and an action was found; otherwise, false.</returns>
     public static bool TryGet(int id, out BaseAction result)
     {
-        if (!IsReady)
+        if (!API.IsReady)
             result = null;
         else
             result = Get(id);
@@ -123,7 +102,7 @@ public static class Actions
     /// <returns>true if the API is ready and an action was found; otherwise, false.</returns>
     public static bool TryGet(string name, out BaseAction result)
     {
-        if (!IsReady)
+        if (!API.IsReady)
             result = null;
         else
             result = Get(name);
@@ -162,7 +141,7 @@ public static class Actions
     /// <returns>true if the API is ready; otherwise, false.</returns>
     public static bool TryGetAll(out List<BaseAction> result)
     {
-        if (!IsReady)
+        if (!API.IsReady)
             result = null;
         else
             result = GetAll();
@@ -178,9 +157,9 @@ public static class Actions
     public static void Update(int id, ActionDescriptor descriptor)
     {
         // Defer loading until ready
-        if (!IsReady)
+        if (!API.IsReady)
         {
-            QueueUpdate.Enqueue((id, descriptor));
+            API.Enqueue(() => Update(id, descriptor));
             return;
         }
 
@@ -196,9 +175,9 @@ public static class Actions
     public static void Update(string name, ActionDescriptor descriptor)
     {
         // Defer loading until ready
-        if (!IsReady)
+        if (!API.IsReady)
         {
-            QueueUpdateByName.Enqueue((name, descriptor));
+            API.Enqueue(() => Update(name, descriptor));
             return;
         }
 

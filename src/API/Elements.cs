@@ -1,4 +1,3 @@
-using System.Collections.Concurrent;
 using UnityEngine;
 
 namespace Ethereal.API;
@@ -19,26 +18,9 @@ public static class Elements
         public Sprite IconSmallFilled { get; set; }
     }
 
-    private static readonly ConcurrentQueue<(
-        EElement element,
-        ElementDescriptor descriptor
-    )> QueueUpdate = new();
+    private static readonly QueueableAPI API = new();
 
-    private static bool IsReady = false;
-
-    /// <summary>
-    /// Mark the API as ready and run all deferred methods.
-    /// </summary>
-    internal static void SetReady()
-    {
-        IsReady = true;
-
-        while (QueueUpdate.TryDequeue(out var item))
-            Update(item.element, item.descriptor);
-
-        while (QueueUpdate.TryDequeue(out var item))
-            Update(item.element, item.descriptor);
-    }
+    internal static void SetReady() => API.SetReady();
 
     /// <summary>
     /// Set an element's icon.
@@ -48,9 +30,9 @@ public static class Elements
     public static void Update(EElement element, ElementDescriptor descriptor)
     {
         // Defer loading until ready
-        if (!IsReady)
+        if (!API.IsReady)
         {
-            QueueUpdate.Enqueue((element, descriptor));
+            API.Enqueue(() => Update(element, descriptor));
             return;
         }
 

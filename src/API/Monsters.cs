@@ -1,4 +1,3 @@
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -37,29 +36,9 @@ public static class Monsters
         public Trait EliteTrait { get; set; }
     }
 
-    private static bool IsReady = false;
+    private static readonly QueueableAPI API = new();
 
-    private static readonly ConcurrentQueue<(int id, MonsterDescriptor descriptor)> QueueUpdate =
-        new();
-
-    private static readonly ConcurrentQueue<(
-        string name,
-        MonsterDescriptor descriptor
-    )> QueueUpdateByName = new();
-
-    /// <summary>
-    /// Mark the API as ready and run all deferred methods.
-    /// </summary>
-    internal static void SetReady()
-    {
-        IsReady = true;
-
-        while (QueueUpdate.TryDequeue(out var item))
-            Update(item.id, item.descriptor);
-
-        while (QueueUpdateByName.TryDequeue(out var item))
-            Update(item.name, item.descriptor);
-    }
+    internal static void SetReady() => API.SetReady();
 
     /// <summary>
     /// Get a monster by id.
@@ -93,7 +72,7 @@ public static class Monsters
     /// <returns>true if the API is ready and an artifact was found; otherwise, false.</returns>
     public static bool TryGet(int id, out Monster result)
     {
-        if (!IsReady)
+        if (!API.IsReady)
             result = null;
         else
             result = Get(id);
@@ -109,7 +88,7 @@ public static class Monsters
     /// <returns>true if the API is ready and an artifact was found; otherwise, false.</returns>
     public static bool TryGet(string name, out Monster result)
     {
-        if (!IsReady)
+        if (!API.IsReady)
             result = null;
         else
             result = Get(name);
@@ -125,9 +104,9 @@ public static class Monsters
     public static void Update(int id, MonsterDescriptor descriptor)
     {
         // Defer loading until ready
-        if (!IsReady)
+        if (!API.IsReady)
         {
-            QueueUpdate.Enqueue((id, descriptor));
+            API.Enqueue(() => Update(id, descriptor));
             return;
         }
 
@@ -143,9 +122,9 @@ public static class Monsters
     public static void Update(string name, MonsterDescriptor descriptor)
     {
         // Defer loading until ready
-        if (!IsReady)
+        if (!API.IsReady)
         {
-            QueueUpdateByName.Enqueue((name, descriptor));
+            API.Enqueue(() => Update(name, descriptor));
             return;
         }
 

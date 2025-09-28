@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -52,6 +51,8 @@ public static class Localisation
         public Dictionary<ELanguage, string> Data { get; set; } = data;
     }
 
+    private static readonly QueueableAPI API = new();
+
     /// <summary>
     /// Contains the name of all native and custom languages.
     /// </summary>
@@ -60,16 +61,9 @@ public static class Localisation
         .. Enum.GetValues(typeof(ELanguage)).Cast<ELanguage>().Select(Loca.GetLanguageString),
     ];
 
-    private static readonly ConcurrentQueue<(
-        LocalisationData.LocalisationDataEntry entry,
-        Dictionary<string, string> customLanguageEntries
-    )> Queue = new();
-
     internal static readonly Dictionary<ELanguage, string> CustomLanguages = [];
 
     internal static readonly Dictionary<string, CustomLocaleData> CustomLocalisations = [];
-
-    private static bool IsReady = false;
 
     private static readonly string LocalesPath = Path.Join(Plugin.EtherealPath, "Locales");
 
@@ -86,15 +80,7 @@ public static class Localisation
         GenerateTemplate();
         LoadLanguages();
 
-        IsReady = true;
-
-        while (Queue.TryDequeue(out var item))
-        {
-            if (item.customLanguageEntries != null)
-                AddLocalisedText(item.entry, item.customLanguageEntries);
-            else
-                AddLocalisedText(item.entry);
-        }
+        API.SetReady();
     }
 
     /// <summary>
@@ -104,9 +90,9 @@ public static class Localisation
     public static void AddLocalisedText(LocalisationData.LocalisationDataEntry entry)
     {
         // Defer loading until ready
-        if (!IsReady)
+        if (!API.IsReady)
         {
-            Queue.Enqueue(new(entry, null));
+            API.Enqueue(() => AddLocalisedText(entry));
             return;
         }
 
@@ -186,9 +172,9 @@ public static class Localisation
     )
     {
         // Defer loading until ready
-        if (!IsReady)
+        if (!API.IsReady)
         {
-            Queue.Enqueue(new(entry, customLanguageEntries));
+            API.Enqueue(() => AddLocalisedText(entry, customLanguageEntries));
             return;
         }
 

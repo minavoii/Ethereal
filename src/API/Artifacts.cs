@@ -1,4 +1,3 @@
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -30,48 +29,9 @@ public static class Artifacts
         public List<EElement> Elements { get; set; } = [];
     }
 
-    private static bool IsReady = false;
+    private static readonly QueueableAPI API = new();
 
-    private static readonly ConcurrentQueue<(
-        ArtifactDescriptor descriptor,
-        LocalisationData.LocalisationDataEntry localisationData,
-        Dictionary<string, string> customLanguageEntries
-    )> QueueAdd = new();
-
-    private static readonly ConcurrentQueue<(int id, ArtifactDescriptor descriptor)> QueueUpdate =
-        new();
-
-    private static readonly ConcurrentQueue<(
-        string name,
-        ArtifactDescriptor descriptor
-    )> QueueUpdateByName = new();
-
-    /// <summary>
-    /// Mark the API as ready and run all deferred methods.
-    /// </summary>
-    internal static void SetReady()
-    {
-        IsReady = true;
-
-        while (QueueAdd.TryDequeue(out var item))
-        {
-            if (item.customLanguageEntries == null)
-            {
-                if (item.localisationData == null)
-                    Add(item.descriptor);
-                else
-                    Add(item.descriptor, item.localisationData);
-            }
-            else
-                Add(item.descriptor, item.localisationData, item.customLanguageEntries);
-        }
-
-        while (QueueUpdate.TryDequeue(out var item))
-            Update(item.id, item.descriptor);
-
-        while (QueueUpdateByName.TryDequeue(out var item))
-            Update(item.name, item.descriptor);
-    }
+    internal static void SetReady() => API.SetReady();
 
     /// <summary>
     /// Get an artifact by id.
@@ -105,7 +65,7 @@ public static class Artifacts
     /// <returns>true if the API is ready and an artifact was found; otherwise, false.</returns>
     public static bool TryGet(int id, out Consumable result)
     {
-        if (!IsReady)
+        if (!API.IsReady)
             result = null;
         else
             result = Get(id);
@@ -121,7 +81,7 @@ public static class Artifacts
     /// <returns>true if the API is ready and an artifact was found; otherwise, false.</returns>
     public static bool TryGet(string name, out Consumable result)
     {
-        if (!IsReady)
+        if (!API.IsReady)
             result = null;
         else
             result = Get(name);
@@ -143,9 +103,9 @@ public static class Artifacts
         };
 
         // Defer loading until ready
-        if (!IsReady)
+        if (!API.IsReady)
         {
-            QueueAdd.Enqueue((descriptor, null, null));
+            API.Enqueue(() => Add(descriptor));
             return;
         }
 
@@ -163,9 +123,9 @@ public static class Artifacts
     )
     {
         // Defer loading until ready
-        if (!IsReady)
+        if (!API.IsReady)
         {
-            QueueAdd.Enqueue((descriptor, localisationData, null));
+            API.Enqueue(() => Add(descriptor, localisationData));
             return;
         }
 
@@ -214,9 +174,9 @@ public static class Artifacts
     )
     {
         // Defer loading until ready
-        if (!IsReady)
+        if (!API.IsReady)
         {
-            QueueAdd.Enqueue((descriptor, localisationData, customLanguageEntries));
+            API.Enqueue(() => Add(descriptor, localisationData, customLanguageEntries));
             return;
         }
 
@@ -233,9 +193,9 @@ public static class Artifacts
     public static void Update(int id, ArtifactDescriptor descriptor)
     {
         // Defer loading until ready
-        if (!IsReady)
+        if (!API.IsReady)
         {
-            QueueUpdate.Enqueue((id, descriptor));
+            API.Enqueue(() => Update(id, descriptor));
             return;
         }
 
@@ -251,9 +211,9 @@ public static class Artifacts
     public static void Update(string name, ArtifactDescriptor descriptor)
     {
         // Defer loading until ready
-        if (!IsReady)
+        if (!API.IsReady)
         {
-            QueueUpdateByName.Enqueue((name, descriptor));
+            API.Enqueue(() => Update(name, descriptor));
             return;
         }
 

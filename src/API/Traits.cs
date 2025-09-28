@@ -1,4 +1,3 @@
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -33,34 +32,9 @@ public static class Traits
         public ESkillType? SkillType { get; set; }
     }
 
-    private static readonly ConcurrentQueue<TraitDescriptor> Queue = new();
+    private static readonly QueueableAPI API = new();
 
-    private static readonly ConcurrentQueue<(int id, TraitDescriptor descriptor)> QueueUpdate =
-        new();
-
-    private static readonly ConcurrentQueue<(
-        string name,
-        TraitDescriptor descriptor
-    )> QueueUpdateByName = new();
-
-    private static bool IsReady = false;
-
-    /// <summary>
-    /// Mark the API as ready and run all deferred methods.
-    /// </summary>
-    internal static void SetReady()
-    {
-        IsReady = true;
-
-        while (Queue.TryDequeue(out var item))
-            Add(item);
-
-        while (QueueUpdate.TryDequeue(out var item))
-            Update(item.id, item.descriptor);
-
-        while (QueueUpdateByName.TryDequeue(out var item))
-            Update(item.name, item.descriptor);
-    }
+    internal static void SetReady() => API.SetReady();
 
     /// <summary>
     /// Get a trait by id.
@@ -136,7 +110,7 @@ public static class Traits
     /// <returns>true if the API is ready and a trait was found; otherwise, false.</returns>
     public static bool TryGet(int id, out Trait result)
     {
-        if (!IsReady)
+        if (!API.IsReady)
             result = null;
         else
             result = Get(id);
@@ -152,7 +126,7 @@ public static class Traits
     /// <returns>true if the API is ready and a trait was found; otherwise, false.</returns>
     public static bool TryGet(string name, out Trait result)
     {
-        if (!IsReady)
+        if (!API.IsReady)
             result = null;
         else
             result = Get(name);
@@ -187,7 +161,7 @@ public static class Traits
     /// <returns>true if the API is ready; otherwise, false.</returns>
     public static bool TryGetAllLearnable(out List<Trait> result)
     {
-        if (!IsReady)
+        if (!API.IsReady)
             result = null;
         else
             result = GetAllLearnable();
@@ -218,7 +192,7 @@ public static class Traits
     /// <returns>true if the API is ready; otherwise, false.</returns>
     public static bool TryGetAllSignature(out List<Trait> result)
     {
-        if (!IsReady)
+        if (!API.IsReady)
             result = null;
         else
             result = GetAllSignature();
@@ -244,7 +218,7 @@ public static class Traits
     /// <returns>true if the API is ready; otherwise, false.</returns>
     public static bool TryGetAll(out List<Trait> result)
     {
-        if (!IsReady)
+        if (!API.IsReady)
             result = null;
         else
             result = GetAll();
@@ -259,9 +233,9 @@ public static class Traits
     public static void Add(TraitDescriptor descriptor)
     {
         // Defer loading until ready
-        if (!IsReady)
+        if (!API.IsReady)
         {
-            Queue.Enqueue(descriptor);
+            API.Enqueue(() => Add(descriptor));
             return;
         }
 
@@ -305,9 +279,9 @@ public static class Traits
     public static void Update(int id, TraitDescriptor descriptor)
     {
         // Defer loading until ready
-        if (!IsReady)
+        if (!API.IsReady)
         {
-            QueueUpdate.Enqueue((id, descriptor));
+            API.Enqueue(() => Update(id, descriptor));
             return;
         }
 
@@ -323,9 +297,9 @@ public static class Traits
     public static void Update(string name, TraitDescriptor descriptor)
     {
         // Defer loading until ready
-        if (!IsReady)
+        if (!API.IsReady)
         {
-            QueueUpdateByName.Enqueue((name, descriptor));
+            API.Enqueue(() => Update(name, descriptor));
             return;
         }
 

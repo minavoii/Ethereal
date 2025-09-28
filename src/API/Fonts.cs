@@ -1,4 +1,3 @@
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using TMPro;
@@ -8,34 +7,21 @@ namespace Ethereal.API;
 
 public static class Fonts
 {
-    private static bool IsReady = false;
-
-    private static readonly ConcurrentQueue<(
-        TMP_FontAsset font,
-        TMP_FontAsset fallback
-    )> QueueAddFallback = new();
+    private static readonly QueueableAPI API = new();
 
     internal static readonly List<TMP_FontAsset> CustomFonts = [];
 
     private static readonly string FontsPath = Path.Join(Plugin.EtherealPath, "Fonts");
 
     /// <summary>
-    /// Mark the API as ready and run all deferred methods.
+    /// Load all custom fonts and mark the API as ready.
     /// </summary>
-    public static void SetReady()
+    internal static void SetReady()
     {
         LoadFonts();
         TMP_Settings.useModernHangulLineBreakingRules = true;
 
-        IsReady = true;
-
-        while (QueueAddFallback.TryDequeue(out var item))
-        {
-            if (item.fallback != null)
-                AddFallback(item.font, item.fallback);
-            else
-                AddAllFallbacks(item.font);
-        }
+        API.SetReady();
     }
 
     /// <summary>
@@ -46,9 +32,9 @@ public static class Fonts
     public static void AddFallback(TMP_FontAsset font, TMP_FontAsset fallback)
     {
         // Defer loading until ready
-        if (!IsReady)
+        if (!API.IsReady)
         {
-            QueueAddFallback.Enqueue((font, fallback));
+            API.Enqueue(() => AddFallback(font, fallback));
             return;
         }
 
@@ -62,9 +48,9 @@ public static class Fonts
     public static void AddAllFallbacks(TMP_FontAsset font)
     {
         // Defer loading until ready
-        if (!IsReady)
+        if (!API.IsReady)
         {
-            QueueAddFallback.Enqueue((font, null));
+            API.Enqueue(() => AddAllFallbacks(font));
             return;
         }
 

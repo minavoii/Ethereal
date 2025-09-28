@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -8,10 +7,7 @@ namespace Ethereal.API;
 
 public static class MonsterTypes
 {
-    private static readonly ConcurrentQueue<(EMonsterType monsterType, Sprite typeIcon)> Queue =
-        new();
-
-    private static bool IsReady = false;
+    private static readonly QueueableAPI API = new();
 
     public static Dictionary<EMonsterType, GameObject> NativeTypes = [];
 
@@ -24,10 +20,7 @@ public static class MonsterTypes
             .Select(x => (id: x, value: GetObject(x)))
             .ToDictionary(x => x.id, x => x.value);
 
-        IsReady = true;
-
-        while (Queue.TryDequeue(out var item))
-            UpdateIcon(item.monsterType, item.typeIcon);
+        API.SetReady();
     }
 
     /// <summary>
@@ -70,7 +63,7 @@ public static class MonsterTypes
     /// <returns>true if the API is ready and an artifact was found; otherwise, false.</returns>
     public static bool TryGet(EMonsterType monsterType, out MonsterType result)
     {
-        if (!IsReady)
+        if (!API.IsReady)
             result = null;
         else
             result = Get(monsterType);
@@ -86,9 +79,9 @@ public static class MonsterTypes
     public static void UpdateIcon(EMonsterType monsterType, Sprite typeIcon)
     {
         // Defer loading until ready
-        if (!IsReady)
+        if (!API.IsReady)
         {
-            Queue.Enqueue((monsterType, typeIcon));
+            API.Enqueue(() => UpdateIcon(monsterType, typeIcon));
             return;
         }
 

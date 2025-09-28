@@ -1,29 +1,12 @@
-using System.Collections.Concurrent;
 using UnityEngine;
 
 namespace Ethereal.API;
 
 public static class Buffs
 {
-    private static readonly ConcurrentQueue<(int id, Sprite icon)> QueueUpdate = new();
+    private static readonly QueueableAPI API = new();
 
-    private static readonly ConcurrentQueue<(string name, Sprite icon)> QueueUpdateByName = new();
-
-    private static bool IsReady = false;
-
-    /// <summary>
-    /// Mark the API as ready and run all deferred methods.
-    /// </summary>
-    internal static void SetReady()
-    {
-        IsReady = true;
-
-        while (QueueUpdate.TryDequeue(out var item))
-            UpdateIcon(item.id, item.icon);
-
-        while (QueueUpdateByName.TryDequeue(out var item))
-            UpdateIcon(item.name, item.icon);
-    }
+    internal static void SetReady() => API.SetReady();
 
     /// <summary>
     /// Get a buff by id.
@@ -55,7 +38,7 @@ public static class Buffs
     /// <returns>true if the API is ready and a buff was found; otherwise, false.</returns>
     public static bool TryGet(int id, out Buff result)
     {
-        if (!IsReady)
+        if (!API.IsReady)
             result = null;
         else
             result = Get(id);
@@ -71,7 +54,7 @@ public static class Buffs
     /// <returns>true if the API is ready and a buff was found; otherwise, false.</returns>
     public static bool TryGet(string name, out Buff result)
     {
-        if (!IsReady)
+        if (!API.IsReady)
             result = null;
         else
             result = Get(name);
@@ -87,9 +70,9 @@ public static class Buffs
     public static void UpdateIcon(int id, Sprite icon)
     {
         // Defer loading until ready
-        if (!IsReady)
+        if (!API.IsReady)
         {
-            QueueUpdate.Enqueue((id, icon));
+            API.Enqueue(() => UpdateIcon(id, icon));
             return;
         }
 
@@ -105,9 +88,9 @@ public static class Buffs
     public static void UpdateIcon(string name, Sprite icon)
     {
         // Defer loading until ready
-        if (!IsReady)
+        if (!API.IsReady)
         {
-            QueueUpdateByName.Enqueue((name, icon));
+            API.Enqueue(() => UpdateIcon(name, icon));
             return;
         }
 
