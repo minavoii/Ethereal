@@ -109,4 +109,53 @@ public static class Mementos
     {
         memento.Icon = icon;
     }
+
+    /// <summary>
+    /// Create a new memento and add it to the game's data.
+    /// </summary>
+    /// <param name="descriptor"></param>
+    public static void Add(MonsterMemento memento)
+    {
+        // Defer loading until ready
+        if (!API.IsReady)
+        {
+            API.Enqueue(() => Add(memento));
+            return;
+        }
+
+        GameObject go = new();
+        Utils.GameObjects.CopyToGameObject(ref go, memento);
+
+        GameController.Instance.ItemManager.MonsterMementos.Add(
+            new() { BaseItem = go.GetComponent<MonsterMemento>() }
+        );
+    }
+
+    /// <summary>
+    /// Create a new memento and add it to the game's data.
+    /// </summary>
+    /// <param name="descriptor"></param>
+    public static void Add(MonsterMemento memento, MonsterMemento shiftedMemento)
+    {
+        // Defer loading until ready
+        if (!API.IsReady)
+        {
+            API.Enqueue(() => Add(memento, shiftedMemento));
+            return;
+        }
+
+        GameObject go = new();
+        GameObject go_shifted = new();
+
+        Utils.GameObjects.CopyToGameObject(ref go, memento);
+        Utils.GameObjects.CopyToGameObject(ref go_shifted, shiftedMemento);
+
+        GameController.Instance.ItemManager.MonsterMementos.Add(
+            new()
+            {
+                BaseItem = go.GetComponent<MonsterMemento>(),
+                ShiftedMemento = go_shifted.GetComponent<MonsterMemento>(),
+            }
+        );
+    }
 }
