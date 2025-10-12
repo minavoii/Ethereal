@@ -63,4 +63,27 @@ public static partial class Buffs
     {
         buff.MonsterHUDIconSmall = icon;
     }
+
+    /// <summary>
+    /// Create a new buff and add it to the game's data.
+    /// </summary>
+    /// <param name="buff"></param>
+    [Deferreable]
+    private static void Add_Impl(Buff buff)
+    {
+        GameObject buff_go = Utils.GameObjects.IntoGameObject(buff);
+
+        foreach (PassiveEffect passive in buff.PassiveEffectList)
+        {
+            Utils.GameObjects.CopyToGameObject(ref buff_go, passive);
+        }
+
+        buff_go.GetComponent<Buff>().InitializeReferenceable();
+        WorldData.Instance.Referenceables.Add(buff_go.GetComponent<Buff>());
+
+        if (buff.BuffType == EBuffType.Buff)
+            Prefabs.Instance.AllBuffs.Add(buff_go.GetComponent<Buff>());
+        else if (buff.BuffType == EBuffType.Debuff)
+            Prefabs.Instance.AllDebuffs.Add(buff_go.GetComponent<Buff>());
+    }
 }
