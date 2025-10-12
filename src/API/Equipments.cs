@@ -97,7 +97,7 @@ public static partial class Equipments
             StringContentEnglish = descriptor.Name,
         };
 
-        Add(descriptor, defaultLocalisation);
+        Add_Impl(descriptor, defaultLocalisation);
     }
 
     /// <summary>
@@ -114,7 +114,7 @@ public static partial class Equipments
         Dictionary<string, string> customLanguageEntries
     )
     {
-        Add(descriptor);
+        Add_Impl(descriptor);
 
         Localisation.AddLocalisedText(localisationData, customLanguageEntries);
     }
