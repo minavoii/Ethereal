@@ -69,7 +69,7 @@ public static partial class Mementos
     /// <summary>
     /// Create a new memento and add it to the game's data.
     /// </summary>
-    /// <param name="descriptor"></param>
+    /// <param name="memento"></param>
     [Deferreable]
     private static void Add_Impl(MonsterMemento memento)
     {
@@ -84,7 +84,8 @@ public static partial class Mementos
     /// <summary>
     /// Create a new memento and add it to the game's data.
     /// </summary>
-    /// <param name="descriptor"></param>
+    /// <param name="memento"></param>
+    /// <param name="shiftedMemento"></param>
     [Deferreable]
     private static void Add_Impl(MonsterMemento memento, MonsterMemento shiftedMemento)
     {
