@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Localisations", "examples\L
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Randomizer", "examples\Randomizer\Randomizer.csproj", "{8C9CD8A6-700A-4114-8296-F5C94CAC2F44}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Generator", "generator\Generator.csproj", "{62821AA1-1394-4096-B92D-E4E9A4AD0540}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -87,6 +89,19 @@ Global
 		{8C9CD8A6-700A-4114-8296-F5C94CAC2F44}.Release|x64.Build.0 = Release|Any CPU
 		{8C9CD8A6-700A-4114-8296-F5C94CAC2F44}.Release|x86.ActiveCfg = Release|Any CPU
 		{8C9CD8A6-700A-4114-8296-F5C94CAC2F44}.Release|x86.Build.0 = Release|Any CPU
+
+		{62821AA1-1394-4096-B92D-E4E9A4AD0540}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{62821AA1-1394-4096-B92D-E4E9A4AD0540}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{62821AA1-1394-4096-B92D-E4E9A4AD0540}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{62821AA1-1394-4096-B92D-E4E9A4AD0540}.Debug|x64.Build.0 = Debug|Any CPU
+		{62821AA1-1394-4096-B92D-E4E9A4AD0540}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{62821AA1-1394-4096-B92D-E4E9A4AD0540}.Debug|x86.Build.0 = Debug|Any CPU
+		{62821AA1-1394-4096-B92D-E4E9A4AD0540}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{62821AA1-1394-4096-B92D-E4E9A4AD0540}.Release|Any CPU.Build.0 = Release|Any CPU
+		{62821AA1-1394-4096-B92D-E4E9A4AD0540}.Release|x64.ActiveCfg = Release|Any CPU
+		{62821AA1-1394-4096-B92D-E4E9A4AD0540}.Release|x64.Build.0 = Release|Any CPU
+		{62821AA1-1394-4096-B92D-E4E9A4AD0540}.Release|x86.ActiveCfg = Release|Any CPU
+		{62821AA1-1394-4096-B92D-E4E9A4AD0540}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

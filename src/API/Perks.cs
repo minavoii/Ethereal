@@ -1,19 +1,18 @@
 using System.Collections.Generic;
+using Ethereal.Generator;
 using UnityEngine;
 
 namespace Ethereal.API;
 
-public static class Perks
+[BasicAPI]
+public static partial class Perks
 {
-    private static readonly BaseAPI API = new();
-
-    internal static void SetReady() => API.SetReady();
-
     /// <summary>
     /// Get a perk by id.
     /// </summary>
     /// <param name="id"></param>
     /// <returns>a perk if one was found; otherwise null.</returns>
+    [TryGet]
     private static PerkInfos Get(int id)
     {
         // Find perk by monster
@@ -37,6 +36,7 @@ public static class Perks
     /// </summary>
     /// <param name="name"></param>
     /// <returns>a perk if one was found; otherwise null.</returns>
+    [TryGet]
     private static PerkInfos Get(string name)
     {
         // Find perk by monster
@@ -56,41 +56,10 @@ public static class Perks
     }
 
     /// <summary>
-    /// Get a perk by id.
-    /// </summary>
-    /// <param name="id"></param>
-    /// <param name="result"></param>
-    /// <returns>true if the API is ready and a perk was found; otherwise, false.</returns>
-    public static bool TryGet(int id, out PerkInfos result)
-    {
-        if (!API.IsReady)
-            result = null;
-        else
-            result = Get(id);
-
-        return result != null;
-    }
-
-    /// <summary>
-    /// Get a perk by name.
-    /// </summary>
-    /// <param name="name"></param>
-    /// <param name="result"></param>
-    /// <returns>true if the API is ready and a perk was found; otherwise, false.</returns>
-    public static bool TryGet(string name, out PerkInfos result)
-    {
-        if (!API.IsReady)
-            result = null;
-        else
-            result = Get(name);
-
-        return result != null;
-    }
-
-    /// <summary>
     /// Get all perks.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>a list of all perks.</returns>
+    [TryGet]
     private static List<PerkInfos> GetAll()
     {
         List<PerkInfos> perks = [];
@@ -113,20 +82,5 @@ public static class Perks
         }
 
         return perks;
-    }
-
-    /// <summary>
-    /// Get all actions.
-    /// </summary>
-    /// <param name="result"></param>
-    /// <returns>true if the API is ready; otherwise, false.</returns>
-    public static bool TryGetAll(out List<PerkInfos> result)
-    {
-        if (!API.IsReady)
-            result = null;
-        else
-            result = GetAll();
-
-        return result != null;
     }
 }

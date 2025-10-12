@@ -1,10 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
+using Ethereal.Generator;
 using UnityEngine;
 
 namespace Ethereal.API;
 
-public static class Traits
+[Deferreable]
+public static partial class Traits
 {
     /// <summary>
     /// A helper class that describes a trait's properties.
@@ -32,15 +34,12 @@ public static class Traits
         public ESkillType? SkillType { get; set; }
     }
 
-    private static readonly QueueableAPI API = new();
-
-    internal static void SetReady() => API.SetReady();
-
     /// <summary>
     /// Get a trait by id.
     /// </summary>
     /// <param name="id"></param>
     /// <returns>a trait if one was found; otherwise null.</returns>
+    [TryGet]
     private static Trait Get(int id)
     {
         // Find trait by monster type
@@ -74,6 +73,7 @@ public static class Traits
     /// </summary>
     /// <param name="name"></param>
     /// <returns>a trait if one was found; otherwise null.</returns>
+    [TryGet]
     private static Trait Get(string name)
     {
         // Find trait by monster type
@@ -103,41 +103,10 @@ public static class Traits
     }
 
     /// <summary>
-    /// Get a trait by id.
-    /// </summary>
-    /// <param name="id"></param>
-    /// <param name="result"></param>
-    /// <returns>true if the API is ready and a trait was found; otherwise, false.</returns>
-    public static bool TryGet(int id, out Trait result)
-    {
-        if (!API.IsReady)
-            result = null;
-        else
-            result = Get(id);
-
-        return result != null;
-    }
-
-    /// <summary>
-    /// Get a trait by name.
-    /// </summary>
-    /// <param name="name"></param>
-    /// <param name="result"></param>
-    /// <returns>true if the API is ready and a trait was found; otherwise, false.</returns>
-    public static bool TryGet(string name, out Trait result)
-    {
-        if (!API.IsReady)
-            result = null;
-        else
-            result = Get(name);
-
-        return result != null;
-    }
-
-    /// <summary>
     /// Get all traits that can be learned (i.e. non-signature traits).
     /// </summary>
     /// <returns></returns>
+    [TryGet]
     private static List<Trait> GetAllLearnable()
     {
         List<Trait> traits = [];
@@ -155,24 +124,10 @@ public static class Traits
     }
 
     /// <summary>
-    /// Get all traits that can be learned (i.e. non-signature traits).
-    /// </summary>
-    /// <param name="result"></param>
-    /// <returns>true if the API is ready; otherwise, false.</returns>
-    public static bool TryGetAllLearnable(out List<Trait> result)
-    {
-        if (!API.IsReady)
-            result = null;
-        else
-            result = GetAllLearnable();
-
-        return result != null;
-    }
-
-    /// <summary>
     /// Get all signature traits.
     /// </summary>
     /// <returns></returns>
+    [TryGet]
     private static List<Trait> GetAllSignature()
     {
         return
@@ -186,24 +141,10 @@ public static class Traits
     }
 
     /// <summary>
-    /// Get all signature traits.
-    /// </summary>
-    /// <param name="result"></param>
-    /// <returns>true if the API is ready; otherwise, false.</returns>
-    public static bool TryGetAllSignature(out List<Trait> result)
-    {
-        if (!API.IsReady)
-            result = null;
-        else
-            result = GetAllSignature();
-
-        return result != null;
-    }
-
-    /// <summary>
     /// Get all traits, both learnable and signature ones.
     /// </summary>
     /// <returns></returns>
+    [TryGet]
     private static List<Trait> GetAll()
     {
         List<Trait> traits = [.. GetAllLearnable().Concat(GetAllSignature())];
@@ -212,33 +153,12 @@ public static class Traits
     }
 
     /// <summary>
-    /// Get all traits, both learnable and signature ones.
-    /// </summary>
-    /// <param name="result"></param>
-    /// <returns>true if the API is ready; otherwise, false.</returns>
-    public static bool TryGetAll(out List<Trait> result)
-    {
-        if (!API.IsReady)
-            result = null;
-        else
-            result = GetAll();
-
-        return result != null;
-    }
-
-    /// <summary>
     /// Create a new trait and add it to the game's data.
     /// </summary>
     /// <param name="descriptor"></param>
-    public static void Add(TraitDescriptor descriptor)
+    [Deferreable]
+    private static void Add_Impl(TraitDescriptor descriptor)
     {
-        // Defer loading until ready
-        if (!API.IsReady)
-        {
-            API.Enqueue(() => Add(descriptor));
-            return;
-        }
-
         var trait = new Trait()
         {
             ID = descriptor.Id,
@@ -276,15 +196,9 @@ public static class Traits
     /// </summary>
     /// <param name="id"></param>
     /// <param name="descriptor"></param>
-    public static void Update(int id, TraitDescriptor descriptor)
+    [Deferreable]
+    private static void Update_Impl(int id, TraitDescriptor descriptor)
     {
-        // Defer loading until ready
-        if (!API.IsReady)
-        {
-            API.Enqueue(() => Update(id, descriptor));
-            return;
-        }
-
         if (TryGet(id, out var trait))
             Update(trait, descriptor);
     }
@@ -294,15 +208,9 @@ public static class Traits
     /// </summary>
     /// <param name="name"></param>
     /// <param name="descriptor"></param>
-    public static void Update(string name, TraitDescriptor descriptor)
+    [Deferreable]
+    private static void Update_Impl(string name, TraitDescriptor descriptor)
     {
-        // Defer loading until ready
-        if (!API.IsReady)
-        {
-            API.Enqueue(() => Update(name, descriptor));
-            return;
-        }
-
         if (TryGet(name, out var trait))
             Update(trait, descriptor);
     }

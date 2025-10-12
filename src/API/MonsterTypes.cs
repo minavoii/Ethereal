@@ -1,14 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Ethereal.Generator;
 using UnityEngine;
 
 namespace Ethereal.API;
 
-public static class MonsterTypes
+[Deferreable]
+public static partial class MonsterTypes
 {
-    private static readonly QueueableAPI API = new();
-
     public static Dictionary<EMonsterType, GameObject> NativeTypes = [];
 
     /// <summary>
@@ -28,6 +28,7 @@ public static class MonsterTypes
     /// </summary>
     /// <param name="monsterType"></param>
     /// <returns>a monster type if one was found; otherwise null.</returns>
+    [TryGet]
     private static MonsterType Get(EMonsterType monsterType)
     {
         return GameController.Instance.MonsterTypes.Find(x => x?.Type == monsterType);
@@ -38,7 +39,8 @@ public static class MonsterTypes
     /// </summary>
     /// <param name="monsterType"></param>
     /// <returns>a monster type's GameObject if one was found, otherwise null.</returns>
-    public static GameObject GetObject(EMonsterType monsterType)
+    [TryGet]
+    private static GameObject GetObject(EMonsterType monsterType)
     {
         foreach (var monster in GameController.Instance.ActiveMonsterList)
         {
@@ -56,35 +58,13 @@ public static class MonsterTypes
     }
 
     /// <summary>
-    /// Get a monster type.
-    /// </summary>
-    /// <param name="monsterType"></param>
-    /// <param name="result"></param>
-    /// <returns>true if the API is ready and an artifact was found; otherwise, false.</returns>
-    public static bool TryGet(EMonsterType monsterType, out MonsterType result)
-    {
-        if (!API.IsReady)
-            result = null;
-        else
-            result = Get(monsterType);
-
-        return result != null;
-    }
-
-    /// <summary>
     /// Set a monster type's icon.
     /// </summary>
     /// <param name="monsterType"></param>
     /// <param name="typeIcon"></param>
-    public static void UpdateIcon(EMonsterType monsterType, Sprite typeIcon)
+    [Deferreable]
+    private static void UpdateIcon_Impl(EMonsterType monsterType, Sprite typeIcon)
     {
-        // Defer loading until ready
-        if (!API.IsReady)
-        {
-            API.Enqueue(() => UpdateIcon(monsterType, typeIcon));
-            return;
-        }
-
         if (TryGet(monsterType, out var type))
             type.TypeIcon = typeIcon;
     }

@@ -1,9 +1,11 @@
 using System.Collections.Generic;
+using Ethereal.Generator;
 using UnityEngine;
 
 namespace Ethereal.API;
 
-public static class Equipments
+[Deferreable]
+public static partial class Equipments
 {
     /// <summary>
     /// A helper class that describes an equipment's properties.
@@ -31,16 +33,13 @@ public static class Equipments
         public List<PassiveEffect> PassiveEffects { get; set; } = [];
     }
 
-    private static readonly QueueableAPI API = new();
-
-    internal static void SetReady() => API.SetReady();
-
     /// <summary>
     /// Get an equipment by id.
     /// </summary>
     /// <param name="id"></param>
     /// <param name="rarity"></param>
     /// <returns>an equipment if one was found; otherwise null.</returns>
+    [TryGet]
     private static Equipment Get(int id, ERarity rarity)
     {
         return rarity switch
@@ -65,6 +64,7 @@ public static class Equipments
     /// <param name="name"></param>
     /// <param name="rarity"></param>
     /// <returns>an equipment if one was found; otherwise null.</returns>
+    [TryGet]
     private static Equipment Get(string name, ERarity rarity)
     {
         return rarity switch
@@ -84,44 +84,11 @@ public static class Equipments
     }
 
     /// <summary>
-    /// Get an equipment by id.
-    /// </summary>
-    /// <param name="id"></param>
-    /// <param name="rarity"></param>
-    /// <param name="result"></param>
-    /// <returns>true if the API is ready and an equipment was found; otherwise, false.</returns>
-    public static bool TryGet(int id, ERarity rarity, out Equipment result)
-    {
-        if (!API.IsReady)
-            result = null;
-        else
-            result = Get(id, rarity);
-
-        return result != null;
-    }
-
-    /// <summary>
-    /// Get an equipment by name.
-    /// </summary>
-    /// <param name="name"></param>
-    /// <param name="rarity"></param>
-    /// <param name="result"></param>
-    /// <returns>true if the API is ready and an equipment was found; otherwise, false.</returns>
-    public static bool TryGet(string name, ERarity rarity, out Equipment result)
-    {
-        if (!API.IsReady)
-            result = null;
-        else
-            result = Get(name, rarity);
-
-        return result != null;
-    }
-
-    /// <summary>
     /// Create a new equipment and add it to the game's data.
     /// </summary>
     /// <param name="descriptor"></param>
-    public static void Add(EquipmentDescriptor descriptor)
+    [Deferreable]
+    private static void Add_Impl(EquipmentDescriptor descriptor)
     {
         LocalisationData.LocalisationDataEntry defaultLocalisation = new()
         {
@@ -130,14 +97,26 @@ public static class Equipments
             StringContentEnglish = descriptor.Name,
         };
 
-        // Defer loading until ready
-        if (!API.IsReady)
-        {
-            API.Enqueue(() => Add(descriptor));
-            return;
-        }
-
         Add(descriptor, defaultLocalisation);
+    }
+
+    /// <summary>
+    /// Create a new artifact and add it to the game's data alongside localisation data,
+    /// with translations for the provided custom languages.
+    /// </summary>
+    /// <param name="descriptor"></param>
+    /// <param name="localisationData"></param>
+    /// <param name="customLanguageEntries"></param>
+    [Deferreable]
+    private static void Add_Impl(
+        EquipmentDescriptor descriptor,
+        LocalisationData.LocalisationDataEntry localisationData,
+        Dictionary<string, string> customLanguageEntries
+    )
+    {
+        Add(descriptor);
+
+        Localisation.AddLocalisedText(localisationData, customLanguageEntries);
     }
 
     /// <summary>
@@ -145,18 +124,12 @@ public static class Equipments
     /// </summary>
     /// <param name="descriptor"></param>
     /// <param name="localisationData"></param>
-    public static void Add(
+    [Deferreable]
+    private static void Add_Impl(
         EquipmentDescriptor descriptor,
         LocalisationData.LocalisationDataEntry localisationData
     )
     {
-        // Defer loading until ready
-        if (!API.IsReady)
-        {
-            API.Enqueue(() => Add(descriptor, localisationData));
-            return;
-        }
-
         string objectName = descriptor.Name.Replace(" ", "");
 
         GameObject go = new($"Equipment{objectName}_{descriptor.Rarity}");
@@ -207,44 +180,13 @@ public static class Equipments
     }
 
     /// <summary>
-    /// Create a new artifact and add it to the game's data alongside localisation data,
-    /// with translations for the provided custom languages.
-    /// </summary>
-    /// <param name="descriptor"></param>
-    /// <param name="localisationData"></param>
-    /// <param name="customLanguageEntries"></param>
-    public static void Add(
-        EquipmentDescriptor descriptor,
-        LocalisationData.LocalisationDataEntry localisationData,
-        Dictionary<string, string> customLanguageEntries
-    )
-    {
-        // Defer loading until ready
-        if (!API.IsReady)
-        {
-            API.Enqueue(() => Add(descriptor, localisationData, customLanguageEntries));
-            return;
-        }
-
-        Add(descriptor);
-
-        Localisation.AddLocalisedText(localisationData, customLanguageEntries);
-    }
-
-    /// <summary>
     /// Overwrite an equipment's properties with values from a descriptor.
     /// </summary>
     /// <param name="id"></param>
     /// <param name="descriptor"></param>
-    public static void Update(int id, EquipmentDescriptor descriptor)
+    [Deferreable]
+    private static void Update_Impl(int id, EquipmentDescriptor descriptor)
     {
-        // Defer loading until ready
-        if (!API.IsReady)
-        {
-            API.Enqueue(() => Update(id, descriptor));
-            return;
-        }
-
         if (TryGet(id, ERarity.Common, out var common))
             Update(common, descriptor);
         else if (TryGet(id, ERarity.Rare, out var rare))
@@ -259,15 +201,9 @@ public static class Equipments
     /// <param name="name"></param>
     /// <param name="rarity"></param>
     /// <param name="descriptor"></param>
-    public static void Update(string name, ERarity rarity, EquipmentDescriptor descriptor)
+    [Deferreable]
+    private static void Update_Impl(string name, ERarity rarity, EquipmentDescriptor descriptor)
     {
-        // Defer loading until ready
-        if (!API.IsReady)
-        {
-            API.Enqueue(() => Update(name, rarity, descriptor));
-            return;
-        }
-
         if (TryGet(name, rarity, out var equipment))
             Update(equipment, descriptor);
     }

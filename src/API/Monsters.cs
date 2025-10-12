@@ -1,9 +1,11 @@
 using System.Collections.Generic;
+using Ethereal.Generator;
 using UnityEngine;
 
 namespace Ethereal.API;
 
-public static class Monsters
+[Deferreable]
+public static partial class Monsters
 {
     /// <summary>
     /// A helper class that describes a monster's properties.
@@ -36,15 +38,12 @@ public static class Monsters
         public Trait EliteTrait { get; set; }
     }
 
-    private static readonly QueueableAPI API = new();
-
-    internal static void SetReady() => API.SetReady();
-
     /// <summary>
     /// Get a monster by id.
     /// </summary>
     /// <param name="id"></param>
     /// <returns>an action if one was found; otherwise null.</returns>
+    [TryGet]
     private static Monster Get(int id)
     {
         return GameController
@@ -57,6 +56,7 @@ public static class Monsters
     /// </summary>
     /// <param name="name"></param>
     /// <returns>an action if one was found; otherwise null.</returns>
+    [TryGet]
     private static Monster Get(string name)
     {
         return GameController
@@ -65,51 +65,13 @@ public static class Monsters
     }
 
     /// <summary>
-    /// Get a memento by id.
-    /// </summary>
-    /// <param name="id"></param>
-    /// <param name="result"></param>
-    /// <returns>true if the API is ready and an artifact was found; otherwise, false.</returns>
-    public static bool TryGet(int id, out Monster result)
-    {
-        if (!API.IsReady)
-            result = null;
-        else
-            result = Get(id);
-
-        return result != null;
-    }
-
-    /// <summary>
-    /// Get a memento by name.
-    /// </summary>
-    /// <param name="name"></param>
-    /// <param name="result"></param>
-    /// <returns>true if the API is ready and an artifact was found; otherwise, false.</returns>
-    public static bool TryGet(string name, out Monster result)
-    {
-        if (!API.IsReady)
-            result = null;
-        else
-            result = Get(name);
-
-        return result != null;
-    }
-
-    /// <summary>
     /// Overwrite a monster's properties with values from a descriptor.
     /// </summary>
     /// <param name="id"></param>
     /// <param name="descriptor"></param>
-    public static void Update(int id, MonsterDescriptor descriptor)
+    [Deferreable]
+    private static void Update_Impl(int id, MonsterDescriptor descriptor)
     {
-        // Defer loading until ready
-        if (!API.IsReady)
-        {
-            API.Enqueue(() => Update(id, descriptor));
-            return;
-        }
-
         if (TryGet(id, out var monster))
             Update(monster, descriptor);
     }
@@ -119,15 +81,9 @@ public static class Monsters
     /// </summary>
     /// <param name="name"></param>
     /// <param name="descriptor"></param>
-    public static void Update(string name, MonsterDescriptor descriptor)
+    [Deferreable]
+    private static void Update_Impl(string name, MonsterDescriptor descriptor)
     {
-        // Defer loading until ready
-        if (!API.IsReady)
-        {
-            API.Enqueue(() => Update(name, descriptor));
-            return;
-        }
-
         if (TryGet(name, out var monster))
             Update(monster, descriptor);
     }
