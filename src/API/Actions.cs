@@ -1,10 +1,12 @@
 using System.Collections.Generic;
+using Ethereal.Generator;
 using HarmonyLib;
 using UnityEngine;
 
 namespace Ethereal.API;
 
-public static class Actions
+[Deferreable]
+public static partial class Actions
 {
     /// <summary>
     /// A helper class that describes an action's properties.
@@ -36,15 +38,12 @@ public static class Actions
         public ESkillType? SkillType { get; set; }
     }
 
-    private static readonly QueueableAPI API = new();
-
-    internal static void SetReady() => API.SetReady();
-
     /// <summary>
     /// Get an action by id.
     /// </summary>
     /// <param name="id"></param>
     /// <returns>an action if one was found; otherwise null.</returns>
+    [TryGet]
     private static BaseAction Get(int id)
     {
         // Find action by monster type
@@ -64,6 +63,7 @@ public static class Actions
     /// </summary>
     /// <param name="name"></param>
     /// <returns>an action if one was found; otherwise null.</returns>
+    [TryGet]
     private static BaseAction Get(string name)
     {
         // Find action by monster type
@@ -79,41 +79,10 @@ public static class Actions
     }
 
     /// <summary>
-    /// Get an action by id.
-    /// </summary>
-    /// <param name="id"></param>
-    /// <param name="result"></param>
-    /// <returns>true if the API is ready and an action was found; otherwise, false.</returns>
-    public static bool TryGet(int id, out BaseAction result)
-    {
-        if (!API.IsReady)
-            result = null;
-        else
-            result = Get(id);
-
-        return result != null;
-    }
-
-    /// <summary>
-    /// Get an action by name.
-    /// </summary>
-    /// <param name="name"></param>
-    /// <param name="result"></param>
-    /// <returns>true if the API is ready and an action was found; otherwise, false.</returns>
-    public static bool TryGet(string name, out BaseAction result)
-    {
-        if (!API.IsReady)
-            result = null;
-        else
-            result = Get(name);
-
-        return result != null;
-    }
-
-    /// <summary>
     /// Get all actions.
     /// </summary>
     /// <returns></returns>
+    [TryGet]
     private static List<BaseAction> GetAll()
     {
         List<BaseAction> actions = [];
@@ -135,34 +104,13 @@ public static class Actions
     }
 
     /// <summary>
-    /// Get all actions.
-    /// </summary>
-    /// <param name="result"></param>
-    /// <returns>true if the API is ready; otherwise, false.</returns>
-    public static bool TryGetAll(out List<BaseAction> result)
-    {
-        if (!API.IsReady)
-            result = null;
-        else
-            result = GetAll();
-
-        return result != null;
-    }
-
-    /// <summary>
     /// Overwrite an action's properties with values from a descriptor.
     /// </summary>
     /// <param name="id"></param>
     /// <param name="descriptor"></param>
-    public static void Update(int id, ActionDescriptor descriptor)
+    [Deferreable]
+    private static void Update_Impl(int id, ActionDescriptor descriptor)
     {
-        // Defer loading until ready
-        if (!API.IsReady)
-        {
-            API.Enqueue(() => Update(id, descriptor));
-            return;
-        }
-
         if (TryGet(id, out var action))
             Update(action, descriptor);
     }
@@ -172,15 +120,9 @@ public static class Actions
     /// </summary>
     /// <param name="name"></param>
     /// <param name="descriptor"></param>
-    public static void Update(string name, ActionDescriptor descriptor)
+    [Deferreable]
+    private static void Update_Impl(string name, ActionDescriptor descriptor)
     {
-        // Defer loading until ready
-        if (!API.IsReady)
-        {
-            API.Enqueue(() => Update(name, descriptor));
-            return;
-        }
-
         if (TryGet(name, out var action))
             Update(action, descriptor);
     }

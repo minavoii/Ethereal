@@ -1,9 +1,11 @@
 using System.Collections.Generic;
+using Ethereal.Generator;
 using UnityEngine;
 
 namespace Ethereal.API;
 
-public static class Artifacts
+[Deferreable]
+public static partial class Artifacts
 {
     /// <summary>
     /// A helper class that describes an artifact's properties.
@@ -29,15 +31,12 @@ public static class Artifacts
         public List<EElement> Elements { get; set; } = [];
     }
 
-    private static readonly QueueableAPI API = new();
-
-    internal static void SetReady() => API.SetReady();
-
     /// <summary>
     /// Get an artifact by id.
     /// </summary>
     /// <param name="id"></param>
     /// <returns>an artifact if one was found; otherwise null.</returns>
+    [TryGet]
     private static Consumable Get(int id)
     {
         return GameController
@@ -50,6 +49,7 @@ public static class Artifacts
     /// </summary>
     /// <param name="name"></param>
     /// <returns>an artifact if one was found; otherwise null.</returns>
+    [TryGet]
     private static Consumable Get(string name)
     {
         return GameController
@@ -58,42 +58,11 @@ public static class Artifacts
     }
 
     /// <summary>
-    /// Get an artifact by id.
-    /// </summary>
-    /// <param name="id"></param>
-    /// <param name="result"></param>
-    /// <returns>true if the API is ready and an artifact was found; otherwise, false.</returns>
-    public static bool TryGet(int id, out Consumable result)
-    {
-        if (!API.IsReady)
-            result = null;
-        else
-            result = Get(id);
-
-        return result != null;
-    }
-
-    /// <summary>
-    /// Get an artifact by name.
-    /// </summary>
-    /// <param name="name"></param>
-    /// <param name="result"></param>
-    /// <returns>true if the API is ready and an artifact was found; otherwise, false.</returns>
-    public static bool TryGet(string name, out Consumable result)
-    {
-        if (!API.IsReady)
-            result = null;
-        else
-            result = Get(name);
-
-        return result != null;
-    }
-
-    /// <summary>
     /// Create a new artifact and add it to the game's data.
     /// </summary>
     /// <param name="descriptor"></param>
-    public static void Add(ArtifactDescriptor descriptor)
+    [Deferreable]
+    private static void Add_Impl(ArtifactDescriptor descriptor)
     {
         LocalisationData.LocalisationDataEntry defaultLocalisation = new()
         {
@@ -102,14 +71,26 @@ public static class Artifacts
             StringContentEnglish = descriptor.Name,
         };
 
-        // Defer loading until ready
-        if (!API.IsReady)
-        {
-            API.Enqueue(() => Add(descriptor));
-            return;
-        }
-
         Add(descriptor, defaultLocalisation);
+    }
+
+    /// <summary>
+    /// Create a new artifact and add it to the game's data alongside localisation data,
+    /// with translations for the provided custom languages.
+    /// </summary>
+    /// <param name="descriptor"></param>
+    /// <param name="localisationData"></param>
+    /// <param name="customLanguageEntries"></param>
+    [Deferreable]
+    private static void Add_Impl(
+        ArtifactDescriptor descriptor,
+        LocalisationData.LocalisationDataEntry localisationData,
+        Dictionary<string, string> customLanguageEntries
+    )
+    {
+        Add(descriptor);
+
+        Localisation.AddLocalisedText(localisationData, customLanguageEntries);
     }
 
     /// <summary>
@@ -117,18 +98,12 @@ public static class Artifacts
     /// </summary>
     /// <param name="descriptor"></param>
     /// <param name="localisationData"></param>
-    public static void Add(
+    [Deferreable]
+    private static void Add_Impl(
         ArtifactDescriptor descriptor,
         LocalisationData.LocalisationDataEntry localisationData
     )
     {
-        // Defer loading until ready
-        if (!API.IsReady)
-        {
-            API.Enqueue(() => Add(descriptor, localisationData));
-            return;
-        }
-
         GameObject parent = new();
         BaseAction action = Utils.GameObjects.WithinGameObject(
             new BaseAction()
@@ -155,34 +130,9 @@ public static class Artifacts
         WorldData.Instance.Referenceables.Add(artifact);
         Localisation.AddLocalisedText(localisationData);
 
-        Update(descriptor.Id, descriptor);
+        Update_Impl(descriptor.Id, descriptor);
 
         Log.API.LogInfo($"Loaded artifact: {descriptor.Name}");
-    }
-
-    /// <summary>
-    /// Create a new artifact and add it to the game's data alongside localisation data,
-    /// with translations for the provided custom languages.
-    /// </summary>
-    /// <param name="descriptor"></param>
-    /// <param name="localisationData"></param>
-    /// <param name="customLanguageEntries"></param>
-    public static void Add(
-        ArtifactDescriptor descriptor,
-        LocalisationData.LocalisationDataEntry localisationData,
-        Dictionary<string, string> customLanguageEntries
-    )
-    {
-        // Defer loading until ready
-        if (!API.IsReady)
-        {
-            API.Enqueue(() => Add(descriptor, localisationData, customLanguageEntries));
-            return;
-        }
-
-        Add(descriptor);
-
-        Localisation.AddLocalisedText(localisationData, customLanguageEntries);
     }
 
     /// <summary>
@@ -190,15 +140,9 @@ public static class Artifacts
     /// </summary>
     /// <param name="id"></param>
     /// <param name="descriptor"></param>
-    public static void Update(int id, ArtifactDescriptor descriptor)
+    [Deferreable]
+    private static void Update_Impl(int id, ArtifactDescriptor descriptor)
     {
-        // Defer loading until ready
-        if (!API.IsReady)
-        {
-            API.Enqueue(() => Update(id, descriptor));
-            return;
-        }
-
         if (TryGet(id, out var artifact))
             Update(artifact, descriptor);
     }
@@ -208,15 +152,9 @@ public static class Artifacts
     /// </summary>
     /// <param name="name"></param>
     /// <param name="descriptor"></param>
-    public static void Update(string name, ArtifactDescriptor descriptor)
+    [Deferreable]
+    private static void Update_Impl(string name, ArtifactDescriptor descriptor)
     {
-        // Defer loading until ready
-        if (!API.IsReady)
-        {
-            API.Enqueue(() => Update(name, descriptor));
-            return;
-        }
-
         if (TryGet(name, out var artifact))
             Update(artifact, descriptor);
     }

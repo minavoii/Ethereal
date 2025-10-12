@@ -1,14 +1,14 @@
 using System.Collections.Generic;
 using System.IO;
+using Ethereal.Generator;
 using TMPro;
 using UnityEngine;
 
 namespace Ethereal.API;
 
-public static class Fonts
+[Deferreable]
+public static partial class Fonts
 {
-    private static readonly QueueableAPI API = new();
-
     internal static readonly List<TMP_FontAsset> CustomFonts = [];
 
     private static readonly string FontsPath = Path.Join(Plugin.EtherealPath, "Fonts");
@@ -29,15 +29,9 @@ public static class Fonts
     /// </summary>
     /// <param name="font"></param>
     /// <param name="fallback"></param>
-    public static void AddFallback(TMP_FontAsset font, TMP_FontAsset fallback)
+    [Deferreable]
+    private static void AddFallback_Impl(TMP_FontAsset font, TMP_FontAsset fallback)
     {
-        // Defer loading until ready
-        if (!API.IsReady)
-        {
-            API.Enqueue(() => AddFallback(font, fallback));
-            return;
-        }
-
         font.fallbackFontAssetTable.Add(fallback);
     }
 
@@ -45,15 +39,9 @@ public static class Fonts
     /// Add all custom fonts as a fallback to another font.
     /// </summary>
     /// <param name="font"></param>
-    public static void AddAllFallbacks(TMP_FontAsset font)
+    [Deferreable]
+    private static void AddAllFallbacks_Impl(TMP_FontAsset font)
     {
-        // Defer loading until ready
-        if (!API.IsReady)
-        {
-            API.Enqueue(() => AddAllFallbacks(font));
-            return;
-        }
-
         foreach (TMP_FontAsset fontAsset in CustomFonts)
             font.fallbackFontAssetTable.Add(fontAsset);
     }

@@ -1,11 +1,13 @@
 using System;
 using System.Globalization;
 using System.IO;
+using Ethereal.Generator;
 using UnityEngine;
 
 namespace Ethereal.API;
 
-public static class Sprites
+[Deferreable]
+public static partial class Sprites
 {
     public enum SpriteType
     {
@@ -21,8 +23,6 @@ public static class Sprites
         MonsterType,
         Trait,
     }
-
-    private static readonly QueueableAPI API = new();
 
     private static readonly string SpritesPath = Path.Join(Plugin.EtherealPath, "Sprites");
 
@@ -102,15 +102,9 @@ public static class Sprites
     /// artifact sprites within an `Artifacts` folder, etc.
     /// </summary>
     /// <param name="spritesPath"></param>
-    public static void BulkReplaceFromDirectory(string spritesPath)
+    [Deferreable]
+    private static void BulkReplaceFromDirectory_Impl(string spritesPath)
     {
-        // Defer loading until ready
-        if (!API.IsReady)
-        {
-            API.Enqueue(() => BulkReplaceFromDirectory(spritesPath));
-            return;
-        }
-
         string PathActions = Path.Join(spritesPath, "Actions");
         string PathArtifacts = Path.Join(spritesPath, "Artifacts");
         string PathBuffs = Path.Join(spritesPath, "Buffs");
@@ -214,15 +208,9 @@ public static class Sprites
     /// artifact sprites within an `Artifacts` folder, etc.
     /// </summary>
     /// <param name="path"></param>
-    public static void BulkReplaceFromBundle(string path)
+    [Deferreable]
+    private static void BulkReplaceFromBundle_Impl(string path)
     {
-        // Defer loading until ready
-        if (!API.IsReady)
-        {
-            API.Enqueue(() => BulkReplaceFromBundle(path));
-            return;
-        }
-
         var bundle = AssetBundle.LoadFromFile(path);
 
         foreach (var assetName in bundle.GetAllAssetNames())

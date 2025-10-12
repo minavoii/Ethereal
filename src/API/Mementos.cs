@@ -1,18 +1,17 @@
+using Ethereal.Generator;
 using UnityEngine;
 
 namespace Ethereal.API;
 
-public static class Mementos
+[Deferreable]
+public static partial class Mementos
 {
-    private static readonly QueueableAPI API = new();
-
-    internal static void SetReady() => API.SetReady();
-
     /// <summary>
     /// Get a memento by id.
     /// </summary>
     /// <param name="id"></param>
-    /// <returns>an action if one was found; otherwise null.</returns>
+    /// <returns>a memento if one was found; otherwise null.</returns>
+    [TryGet]
     private static MonsterMemento Get(int id)
     {
         return GameController
@@ -24,7 +23,8 @@ public static class Mementos
     /// Get a memento by name.
     /// </summary>
     /// <param name="name"></param>
-    /// <returns>an action if one was found; otherwise null.</returns>
+    /// <returns>a memento if one was found; otherwise null.</returns>
+    [TryGet]
     private static MonsterMemento Get(string name)
     {
         return GameController
@@ -33,51 +33,13 @@ public static class Mementos
     }
 
     /// <summary>
-    /// Get a memento by id.
-    /// </summary>
-    /// <param name="id"></param>
-    /// <param name="result"></param>
-    /// <returns>true if the API is ready and an artifact was found; otherwise, false.</returns>
-    public static bool TryGet(int id, out MonsterMemento result)
-    {
-        if (!API.IsReady)
-            result = null;
-        else
-            result = Get(id);
-
-        return result != null;
-    }
-
-    /// <summary>
-    /// Get a memento by name.
-    /// </summary>
-    /// <param name="name"></param>
-    /// <param name="result"></param>
-    /// <returns>true if the API is ready and an artifact was found; otherwise, false.</returns>
-    public static bool TryGet(string name, out MonsterMemento result)
-    {
-        if (!API.IsReady)
-            result = null;
-        else
-            result = Get(name);
-
-        return result != null;
-    }
-
-    /// <summary>
     /// Set a memento's icon.
     /// </summary>
     /// <param name="id"></param>
     /// <param name="icon"></param>
-    public static void UpdateIcon(int id, Sprite icon)
+    [Deferreable]
+    private static void UpdateIcon_Impl(int id, Sprite icon)
     {
-        // Defer loading until ready
-        if (!API.IsReady)
-        {
-            API.Enqueue(() => UpdateIcon(id, icon));
-            return;
-        }
-
         if (TryGet(id, out var memento))
             UpdateIcon(memento, icon);
     }
@@ -87,15 +49,9 @@ public static class Mementos
     /// </summary>
     /// <param name="name"></param>
     /// <param name="icon"></param>
-    public static void UpdateIcon(string name, Sprite icon)
+    [Deferreable]
+    private static void UpdateIcon_Impl(string name, Sprite icon)
     {
-        // Defer loading until ready
-        if (!API.IsReady)
-        {
-            API.Enqueue(() => UpdateIcon(name, icon));
-            return;
-        }
-
         if (TryGet(name, out var memento))
             UpdateIcon(memento, icon);
     }
@@ -114,15 +70,9 @@ public static class Mementos
     /// Create a new memento and add it to the game's data.
     /// </summary>
     /// <param name="descriptor"></param>
-    public static void Add(MonsterMemento memento)
+    [Deferreable]
+    private static void Add_Impl(MonsterMemento memento)
     {
-        // Defer loading until ready
-        if (!API.IsReady)
-        {
-            API.Enqueue(() => Add(memento));
-            return;
-        }
-
         GameObject go = new();
         Utils.GameObjects.CopyToGameObject(ref go, memento);
 
@@ -135,15 +85,9 @@ public static class Mementos
     /// Create a new memento and add it to the game's data.
     /// </summary>
     /// <param name="descriptor"></param>
-    public static void Add(MonsterMemento memento, MonsterMemento shiftedMemento)
+    [Deferreable]
+    private static void Add_Impl(MonsterMemento memento, MonsterMemento shiftedMemento)
     {
-        // Defer loading until ready
-        if (!API.IsReady)
-        {
-            API.Enqueue(() => Add(memento, shiftedMemento));
-            return;
-        }
-
         GameObject go = new();
         GameObject go_shifted = new();
 

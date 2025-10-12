@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using Ethereal.Generator;
 using Ethereal.Utils;
 using HarmonyLib;
 using Newtonsoft.Json;
@@ -10,7 +11,8 @@ using UnityEngine;
 
 namespace Ethereal.API;
 
-public static class Localisation
+[Deferreable]
+public static partial class Localisation
 {
     /// <summary>
     /// A language's data as stored in JSON.
@@ -51,8 +53,6 @@ public static class Localisation
         public Dictionary<ELanguage, string> Data { get; set; } = data;
     }
 
-    private static readonly QueueableAPI API = new();
-
     /// <summary>
     /// Contains the name of all native and custom languages.
     /// </summary>
@@ -87,15 +87,9 @@ public static class Localisation
     /// Add new localisation to the game's data.
     /// </summary>
     /// <param name="entry"></param>
-    public static void AddLocalisedText(LocalisationData.LocalisationDataEntry entry)
+    [Deferreable]
+    private static void AddLocalisedText_Impl(LocalisationData.LocalisationDataEntry entry)
     {
-        // Defer loading until ready
-        if (!API.IsReady)
-        {
-            API.Enqueue(() => AddLocalisedText(entry));
-            return;
-        }
-
         // Already translated
         // Need to return in case multiple mods add the same `StringContent` to localise
         if (LocalisationData.Instance.LocaEntries.ContainsKey(entry.StringContent))
@@ -166,18 +160,12 @@ public static class Localisation
     /// </summary>
     /// <param name="entry"></param>
     /// <param name="customLanguageEntries"></param>
-    public static void AddLocalisedText(
+    [Deferreable]
+    private static void AddLocalisedText_Impl(
         LocalisationData.LocalisationDataEntry entry,
         Dictionary<string, string> customLanguageEntries
     )
     {
-        // Defer loading until ready
-        if (!API.IsReady)
-        {
-            API.Enqueue(() => AddLocalisedText(entry, customLanguageEntries));
-            return;
-        }
-
         AddLocalisedText(entry);
 
         foreach (var (langName, text) in customLanguageEntries)
