@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Concurrent;
 
+namespace Ethereal.Classes.API;
+
 /// <summary>
 /// An API that contains a queue for use when the API isn't yet ready.
 /// </summary>
-internal class DeferreableAPI : BaseAPI
+internal class DeferrableAPI : BaseAPI
 {
     private readonly ConcurrentQueue<Action> Queue = new();
 

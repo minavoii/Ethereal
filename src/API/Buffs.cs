@@ -76,7 +76,7 @@ public static partial class Buffs
         }
 
         buff_go.GetComponent<Buff>().InitializeReferenceable();
-        WorldData.Instance.Referenceables.Add(buff_go.GetComponent<Buff>());
+        Referenceables.Add(buff_go.GetComponent<Buff>());
 
         if (buff.BuffType == EBuffType.Buff)
             Prefabs.Instance.AllBuffs.Add(buff_go.GetComponent<Buff>());

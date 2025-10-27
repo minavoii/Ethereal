@@ -122,7 +122,7 @@ public static partial class Artifacts
         parent.SetActive(false);
 
         GameController.Instance.ItemManager.Consumables.Insert(0, new() { BaseItem = artifact });
-        WorldData.Instance.Referenceables.Add(artifact);
+        Referenceables.Add(artifact);
         Localisation.AddLocalisedText(localisationData);
 
         Update_Impl(descriptor.Id, descriptor);

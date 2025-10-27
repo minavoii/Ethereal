@@ -169,7 +169,7 @@ public static partial class Equipments
         equItemInst.Validate();
 
         GameController.Instance.ItemManager.Equipments.Add(equItemInst);
-        WorldData.Instance.Referenceables.Add(go.GetComponent<Equipment>());
+        Referenceables.Add(go.GetComponent<Equipment>());
 
         Localisation.AddLocalisedText(localisationData);
 

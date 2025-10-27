@@ -170,7 +170,7 @@ public static partial class Traits
                 type.Traits.Add(go.GetComponent<Trait>());
         }
 
-        WorldData.Instance.Referenceables.Add(go.GetComponent<Trait>());
+        Referenceables.Add(go.GetComponent<Trait>());
     }
 
     /// <summary>
