@@ -1,9 +1,9 @@
-using Ethereal.Generator;
+using Ethereal.Attributes;
 using UnityEngine;
 
 namespace Ethereal.API;
 
-[Deferreable]
+[Deferrable]
 public static partial class Elements
 {
     /// <summary>
@@ -25,7 +25,7 @@ public static partial class Elements
     /// </summary>
     /// <param name="element"></param>
     /// <param name="descriptor"></param>
-    [Deferreable]
+    [Deferrable]
     private static void Update_Impl(EElement element, ElementDescriptor descriptor)
     {
         if (descriptor.Icon != null)

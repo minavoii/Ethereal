@@ -1,10 +1,11 @@
+using System;
 using System.Collections.Generic;
-using Ethereal.Generator;
+using Ethereal.Attributes;
 using UnityEngine;
 
 namespace Ethereal.API;
 
-[Deferreable]
+[Deferrable]
 public static partial class Monsters
 {
     /// <summary>
@@ -73,7 +74,7 @@ public static partial class Monsters
     /// </summary>
     /// <param name="id"></param>
     /// <param name="descriptor"></param>
-    [Deferreable]
+    [Deferrable]
     private static void Update_Impl(int id, MonsterDescriptor descriptor)
     {
         if (TryGet(id, out var monster))
@@ -85,7 +86,7 @@ public static partial class Monsters
     /// </summary>
     /// <param name="name"></param>
     /// <param name="descriptor"></param>
-    [Deferreable]
+    [Deferrable]
     private static void Update_Impl(string name, MonsterDescriptor descriptor)
     {
         if (TryGet(name, out var monster))

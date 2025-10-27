@@ -1,9 +1,11 @@
-using Ethereal.Generator;
+using System;
+using Ethereal.Attributes;
+using Ethereal.Classes.Builders;
 using UnityEngine;
 
 namespace Ethereal.API;
 
-[Deferreable]
+[Deferrable]
 public static partial class Mementos
 {
     /// <summary>
@@ -38,7 +40,7 @@ public static partial class Mementos
     /// </summary>
     /// <param name="id"></param>
     /// <param name="icon"></param>
-    [Deferreable]
+    [Deferrable]
     private static void UpdateIcon_Impl(int id, Sprite icon)
     {
         if (TryGet(id, out var memento))
@@ -50,7 +52,7 @@ public static partial class Mementos
     /// </summary>
     /// <param name="name"></param>
     /// <param name="icon"></param>
-    [Deferreable]
+    [Deferrable]
     private static void UpdateIcon_Impl(string name, Sprite icon)
     {
         if (TryGet(name, out var memento))

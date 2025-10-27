@@ -1,12 +1,12 @@
 using System;
 using System.Globalization;
 using System.IO;
-using Ethereal.Generator;
+using Ethereal.Attributes;
 using UnityEngine;
 
 namespace Ethereal.API;
 
-[Deferreable]
+[Deferrable]
 public static partial class Sprites
 {
     public enum SpriteType
@@ -102,7 +102,7 @@ public static partial class Sprites
     /// artifact sprites within an `Artifacts` folder, etc.
     /// </summary>
     /// <param name="spritesPath"></param>
-    [Deferreable]
+    [Deferrable]
     private static void BulkReplaceFromDirectory_Impl(string spritesPath)
     {
         string PathActions = Path.Join(spritesPath, "Actions");
@@ -198,7 +198,7 @@ public static partial class Sprites
     /// artifact sprites within an `Artifacts` folder, etc.
     /// </summary>
     /// <param name="path"></param>
-    [Deferreable]
+    [Deferrable]
     private static void BulkReplaceFromBundle_Impl(string path)
     {
         var bundle = AssetBundle.LoadFromFile(path);

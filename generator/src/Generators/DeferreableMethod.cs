@@ -1,26 +1,25 @@
-using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
+using Generators.Helpers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Text;
 
 namespace Generators;
 
-#nullable enable
 [Generator]
-public sealed class DeferreableMethodGenerator : IIncrementalGenerator
+public sealed class DeferrableMethodGenerator : IIncrementalGenerator
 {
-    private const string Attribute = "Ethereal.Generator.Deferreable";
+    private const string Attribute = "Ethereal.Attributes.Deferrable";
+
+    private const string Suffix = "Deferrable";
 
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         var provider = context
             .SyntaxProvider.CreateSyntaxProvider(
                 static (node, _) => node is MethodDeclarationSyntax m && m.AttributeLists.Count > 0,
-                static (ctx, _) => GetMethodWithAttribute(ctx)
+                static (ctx, _) => MethodHelper.GetWithAttribute(ctx, Attribute)
             )
             .Where(static m => m is not null);
 
@@ -28,75 +27,21 @@ public sealed class DeferreableMethodGenerator : IIncrementalGenerator
 
         context.RegisterSourceOutput(
             compilation,
-            static (spc, source) => Execute(spc, source.Right!)
+            static (spc, source) =>
+                GeneratorHelper.ExecuteGroup<MethodMetadata, IMethodSymbol>(
+                    spc,
+                    source.Right!,
+                    Suffix,
+                    GeneratePartialClass
+                )
         );
     }
 
-    private static SymbolWithComments? GetMethodWithAttribute(GeneratorSyntaxContext context)
-    {
-        var declaration = (MethodDeclarationSyntax)context.Node;
-
-        if (context.SemanticModel.GetDeclaredSymbol(declaration) is not IMethodSymbol symbol)
-            return null;
-
-        var serializableAttr = context.SemanticModel.Compilation.GetTypeByMetadataName(Attribute);
-
-        if (serializableAttr == null)
-            return null;
-
-        return symbol
-            .GetAttributes()
-            .Any(x => SymbolEqualityComparer.Default.Equals(x.AttributeClass, serializableAttr))
-            ? new SymbolWithComments() { Comments = GetComments(declaration), Symbol = symbol }
-            : null;
-    }
-
-    private static string GetComments(MethodDeclarationSyntax declaration)
-    {
-        SyntaxTriviaList leadingTrivia = declaration.GetLeadingTrivia();
-
-        var comments = leadingTrivia.Where(t =>
-            t.IsKind(Microsoft.CodeAnalysis.CSharp.SyntaxKind.SingleLineCommentTrivia)
-            || t.IsKind(Microsoft.CodeAnalysis.CSharp.SyntaxKind.MultiLineCommentTrivia)
-            || t.IsKind(
-                Microsoft.CodeAnalysis.CSharp.SyntaxKind.SingleLineDocumentationCommentTrivia
-            )
-        );
-
-        return string.Join("\n", comments.Select(t => t.ToString())) ?? String.Empty;
-    }
-
-    private static void Execute(
-        SourceProductionContext context,
-        ImmutableArray<SymbolWithComments> methods
-    )
-    {
-        if (methods.IsDefaultOrEmpty)
-            return;
-
-        // Emit a single partial class
-        var classes = methods.GroupBy(
-            m => m.Symbol!.ContainingType,
-            SymbolEqualityComparer.Default
-        );
-
-        foreach (var partialClass in classes)
-        {
-            ISymbol type = partialClass.Key!;
-
-            context.AddSource(
-                $"{type.Name}_Deferreable.g.cs",
-                SourceText.From(GeneratePartialClass(type, partialClass), Encoding.UTF8)
-            );
-        }
-    }
-
-    private static string GeneratePartialClass(
-        ISymbol symbol,
-        IEnumerable<SymbolWithComments> methods
-    )
+    private static string GeneratePartialClass(ISymbol symbol, IEnumerable<MethodMetadata> methods)
     {
         StringBuilder sb = new();
+
+        sb.AppendLine("#nullable enable");
 
         string @namespace = symbol.ContainingNamespace.ToDisplayString();
 
@@ -110,17 +55,14 @@ public sealed class DeferreableMethodGenerator : IIncrementalGenerator
         sb.AppendLine($"    {accessibility} static partial class {symbol.Name}");
         sb.AppendLine("    {");
 
-        foreach (SymbolWithComments data in methods)
+        foreach (MethodMetadata data in methods)
         {
             var method = data.Symbol!;
             var name = method.Name.Replace("_Impl", "");
-            var args = string.Join(", ", method.Parameters.Select(p => p.Name));
-            var @params = string.Join(
-                ", ",
-                method.Parameters.Select(p => $"{p.Type.ToDisplayString()} {p.Name}")
-            );
+            var args = string.Join(", ", data.Parameters?.Select(p => p.Name));
+            var @params = string.Join(", ", data.Parameters?.Select(x => x.AsArgument()));
 
-            sb.AppendLine($"        /// {data.Comments}");
+            sb.AppendLine($"        /// {string.Join("\n", data.Comments)}");
             sb.AppendLine($"        public static void {name}({@params})");
             sb.AppendLine("        {");
             sb.AppendLine("            if (!API.IsReady)");
@@ -139,5 +81,3 @@ public sealed class DeferreableMethodGenerator : IIncrementalGenerator
         return sb.ToString();
     }
 }
-
-#nullable disable

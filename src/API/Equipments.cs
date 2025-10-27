@@ -1,10 +1,11 @@
+using System;
 using System.Collections.Generic;
-using Ethereal.Generator;
+using Ethereal.Attributes;
 using UnityEngine;
 
 namespace Ethereal.API;
 
-[Deferreable]
+[Deferrable]
 public static partial class Equipments
 {
     /// <summary>
@@ -28,7 +29,7 @@ public static partial class Equipments
 
         public bool? AutomaticPricing { get; set; } = true;
 
-        public Sprite Icon { get; set; }
+        public Sprite? Icon { get; set; }
 
         public List<PassiveEffect> PassiveEffects { get; set; } = [];
     }
@@ -86,7 +87,7 @@ public static partial class Equipments
     /// Create a new equipment and add it to the game's data.
     /// </summary>
     /// <param name="descriptor"></param>
-    [Deferreable]
+    [Deferrable]
     private static void Add_Impl(EquipmentDescriptor descriptor)
     {
         LocalisationData.LocalisationDataEntry defaultLocalisation = new()
@@ -106,7 +107,7 @@ public static partial class Equipments
     /// <param name="descriptor"></param>
     /// <param name="localisationData"></param>
     /// <param name="customLanguageEntries"></param>
-    [Deferreable]
+    [Deferrable]
     private static void Add_Impl(
         EquipmentDescriptor descriptor,
         LocalisationData.LocalisationDataEntry localisationData,
@@ -123,7 +124,7 @@ public static partial class Equipments
     /// </summary>
     /// <param name="descriptor"></param>
     /// <param name="localisationData"></param>
-    [Deferreable]
+    [Deferrable]
     private static void Add_Impl(
         EquipmentDescriptor descriptor,
         LocalisationData.LocalisationDataEntry localisationData
@@ -180,7 +181,7 @@ public static partial class Equipments
     /// </summary>
     /// <param name="id"></param>
     /// <param name="descriptor"></param>
-    [Deferreable]
+    [Deferrable]
     private static void Update_Impl(int id, EquipmentDescriptor descriptor)
     {
         if (TryGet(id, ERarity.Common, out var common))
@@ -197,7 +198,7 @@ public static partial class Equipments
     /// <param name="name"></param>
     /// <param name="rarity"></param>
     /// <param name="descriptor"></param>
-    [Deferreable]
+    [Deferrable]
     private static void Update_Impl(string name, ERarity rarity, EquipmentDescriptor descriptor)
     {
         if (TryGet(name, rarity, out var equipment))

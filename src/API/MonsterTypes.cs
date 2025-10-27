@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Ethereal.Generator;
+using Ethereal.Attributes;
 using UnityEngine;
 
 namespace Ethereal.API;
 
-[Deferreable]
+[Deferrable]
 public static partial class MonsterTypes
 {
     public static Dictionary<EMonsterType, GameObject> NativeTypes = [];
@@ -49,7 +49,7 @@ public static partial class MonsterTypes
     /// </summary>
     /// <param name="monsterType"></param>
     /// <param name="typeIcon"></param>
-    [Deferreable]
+    [Deferrable]
     private static void UpdateIcon_Impl(EMonsterType monsterType, Sprite typeIcon)
     {
         if (TryGet(monsterType, out var type))

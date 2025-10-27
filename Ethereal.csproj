@@ -14,6 +14,7 @@
     </RestoreAdditionalProjectSources>
     <RootNamespace>Ethereal</RootNamespace>
     <DefaultItemExcludes>$(DefaultItemExcludes);examples\**;generator\**</DefaultItemExcludes>
+    <EmitCompilerGeneratedFiles Condition="'$(Configuration)' == 'Debug'">true</EmitCompilerGeneratedFiles>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 

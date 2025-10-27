@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using Ethereal.Generator;
+using Ethereal.Attributes;
 using Ethereal.Utils;
 using HarmonyLib;
 using Newtonsoft.Json;
@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace Ethereal.API;
 
-[Deferreable]
+[Deferrable]
 public static partial class Localisation
 {
     /// <summary>
@@ -87,7 +87,7 @@ public static partial class Localisation
     /// Add new localisation to the game's data.
     /// </summary>
     /// <param name="entry"></param>
-    [Deferreable]
+    [Deferrable]
     private static void AddLocalisedText_Impl(LocalisationData.LocalisationDataEntry entry)
     {
         // Already translated
@@ -160,7 +160,7 @@ public static partial class Localisation
     /// </summary>
     /// <param name="entry"></param>
     /// <param name="customLanguageEntries"></param>
-    [Deferreable]
+    [Deferrable]
     private static void AddLocalisedText_Impl(
         LocalisationData.LocalisationDataEntry entry,
         Dictionary<string, string> customLanguageEntries

@@ -1,11 +1,12 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Ethereal.Generator;
+using Ethereal.Attributes;
 using UnityEngine;
 
 namespace Ethereal.API;
 
-[Deferreable]
+[Deferrable]
 public static partial class Traits
 {
     /// <summary>
@@ -38,7 +39,6 @@ public static partial class Traits
     /// Get a trait by id.
     /// </summary>
     /// <param name="id"></param>
-    /// <returns>a trait if one was found; otherwise null.</returns>
     [TryGet]
     private static Trait? Get(int id) => Get(x => x?.ID == id);
 
@@ -46,7 +46,6 @@ public static partial class Traits
     /// Get a trait by name.
     /// </summary>
     /// <param name="name"></param>
-    /// <returns>a trait if one was found; otherwise null.</returns>
     [TryGet]
     private static Trait? Get(string name) => Get(x => x?.Name == name);
 
@@ -69,7 +68,6 @@ public static partial class Traits
     /// <summary>
     /// Get all traits that can be learned (i.e. non-signature traits).
     /// </summary>
-    /// <returns></returns>
     [TryGet]
     private static List<Trait> GetAllLearnable() =>
         [
@@ -82,20 +80,16 @@ public static partial class Traits
     /// <summary>
     /// Get all signature traits.
     /// </summary>
-    /// <returns></returns>
     [TryGet]
-    private static List<Trait> GetAllSignature()
-    {
-        return
+    private static List<Trait> GetAllSignature() =>
         [
             .. GameController
                 .Instance.ActiveMonsterList.Select(x =>
-                    x.GetComponent<SkillManager>()?.SignatureTrait?.GetComponent<Trait>()
+                    x.GetComponent<SkillManager>()?.SignatureTrait?.GetComponent<Trait>()!
                 )
                 .Where(x => x is not null && x.Name != "?????")
                 .Distinct(),
         ];
-    }
 
     /// <summary>
     /// Get all traits, both learnable and signature ones.
@@ -144,7 +138,7 @@ public static partial class Traits
     /// Create a new trait and add it to the game's data.
     /// </summary>
     /// <param name="descriptor"></param>
-    [Deferreable]
+    [Deferrable]
     private static void Add_Impl(TraitDescriptor descriptor)
     {
         var trait = new Trait()
@@ -184,7 +178,7 @@ public static partial class Traits
     /// </summary>
     /// <param name="id"></param>
     /// <param name="descriptor"></param>
-    [Deferreable]
+    [Deferrable]
     private static void Update_Impl(int id, TraitDescriptor descriptor)
     {
         if (TryGet(id, out var trait))
@@ -196,7 +190,7 @@ public static partial class Traits
     /// </summary>
     /// <param name="name"></param>
     /// <param name="descriptor"></param>
-    [Deferreable]
+    [Deferrable]
     private static void Update_Impl(string name, TraitDescriptor descriptor)
     {
         if (TryGet(name, out var trait))

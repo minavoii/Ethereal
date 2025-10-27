@@ -1,10 +1,11 @@
+using System;
 using System.Collections.Generic;
-using Ethereal.Generator;
+using Ethereal.Attributes;
 using UnityEngine;
 
 namespace Ethereal.API;
 
-[Deferreable]
+[Deferrable]
 public static partial class Artifacts
 {
     /// <summary>
@@ -55,7 +56,7 @@ public static partial class Artifacts
     /// Create a new artifact and add it to the game's data.
     /// </summary>
     /// <param name="descriptor"></param>
-    [Deferreable]
+    [Deferrable]
     private static void Add_Impl(ArtifactDescriptor descriptor)
     {
         LocalisationData.LocalisationDataEntry defaultLocalisation = new()
@@ -75,7 +76,7 @@ public static partial class Artifacts
     /// <param name="descriptor"></param>
     /// <param name="localisationData"></param>
     /// <param name="customLanguageEntries"></param>
-    [Deferreable]
+    [Deferrable]
     private static void Add_Impl(
         ArtifactDescriptor descriptor,
         LocalisationData.LocalisationDataEntry localisationData,
@@ -92,7 +93,7 @@ public static partial class Artifacts
     /// </summary>
     /// <param name="descriptor"></param>
     /// <param name="localisationData"></param>
-    [Deferreable]
+    [Deferrable]
     private static void Add_Impl(
         ArtifactDescriptor descriptor,
         LocalisationData.LocalisationDataEntry localisationData
@@ -134,7 +135,7 @@ public static partial class Artifacts
     /// </summary>
     /// <param name="id"></param>
     /// <param name="descriptor"></param>
-    [Deferreable]
+    [Deferrable]
     private static void Update_Impl(int id, ArtifactDescriptor descriptor)
     {
         if (TryGet(id, out var artifact))
@@ -146,7 +147,7 @@ public static partial class Artifacts
     /// </summary>
     /// <param name="name"></param>
     /// <param name="descriptor"></param>
-    [Deferreable]
+    [Deferrable]
     private static void Update_Impl(string name, ArtifactDescriptor descriptor)
     {
         if (TryGet(name, out var artifact))

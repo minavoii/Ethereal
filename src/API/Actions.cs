@@ -1,11 +1,12 @@
 using System.Collections.Generic;
-using Ethereal.Generator;
+using System.Linq;
+using Ethereal.Attributes;
 using HarmonyLib;
 using UnityEngine;
 
 namespace Ethereal.API;
 
-[Deferreable]
+[Deferrable]
 public static partial class Actions
 {
     /// <summary>
@@ -138,7 +139,7 @@ public static partial class Actions
     /// </summary>
     /// <param name="id"></param>
     /// <param name="descriptor"></param>
-    [Deferreable]
+    [Deferrable]
     private static void Update_Impl(int id, ActionDescriptor descriptor)
     {
         if (TryGet(id, out var action))
@@ -150,7 +151,7 @@ public static partial class Actions
     /// </summary>
     /// <param name="name"></param>
     /// <param name="descriptor"></param>
-    [Deferreable]
+    [Deferrable]
     private static void Update_Impl(string name, ActionDescriptor descriptor)
     {
         if (TryGet(name, out var action))
