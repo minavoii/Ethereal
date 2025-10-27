@@ -2,19 +2,21 @@
 
 A modding API for [Aethermancer](https://store.steampowered.com/app/2288470/Aethermancer/) to help create mods with BepInEx.
 
-Currently made for demo version 0.1.1.7.
+## Downloads
 
-## Installation
+You can get Ethereal from the [latest releases](https://github.com/minavoii/Ethereal/releases/latest/download/Ethereal.zip).
 
--   Download the BepInEx package from the [latest releases](https://github.com/minavoii/Ethereal/releases/latest/download/BepInEx_Package.zip).
+A build of the monster randomizer example is available [here](https://github.com/minavoii/Ethereal/releases/latest/download/Randomizer.zip).
+
+## Installing mods
+
+If you don't have BepInEx:
+
+-   Download [BepInEx separately](https://github.com/BepInEx/BepInEx) or the [Ethereal + BepInEx package](https://github.com/minavoii/Ethereal/releases/latest/download/Ethereal+BepInEx.zip).
 
 -   Extract the files into the game's directory (`C:\Program Files (x86)\Steam\steamapps\common\Aethermancer Demo`).
 
--   You can download mods and extract them into the `BepInEx\plugins` directory.
-
--   A build of the monster randomizer example is available [here](https://github.com/minavoii/Ethereal/releases/latest/download/Randomizer.zip).
-
-If you already installed BepInEx, you can get Ethereal separately from [here](https://github.com/minavoii/Ethereal/releases/latest/download/Ethereal.zip).
+You can now download mods and extract them into the `BepInEx\plugins` directory.
 
 ## Examples
 
