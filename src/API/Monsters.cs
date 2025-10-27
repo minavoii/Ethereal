@@ -69,6 +69,20 @@ public static partial class Monsters
     private static Monster? Get(Predicate<GameObject?> predicate) =>
         GameController.Instance.CompleteMonsterList.Find(predicate)?.GetComponent<Monster>();
 
+    /// <summary>
+    /// Create a new monster and add it to the game's data.
+    /// </summary>
+    [Deferrable]
+    private static void Add_Impl(MonsterBuilder monsterBuilder) => Add_Impl(monsterBuilder.Build());
+
+    /// <summary>
+    /// Create a new monster and add it to the game's data.
+    /// </summary>
+    [Deferrable]
+    private static void Add_Impl(GameObject monster)
+    {
+        GameController.Instance.CompleteMonsterList.Add(monster);
+        Referenceables.Add(monster.GetComponent<Monster>());
     }
 
     /// <summary>
