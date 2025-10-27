@@ -17,11 +17,11 @@ public abstract record LazyValue<T>
         Data = data;
     }
 
-    public int? Id { get; init; }
+    protected int? Id { get; init; }
 
     protected string? Name { get; init; }
 
-    public T? Data { get; init; }
+    protected T? Data { get; init; }
 
     public virtual T? Get() => Data;
 }
