@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Ethereal.Attributes;
+using Ethereal.Classes.Builders;
 using UnityEngine;
 
 namespace Ethereal.API;
