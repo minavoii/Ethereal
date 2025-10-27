@@ -42,10 +42,10 @@ public static partial class Sprites
     /// <param name="path"></param>
     /// <param name="asset"></param>
     /// <returns></returns>
-    public static Sprite LoadFromAsset(string path, string asset)
+    public static Sprite? LoadFromAsset(string path, string asset)
     {
-        GameObject gameObject = Utils.Assets.LoadAsset(path, asset);
-        Sprite sprite = gameObject.GetComponent<SpriteRenderer>().sprite;
+        GameObject? go = Utils.Assets.LoadAsset(path, asset);
+        Sprite? sprite = go?.GetComponent<SpriteRenderer>().sprite;
 
         return sprite;
     }
@@ -56,7 +56,7 @@ public static partial class Sprites
     /// <param name="iconType"></param>
     /// <param name="path"></param>
     /// <returns>a Sprite if the file was found; otherwise null.</returns>
-    public static Sprite LoadFromImage(SpriteType iconType, string path)
+    public static Sprite? LoadFromImage(SpriteType iconType, string path)
     {
         if (!File.Exists(path))
         {
@@ -136,10 +136,8 @@ public static partial class Sprites
         try
         {
             foreach (FileInfo file in new DirectoryInfo(PathBuffs).EnumerateFiles())
-                ReplaceIconBuff(
-                    ToTitleCase(file.Name),
-                    LoadFromImage(SpriteType.Buff, file.FullName)
-                );
+                if (LoadFromImage(SpriteType.Buff, file.FullName) is Sprite icon)
+                    ReplaceIconBuff(ToTitleCase(file.Name), icon);
         }
         catch (Exception e)
             when (e is DirectoryNotFoundException || e is System.Security.SecurityException) { }
@@ -157,10 +155,8 @@ public static partial class Sprites
         try
         {
             foreach (FileInfo file in new DirectoryInfo(PathEquipments).EnumerateFiles())
-                ReplaceIconEquipment(
-                    ToTitleCase(file.Name),
-                    LoadFromImage(SpriteType.Equipment, file.FullName)
-                );
+                if (LoadFromImage(SpriteType.Equipment, file.FullName) is Sprite icon)
+                    ReplaceIconEquipment(ToTitleCase(file.Name), icon);
         }
         catch (Exception e)
             when (e is DirectoryNotFoundException || e is System.Security.SecurityException) { }
@@ -169,10 +165,8 @@ public static partial class Sprites
         try
         {
             foreach (FileInfo file in new DirectoryInfo(PathMementos).EnumerateFiles())
-                ReplaceIconMemento(
-                    ToTitleCase(file.Name),
-                    LoadFromImage(SpriteType.Memento, file.FullName)
-                );
+                if (LoadFromImage(SpriteType.Memento, file.FullName) is Sprite icon)
+                    ReplaceIconMemento(ToTitleCase(file.Name), icon);
         }
         catch (Exception e)
             when (e is DirectoryNotFoundException || e is System.Security.SecurityException) { }
@@ -181,10 +175,8 @@ public static partial class Sprites
         try
         {
             foreach (FileInfo file in new DirectoryInfo(PathTraits).EnumerateFiles())
-                ReplaceIconTrait(
-                    ToTitleCase(file.Name),
-                    LoadFromImage(SpriteType.Trait, file.FullName)
-                );
+                if (LoadFromImage(SpriteType.Trait, file.FullName) is Sprite icon)
+                    ReplaceIconTrait(ToTitleCase(file.Name), icon);
         }
         catch (Exception e)
             when (e is DirectoryNotFoundException || e is System.Security.SecurityException) { }
@@ -193,10 +185,8 @@ public static partial class Sprites
         try
         {
             foreach (FileInfo file in new DirectoryInfo(PathTypes).EnumerateFiles())
-                ReplaceIconType(
-                    ToTitleCase(file.Name),
-                    LoadFromImage(SpriteType.MonsterType, file.FullName)
-                );
+                if (LoadFromImage(SpriteType.MonsterType, file.FullName) is Sprite icon)
+                    ReplaceIconType(ToTitleCase(file.Name), icon);
         }
         catch (Exception e)
             when (e is DirectoryNotFoundException || e is System.Security.SecurityException) { }
@@ -252,7 +242,7 @@ public static partial class Sprites
     /// <param name="name"></param>
     /// <param name="icon"></param>
     /// <param name="iconPath"></param>
-    private static void ReplaceIconAction(string name, Sprite icon, string iconPath = "")
+    private static void ReplaceIconAction(string name, Sprite? icon = null, string iconPath = "")
     {
         Actions.ActionDescriptor descriptor = new();
 
@@ -278,7 +268,7 @@ public static partial class Sprites
     /// <param name="name"></param>
     /// <param name="icon"></param>
     /// <param name="iconPath"></param>
-    private static void ReplaceIconArtifact(string name, Sprite icon, string iconPath = "")
+    private static void ReplaceIconArtifact(string name, Sprite? icon = null, string iconPath = "")
     {
         Artifacts.ArtifactDescriptor descriptor = new();
 
@@ -314,7 +304,7 @@ public static partial class Sprites
     /// <param name="name"></param>
     /// <param name="icon"></param>
     /// <param name="iconPath"></param>
-    private static void ReplaceIconElement(string name, Sprite icon, string iconPath = "")
+    private static void ReplaceIconElement(string name, Sprite? icon = null, string iconPath = "")
     {
         Elements.ElementDescriptor descriptor = new();
 

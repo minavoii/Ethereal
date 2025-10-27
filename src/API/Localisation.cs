@@ -201,7 +201,9 @@ public static partial class Localisation
                 continue;
 
             string json = file.OpenText().ReadToEnd();
-            Language language = JsonConvert.DeserializeObject<Language>(json);
+
+            if (JsonConvert.DeserializeObject<Language>(json) is not Language language)
+                continue;
 
             // Remove the "don't edit this file" warning from the template
             //   in case a modder forgot to remove it
@@ -392,9 +394,9 @@ public static partial class Localisation
         try
         {
             string template_json = File.ReadAllText(Path.Join(LocalesPath, TemplateName));
-            Language lang = JsonConvert.DeserializeObject<Language>(template_json);
+            Language? lang = JsonConvert.DeserializeObject<Language>(template_json);
 
-            return lang.GameVersion ?? "0.0.0.0";
+            return lang?.GameVersion ?? "0.0.0.0";
         }
         catch
         {

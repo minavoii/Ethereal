@@ -38,50 +38,49 @@ public static partial class Equipments
     /// </summary>
     /// <param name="id"></param>
     /// <param name="rarity"></param>
-    /// <returns>an equipment if one was found; otherwise null.</returns>
     [TryGet]
-    private static Equipment Get(int id, ERarity rarity)
-    {
-        return rarity switch
-        {
-            ERarity.Epic => GameController
-                .Instance.ItemManager.Equipments.Find(x => x.EpicItem?.ID == id)
-                ?.BaseItem as Equipment,
-
-            ERarity.Rare => GameController
-                .Instance.ItemManager.Equipments.Find(x => x.RareItem?.ID == id)
-                ?.RareItem as Equipment,
-
-            ERarity.Common or _ => GameController
-                .Instance.ItemManager.Equipments.Find(x => x.BaseItem?.ID == id)
-                ?.BaseItem as Equipment,
-        };
-    }
+    private static Equipment? Get(int id, ERarity rarity) =>
+        Get(
+            x => x?.BaseItem.ID == id,
+            x => x?.RareItem.ID == id,
+            x => x?.EpicItem.ID == id,
+            rarity
+        );
 
     /// <summary>
     /// Get an equipment by name.
     /// </summary>
     /// <param name="name"></param>
     /// <param name="rarity"></param>
-    /// <returns>an equipment if one was found; otherwise null.</returns>
     [TryGet]
-    private static Equipment Get(string name, ERarity rarity)
-    {
-        return rarity switch
+    private static Equipment? Get(string name, ERarity rarity) =>
+        Get(
+            x => x?.BaseItem.Name == name,
+            x => x?.RareItem.Name == name,
+            x => x?.EpicItem.Name == name,
+            rarity
+        );
+
+    private static Equipment? Get(
+        Predicate<ItemManager.EquipmentItemInstance?> predicateBase,
+        Predicate<ItemManager.EquipmentItemInstance?> predicateRare,
+        Predicate<ItemManager.EquipmentItemInstance?> predicateEpic,
+        ERarity rarity
+    ) =>
+        rarity switch
         {
             ERarity.Epic => GameController
-                .Instance.ItemManager.Equipments.Find(x => x.EpicItem?.Name == name)
-                ?.BaseItem as Equipment,
+                .Instance.ItemManager.Equipments.Find(predicateEpic)
+                ?.EpicItem as Equipment,
 
             ERarity.Rare => GameController
-                .Instance.ItemManager.Equipments.Find(x => x.RareItem?.Name == name)
+                .Instance.ItemManager.Equipments.Find(predicateRare)
                 ?.RareItem as Equipment,
 
             ERarity.Common or _ => GameController
-                .Instance.ItemManager.Equipments.Find(x => x.BaseItem?.Name == name)
+                .Instance.ItemManager.Equipments.Find(predicateBase)
                 ?.BaseItem as Equipment,
         };
-    }
 
     /// <summary>
     /// Create a new equipment and add it to the game's data.
@@ -147,9 +146,6 @@ public static partial class Equipments
             DescriptionOverride = descriptor.Description,
             PassiveEffectList = [],
         };
-
-        equipment.Icon.name = objectName;
-        equipment.Icon.texture.name = objectName;
 
         Utils.GameObjects.CopyToGameObject(ref go, equipment);
         go.GetComponent<Equipment>().name = go.name;
@@ -243,7 +239,7 @@ public static partial class Equipments
         {
             foreach (PassiveEffect comp in equipment.GetComponents<PassiveEffect>())
             {
-                Object.DestroyImmediate(comp);
+                GameObject.DestroyImmediate(comp);
             }
 
             GameObject go = equipment.gameObject;

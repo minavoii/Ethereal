@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using HarmonyLib;
-using UnityEngine.UIElements.Collections;
 using static Ethereal.API.Localisation;
 
 namespace Ethereal.Patches;
@@ -51,7 +50,9 @@ internal static class Localisation
             ELanguage.Spanish => "Español",
             ELanguage.Portuguese => "Português(BR)",
             ELanguage.Korean => "한국어",
-            ELanguage custom => CustomLanguages.Get(custom) ?? "Unknown Language",
+            ELanguage custom => CustomLanguages.TryGetValue(custom, out string value)
+                ? value
+                : "Unknown Language",
         };
 
         return false;
@@ -81,8 +82,11 @@ internal static class Localisation
             ELanguage.Japanese => __instance.StringContentJapanese,
             ELanguage.Korean => __instance.StringContentKorean,
             ELanguage customLang => (
-                CustomLocalisations.Get(__instance.StringContent ?? "")?.Data.Get(customLang)
-            ) ?? __instance.StringContentEnglish,
+                CustomLocalisations.TryGetValue(__instance.StringContent ?? "", out var localeData)
+                && localeData.Data.TryGetValue(customLang, out string content)
+                    ? content
+                    : __instance.StringContentEnglish
+            ),
         };
 
         return false;

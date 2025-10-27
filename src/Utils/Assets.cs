@@ -10,17 +10,17 @@ internal static class Assets
     /// <param name="path"></param>
     /// <param name="asset"></param>
     /// <returns></returns>
-    internal static GameObject LoadAsset(string path, string asset)
+    internal static GameObject? LoadAsset(string path, string asset)
     {
         AssetBundle bundle = AssetBundle.LoadFromFile(path);
-        GameObject gameObject = bundle.LoadAsset<GameObject>(asset);
+        GameObject go = bundle.LoadAsset<GameObject>(asset);
 
-        if (gameObject == null)
+        if (go is null)
         {
             Log.Plugin.LogError($"Could not load asset: {path}:{asset}");
             return null;
         }
 
-        return gameObject;
+        return go;
     }
 }

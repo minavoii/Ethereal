@@ -18,7 +18,8 @@ public static partial class MonsterTypes
     {
         NativeTypes = ((EMonsterType[])Enum.GetValues(typeof(EMonsterType)))
             .Select(x => (id: x, value: GetObject(x)))
-            .ToDictionary(x => x.id, x => x.value);
+            .Where(x => x.value != null)
+            .ToDictionary(x => x.id, x => x.value)!;
 
         API.SetReady();
     }
@@ -27,35 +28,21 @@ public static partial class MonsterTypes
     /// Get a monster type.
     /// </summary>
     /// <param name="monsterType"></param>
-    /// <returns>a monster type if one was found; otherwise null.</returns>
     [TryGet]
-    private static MonsterType Get(EMonsterType monsterType)
-    {
-        return GameController.Instance.MonsterTypes.Find(x => x?.Type == monsterType);
-    }
+    private static MonsterType? Get(EMonsterType monsterType) =>
+        GameController.Instance.MonsterTypes.Find(x => x?.Type == monsterType);
 
     /// <summary>
     /// Get a monster type's GameObject.
     /// </summary>
     /// <param name="monsterType"></param>
-    /// <returns>a monster type's GameObject if one was found, otherwise null.</returns>
     [TryGet]
-    private static GameObject GetObject(EMonsterType monsterType)
-    {
-        foreach (var monster in GameController.Instance.ActiveMonsterList)
-        {
-            if (monster == null)
-                continue;
-
-            foreach (var type in monster.GetComponent<SkillManager>()?.MonsterTypes)
-            {
-                if (type?.GetComponent<MonsterType>()?.Type == monsterType)
-                    return type;
-            }
-        }
-
-        return null;
-    }
+    private static GameObject? GetObject(EMonsterType monsterType) =>
+        GameController
+            .Instance.ActiveMonsterList.SelectMany(x =>
+                x?.GetComponent<SkillManager>()?.MonsterTypes
+            )
+            .FirstOrDefault(x => x?.GetComponent<MonsterType>()?.Type == monsterType);
 
     /// <summary>
     /// Set a monster type's icon.

@@ -10,24 +10,20 @@ public static partial class Buffs
     /// Get a buff by id.
     /// </summary>
     /// <param name="id"></param>
-    /// <returns>a buff if one was found; otherwise null.</returns>
     [TryGet]
-    private static Buff Get(int id)
-    {
-        return Prefabs.Instance.AllBuffs.Find(x => x.ID == id)
-            ?? Prefabs.Instance.AllDebuffs.Find(x => x.ID == id);
-    }
+    private static Buff Get(int id) => Get(x => x?.ID == id);
 
     /// <summary>
     /// Get a buff by name.
     /// </summary>
     /// <param name="name"></param>
-    /// <returns>a buff if one was found; otherwise null.</returns>
     [TryGet]
-    private static Buff Get(string name)
+    private static Buff Get(string name) => Get(x => x?.Name == name);
+
+    private static Buff Get(Predicate<Buff?> predicate)
     {
-        return Prefabs.Instance.AllBuffs.Find(x => x.Name == name)
-            ?? Prefabs.Instance.AllDebuffs.Find(x => x.Name == name);
+        return Prefabs.Instance.AllBuffs.Find(predicate)
+            ?? Prefabs.Instance.AllDebuffs.Find(predicate);
     }
 
     /// <summary>

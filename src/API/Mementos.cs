@@ -10,27 +10,28 @@ public static partial class Mementos
     /// Get a memento by id.
     /// </summary>
     /// <param name="id"></param>
-    /// <returns>a memento if one was found; otherwise null.</returns>
     [TryGet]
-    private static MonsterMemento Get(int id)
-    {
-        return GameController
-                .Instance.ItemManager.MonsterMementos.Find(x => x?.BaseItem.ID == id)
-                ?.BaseItem as MonsterMemento;
-    }
+    private static MonsterMemento? Get(int id) =>
+        Get(x => x?.BaseItem.ID == id, x => x?.ShiftedMemento.ID == id);
 
     /// <summary>
     /// Get a memento by name.
     /// </summary>
     /// <param name="name"></param>
-    /// <returns>a memento if one was found; otherwise null.</returns>
     [TryGet]
-    private static MonsterMemento Get(string name)
-    {
-        return GameController
-                .Instance.ItemManager.MonsterMementos.Find(x => x?.BaseItem.Name == name)
-                ?.BaseItem as MonsterMemento;
-    }
+    private static MonsterMemento? Get(string name) =>
+        Get(x => x?.BaseItem.Name == name, x => x?.ShiftedMemento.Name == name);
+
+    private static MonsterMemento? Get(
+        Predicate<ItemManager.MonsterMementoInstance?> predicate,
+        Predicate<ItemManager.MonsterMementoInstance?> predicateShifted
+    ) =>
+        (
+            GameController.Instance.ItemManager.MonsterMementos.Find(predicate)?.BaseItem
+            ?? GameController
+                .Instance.ItemManager.MonsterMementos.Find(predicateShifted)
+                ?.ShiftedMemento
+        ) as MonsterMemento;
 
     /// <summary>
     /// Set a memento's icon.

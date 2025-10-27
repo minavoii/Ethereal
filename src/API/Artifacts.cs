@@ -20,11 +20,11 @@ public static partial class Artifacts
 
         public ETargetType? TargetType { get; set; }
 
-        public Sprite Icon { get; set; }
+        public Sprite? Icon { get; set; }
 
-        public Sprite ActionIconBig { get; set; }
+        public Sprite? ActionIconBig { get; set; }
 
-        public Sprite ActionIconSmall { get; set; }
+        public Sprite? ActionIconSmall { get; set; }
 
         public List<ActionModifier> Actions { get; set; } = [];
 
@@ -35,26 +35,20 @@ public static partial class Artifacts
     /// Get an artifact by id.
     /// </summary>
     /// <param name="id"></param>
-    /// <returns>an artifact if one was found; otherwise null.</returns>
     [TryGet]
-    private static Consumable Get(int id)
-    {
-        return GameController
-                .Instance.ItemManager.Consumables.Find(x => x?.BaseItem.ID == id)
-                ?.BaseItem as Consumable;
-    }
+    private static Consumable? Get(int id) => Get(x => x?.BaseItem.ID == id);
 
     /// <summary>
     /// Get an artifact by id.
     /// </summary>
     /// <param name="name"></param>
-    /// <returns>an artifact if one was found; otherwise null.</returns>
     [TryGet]
-    private static Consumable Get(string name)
+    private static Consumable? Get(string name) => Get(x => x?.BaseItem.Name == name);
+
+    private static Consumable? Get(Predicate<ItemManager.BaseItemInstance?> predicate)
     {
-        return GameController
-                .Instance.ItemManager.Consumables.Find(x => x?.BaseItem.Name == name)
-                ?.BaseItem as Consumable;
+        return GameController.Instance.ItemManager.Consumables.Find(predicate)?.BaseItem
+            as Consumable;
     }
 
     /// <summary>
