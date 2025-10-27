@@ -1,11 +1,14 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Ethereal.Generator;
+using Ethereal.Attributes;
+using Ethereal.Classes.Builders;
+using Ethereal.Classes.Wrappers;
 using UnityEngine;
 
 namespace Ethereal.API;
 
-[Deferreable]
+[Deferrable]
 public static partial class Traits
 {
     /// <summary>
@@ -29,7 +32,7 @@ public static partial class Traits
 
         public List<EMonsterType> Types { get; set; } = [];
 
-        public Sprite Icon { get; set; }
+        public Sprite? Icon { get; set; }
 
         public ESkillType? SkillType { get; set; }
     }
@@ -38,125 +41,106 @@ public static partial class Traits
     /// Get a trait by id.
     /// </summary>
     /// <param name="id"></param>
-    /// <returns>a trait if one was found; otherwise null.</returns>
     [TryGet]
-    private static Trait Get(int id)
-    {
-        // Find trait by monster type
-        foreach (MonsterType type in GameController.Instance.MonsterTypes)
-        {
-            Trait trait = type.Traits.Find(x => x.ID == id);
-
-            if (trait != null)
-                return trait;
-        }
-
-        // Find signature trait
-        foreach (GameObject monster in GameController.Instance.ActiveMonsterList)
-        {
-            if (monster == null)
-                continue;
-
-            Trait trait = monster
-                .GetComponent<SkillManager>()
-                ?.SignatureTrait?.GetComponent<Trait>();
-
-            if (trait.ID == id)
-                return trait;
-        }
-
-        return null;
-    }
+    private static Trait? Get(int id) => Get(x => x?.ID == id);
 
     /// <summary>
     /// Get a trait by name.
     /// </summary>
     /// <param name="name"></param>
-    /// <returns>a trait if one was found; otherwise null.</returns>
     [TryGet]
-    private static Trait Get(string name)
+    private static Trait? Get(string name) => Get(x => x?.Name == name);
+
+    /// <summary>
+    /// Find a trait by monster type or signature trait.
+    /// </summary>
+    /// <param name="predicate"></param>
+    private static Trait? Get(Func<Trait?, bool> predicate)
     {
-        // Find trait by monster type
-        foreach (MonsterType type in GameController.Instance.MonsterTypes)
-        {
-            Trait trait = type.Traits.Find(x => x.Name == name);
-
-            if (trait != null)
-                return trait;
-        }
-
-        // Find signature trait
-        foreach (GameObject monster in GameController.Instance.ActiveMonsterList)
-        {
-            if (monster == null)
-                continue;
-
-            Trait trait = monster
-                .GetComponent<SkillManager>()
-                ?.SignatureTrait?.GetComponent<Trait>();
-
-            if (trait.Name == name)
-                return trait;
-        }
-
-        return null;
+        return GameController
+                .Instance.MonsterTypes.SelectMany(x => x.Traits)
+                .FirstOrDefault(predicate)
+            ?? GameController
+                .Instance.ActiveMonsterList.Select(x =>
+                    x.GetComponent<SkillManager>()?.SignatureTrait?.GetComponent<Trait>()
+                )
+                .FirstOrDefault(predicate);
     }
 
     /// <summary>
     /// Get all traits that can be learned (i.e. non-signature traits).
     /// </summary>
-    /// <returns></returns>
     [TryGet]
-    private static List<Trait> GetAllLearnable()
-    {
-        List<Trait> traits = [];
-
-        foreach (MonsterType type in GameController.Instance.MonsterTypes)
-        {
-            foreach (Trait trait in type.Traits)
-            {
-                if (trait != null && !traits.Contains(trait))
-                    traits.Add(trait);
-            }
-        }
-
-        return traits;
-    }
+    private static List<Trait> GetAllLearnable() =>
+        [
+            .. GameController
+                .Instance.MonsterTypes.SelectMany(x => x.Traits)
+                .Where(x => x is not null)
+                .Distinct(),
+        ];
 
     /// <summary>
     /// Get all signature traits.
     /// </summary>
-    /// <returns></returns>
     [TryGet]
-    private static List<Trait> GetAllSignature()
-    {
-        return
+    private static List<Trait> GetAllSignature() =>
         [
             .. GameController
                 .Instance.ActiveMonsterList.Select(x =>
-                    x.GetComponent<SkillManager>()?.SignatureTrait?.GetComponent<Trait>()
+                    x.GetComponent<SkillManager>()?.SignatureTrait?.GetComponent<Trait>()!
                 )
-                .Where(x => x.Name != "?????"),
+                .Where(x => x is not null && x.Name != "?????")
+                .Distinct(),
         ];
-    }
 
     /// <summary>
     /// Get all traits, both learnable and signature ones.
     /// </summary>
     /// <returns></returns>
     [TryGet]
-    private static List<Trait> GetAll()
-    {
-        List<Trait> traits = [.. GetAllLearnable().Concat(GetAllSignature())];
+    private static List<Trait> GetAll() => [.. GetAllLearnable().Concat(GetAllSignature())];
 
-        return traits;
+    /// <summary>
+    /// Create a new trait and add it to the game's data.
+    /// </summary>
+    /// <param name="descriptor"></param>
+    [Deferrable]
+    private static void Add_Impl(TraitBuilder trait) => Add_Impl(trait.Build());
+
+    /// <summary>
+    /// Create a new trait and add it to the game's data.
+    /// </summary>
+    /// <param name="descriptor"></param>
+    [Deferrable]
+    private static void Add_Impl(Trait trait, bool learnable = false)
+    {
+        var go = Utils.GameObjects.IntoGameObject(trait);
+
+        foreach (PassiveEffect passive in trait.PassiveEffectList)
+        {
+            if (passive is PassiveGrantBuffWrapper grantBuff)
+                grantBuff.Unwrap();
+            else if (passive is PassiveGrantActionWrapper grantAction)
+                grantAction.Unwrap();
+
+            Utils.GameObjects.CopyToGameObject(ref go, passive);
+        }
+
+        go.GetComponent<Trait>().InitializeReferenceable();
+        Referenceables.Add(go.GetComponent<Trait>());
+
+        if (learnable)
+        {
+            foreach (GameObject monsterType in trait.Types)
+                monsterType.GetComponent<MonsterType>().Traits.Add(go.GetComponent<Trait>());
+        }
     }
 
     /// <summary>
     /// Create a new trait and add it to the game's data.
     /// </summary>
     /// <param name="descriptor"></param>
-    [Deferreable]
+    [Deferrable]
     private static void Add_Impl(TraitDescriptor descriptor)
     {
         var trait = new Trait()
@@ -188,7 +172,7 @@ public static partial class Traits
                 type.Traits.Add(go.GetComponent<Trait>());
         }
 
-        WorldData.Instance.Referenceables.Add(go.GetComponent<Trait>());
+        Referenceables.Add(go.GetComponent<Trait>());
     }
 
     /// <summary>
@@ -196,7 +180,7 @@ public static partial class Traits
     /// </summary>
     /// <param name="id"></param>
     /// <param name="descriptor"></param>
-    [Deferreable]
+    [Deferrable]
     private static void Update_Impl(int id, TraitDescriptor descriptor)
     {
         if (TryGet(id, out var trait))
@@ -208,7 +192,7 @@ public static partial class Traits
     /// </summary>
     /// <param name="name"></param>
     /// <param name="descriptor"></param>
-    [Deferreable]
+    [Deferrable]
     private static void Update_Impl(string name, TraitDescriptor descriptor)
     {
         if (TryGet(name, out var trait))
@@ -240,7 +224,7 @@ public static partial class Traits
         if (descriptor.PassiveEffects.Count != 0)
         {
             foreach (PassiveEffect comp in trait.GetComponents<PassiveEffect>())
-                Object.DestroyImmediate(comp);
+                GameObject.DestroyImmediate(comp);
 
             GameObject go = trait.gameObject;
 

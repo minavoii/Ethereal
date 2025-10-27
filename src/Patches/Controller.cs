@@ -8,13 +8,11 @@ internal static class Controller
     [HarmonyPrefix]
     private static void Prefix()
     {
+        API.Referenceables.SetReady();
         API.Fonts.SetReady();
         API.Localisation.SetReady();
         API.MonsterTypes.SetReady();
-        API.Actions.SetReady();
-        API.Traits.SetReady();
         API.Perks.SetReady();
-        API.Monsters.SetReady();
         API.Sprites.SetReady();
     }
 
@@ -24,5 +22,9 @@ internal static class Controller
     {
         API.Buffs.SetReady();
         API.Elements.SetReady();
+        API.Actions.SetReady();
+        API.Traits.SetReady();
+        API.Monsters.SetReady();
+        API.Mementos.SetReady();
     }
 }

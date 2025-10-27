@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Ethereal.API;
 
 namespace Randomizer.API;
@@ -10,21 +11,26 @@ internal static class Data
     internal static List<Trait> SignatureTraits = [];
 
     /// <summary>
-    /// Get all buffs related to the selected monster types.
+    /// Get all buffs related to the selected monster types. <br/>
+    /// Only include buffs derived from this monster's type.
     /// </summary>
     /// <param name="types"></param>
     /// <returns></returns>
-    internal static List<Buff> GetTypeBuffs(List<EMonsterType> types)
-    {
-        List<Buff> possibleBuffs = [];
+    internal static List<Buff> GetTypeBuffs(List<EMonsterType> types) =>
+        [
+            .. types
+                .Select(x => Buffs.TryGet(x.ToString(), out var buff) ? buff : null)
+                .Where(x => x is not null)
+                .Distinct(),
+        ];
 
-        // Only include buffs derived from this monster's type
-        foreach (EMonsterType type in types)
-        {
-            if (Buffs.TryGet(type.ToString(), out var buff))
-                possibleBuffs.Add(buff);
-        }
-
-        return possibleBuffs;
-    }
+    internal static List<PerkInfos> GetAllPerkInfos() =>
+        [
+            .. GameController
+                .Instance.ActiveMonsterList.SelectMany(x =>
+                    x?.GetComponent<MonsterStats>().PerkInfosList
+                )
+                .Where(x => x?.Perk.GetComponent<Perk>().Name != "?????")
+                .Distinct(),
+        ];
 }

@@ -69,16 +69,24 @@ internal class Random
     /// </summary>
     /// <param name="types"></param>
     /// <param name="allowMaverick"></param>
+    /// <param name="excludeIDs">A list of Trait IDs to exclude.</param>
     /// <returns></returns>
-    internal static Trait GetRandomTrait(List<EMonsterType> types, bool allowMaverick)
+    internal static Trait GetRandomTrait(
+        List<EMonsterType> types,
+        bool allowMaverick,
+        List<int> excludeIDs = null
+    )
     {
+        excludeIDs ??= [];
+
         List<Trait> traits =
         [
             .. types
                 .SelectMany(x => MonsterTypes.NativeTypes[x].GetComponent<MonsterType>().Traits)
                 .Concat(Data.SignatureTraits)
                 .Distinct()
-                .Where(x => allowMaverick || x.MaverickSkill == false),
+                .Where(x => allowMaverick || x.MaverickSkill == false)
+                .Where(x => !excludeIDs.Any(y => y == x.ID)),
         ];
 
         int[] indexes = Shuffle(0, traits.Count);

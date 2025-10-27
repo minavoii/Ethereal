@@ -10,6 +10,5 @@ internal static class World
     {
         API.Artifacts.SetReady();
         API.Equipments.SetReady();
-        API.Mementos.SetReady();
     }
 }

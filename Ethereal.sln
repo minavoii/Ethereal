@@ -5,6 +5,8 @@ VisualStudioVersion = 17.5.2.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ethereal", "Ethereal.csproj", "{D3343A75-CD6E-5C53-0325-AD9C9305E706}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Generator", "generator\Generator.csproj", "{62821AA1-1394-4096-B92D-E4E9A4AD0540}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Artifacts", "examples\Artifact\Artifacts.csproj", "{E1EE497B-0640-4847-87A1-D2C427D26714}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Equipments", "examples\Equipments\Equipments.csproj", "{5CF62D2F-CB2B-2A77-B3D4-8F92A1A4566B}"
@@ -13,7 +15,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Localisations", "examples\L
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Randomizer", "examples\Randomizer\Randomizer.csproj", "{8C9CD8A6-700A-4114-8296-F5C94CAC2F44}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Generator", "generator\Generator.csproj", "{62821AA1-1394-4096-B92D-E4E9A4AD0540}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Monsters", "examples\Monsters\Monsters.csproj", "{413D10BD-2A2B-4CCA-9E43-0D07CB24A227}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -102,6 +104,19 @@ Global
 		{62821AA1-1394-4096-B92D-E4E9A4AD0540}.Release|x64.Build.0 = Release|Any CPU
 		{62821AA1-1394-4096-B92D-E4E9A4AD0540}.Release|x86.ActiveCfg = Release|Any CPU
 		{62821AA1-1394-4096-B92D-E4E9A4AD0540}.Release|x86.Build.0 = Release|Any CPU
+
+		{413D10BD-2A2B-4CCA-9E43-0D07CB24A227}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{413D10BD-2A2B-4CCA-9E43-0D07CB24A227}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{413D10BD-2A2B-4CCA-9E43-0D07CB24A227}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{413D10BD-2A2B-4CCA-9E43-0D07CB24A227}.Debug|x64.Build.0 = Debug|Any CPU
+		{413D10BD-2A2B-4CCA-9E43-0D07CB24A227}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{413D10BD-2A2B-4CCA-9E43-0D07CB24A227}.Debug|x86.Build.0 = Debug|Any CPU
+		{413D10BD-2A2B-4CCA-9E43-0D07CB24A227}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{413D10BD-2A2B-4CCA-9E43-0D07CB24A227}.Release|Any CPU.Build.0 = Release|Any CPU
+		{413D10BD-2A2B-4CCA-9E43-0D07CB24A227}.Release|x64.ActiveCfg = Release|Any CPU
+		{413D10BD-2A2B-4CCA-9E43-0D07CB24A227}.Release|x64.Build.0 = Release|Any CPU
+		{413D10BD-2A2B-4CCA-9E43-0D07CB24A227}.Release|x86.ActiveCfg = Release|Any CPU
+		{413D10BD-2A2B-4CCA-9E43-0D07CB24A227}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

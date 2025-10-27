@@ -1,10 +1,11 @@
+using System;
 using System.Collections.Generic;
-using Ethereal.Generator;
+using Ethereal.Attributes;
 using UnityEngine;
 
 namespace Ethereal.API;
 
-[Deferreable]
+[Deferrable]
 public static partial class Artifacts
 {
     /// <summary>
@@ -20,11 +21,11 @@ public static partial class Artifacts
 
         public ETargetType? TargetType { get; set; }
 
-        public Sprite Icon { get; set; }
+        public Sprite? Icon { get; set; }
 
-        public Sprite ActionIconBig { get; set; }
+        public Sprite? ActionIconBig { get; set; }
 
-        public Sprite ActionIconSmall { get; set; }
+        public Sprite? ActionIconSmall { get; set; }
 
         public List<ActionModifier> Actions { get; set; } = [];
 
@@ -35,33 +36,27 @@ public static partial class Artifacts
     /// Get an artifact by id.
     /// </summary>
     /// <param name="id"></param>
-    /// <returns>an artifact if one was found; otherwise null.</returns>
     [TryGet]
-    private static Consumable Get(int id)
-    {
-        return GameController
-                .Instance.ItemManager.Consumables.Find(x => x?.BaseItem.ID == id)
-                ?.BaseItem as Consumable;
-    }
+    private static Consumable? Get(int id) => Get(x => x?.BaseItem.ID == id);
 
     /// <summary>
     /// Get an artifact by id.
     /// </summary>
     /// <param name="name"></param>
-    /// <returns>an artifact if one was found; otherwise null.</returns>
     [TryGet]
-    private static Consumable Get(string name)
+    private static Consumable? Get(string name) => Get(x => x?.BaseItem.Name == name);
+
+    private static Consumable? Get(Predicate<ItemManager.BaseItemInstance?> predicate)
     {
-        return GameController
-                .Instance.ItemManager.Consumables.Find(x => x?.BaseItem.Name == name)
-                ?.BaseItem as Consumable;
+        return GameController.Instance.ItemManager.Consumables.Find(predicate)?.BaseItem
+            as Consumable;
     }
 
     /// <summary>
     /// Create a new artifact and add it to the game's data.
     /// </summary>
     /// <param name="descriptor"></param>
-    [Deferreable]
+    [Deferrable]
     private static void Add_Impl(ArtifactDescriptor descriptor)
     {
         LocalisationData.LocalisationDataEntry defaultLocalisation = new()
@@ -71,7 +66,7 @@ public static partial class Artifacts
             StringContentEnglish = descriptor.Name,
         };
 
-        Add(descriptor, defaultLocalisation);
+        Add_Impl(descriptor, defaultLocalisation);
     }
 
     /// <summary>
@@ -81,14 +76,14 @@ public static partial class Artifacts
     /// <param name="descriptor"></param>
     /// <param name="localisationData"></param>
     /// <param name="customLanguageEntries"></param>
-    [Deferreable]
+    [Deferrable]
     private static void Add_Impl(
         ArtifactDescriptor descriptor,
         LocalisationData.LocalisationDataEntry localisationData,
         Dictionary<string, string> customLanguageEntries
     )
     {
-        Add(descriptor);
+        Add_Impl(descriptor);
 
         Localisation.AddLocalisedText(localisationData, customLanguageEntries);
     }
@@ -98,7 +93,7 @@ public static partial class Artifacts
     /// </summary>
     /// <param name="descriptor"></param>
     /// <param name="localisationData"></param>
-    [Deferreable]
+    [Deferrable]
     private static void Add_Impl(
         ArtifactDescriptor descriptor,
         LocalisationData.LocalisationDataEntry localisationData
@@ -127,7 +122,7 @@ public static partial class Artifacts
         parent.SetActive(false);
 
         GameController.Instance.ItemManager.Consumables.Insert(0, new() { BaseItem = artifact });
-        WorldData.Instance.Referenceables.Add(artifact);
+        Referenceables.Add(artifact);
         Localisation.AddLocalisedText(localisationData);
 
         Update_Impl(descriptor.Id, descriptor);
@@ -140,7 +135,7 @@ public static partial class Artifacts
     /// </summary>
     /// <param name="id"></param>
     /// <param name="descriptor"></param>
-    [Deferreable]
+    [Deferrable]
     private static void Update_Impl(int id, ArtifactDescriptor descriptor)
     {
         if (TryGet(id, out var artifact))
@@ -152,7 +147,7 @@ public static partial class Artifacts
     /// </summary>
     /// <param name="name"></param>
     /// <param name="descriptor"></param>
-    [Deferreable]
+    [Deferrable]
     private static void Update_Impl(string name, ArtifactDescriptor descriptor)
     {
         if (TryGet(name, out var artifact))

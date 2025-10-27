@@ -12,8 +12,7 @@ internal static class LoadGame
     [HarmonyPrefix]
     private static void Prefix()
     {
-        if (Perks.TryGetAll(out var perks))
-            API.Data.AllPerks = perks;
+        API.Data.AllPerks = API.Data.GetAllPerkInfos();
 
         if (Traits.TryGetAllSignature(out var signatureTraits))
             API.Data.SignatureTraits = signatureTraits;

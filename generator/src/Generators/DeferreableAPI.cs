@@ -1,62 +1,43 @@
 ﻿using System.Linq;
 using System.Text;
+using Generators.Helpers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Text;
 
 namespace Generators;
 
-#nullable enable
 [Generator]
-public sealed class DeferreableAPIGenerator : IIncrementalGenerator
+public sealed class DeferrableAPIGenerator : IIncrementalGenerator
 {
-    private const string Attribute = "Ethereal.Generator.Deferreable";
+    private const string Attribute = "Ethereal.Attributes.Deferrable";
+
+    private const string Suffix = "API";
 
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         var provider = context
             .SyntaxProvider.CreateSyntaxProvider(
                 static (node, _) => node is ClassDeclarationSyntax m && m.AttributeLists.Count > 0,
-                static (ctx, _) => GetClassWithAttribute(ctx)
+                static (ctx, _) => ClassHelper.GetWithAttribute(ctx, Attribute)
             )
             .Where(static c => c is not null);
 
-        context.RegisterSourceOutput(provider, static (spc, source) => Execute(spc, source!));
-    }
-
-    private static INamedTypeSymbol? GetClassWithAttribute(GeneratorSyntaxContext context)
-    {
-        var declaration = (ClassDeclarationSyntax)context.Node;
-
-        if (context.SemanticModel.GetDeclaredSymbol(declaration) is not INamedTypeSymbol symbol)
-            return null;
-
-        var serializableAttr = context.SemanticModel.Compilation.GetTypeByMetadataName(Attribute);
-
-        if (serializableAttr == null)
-            return null;
-
-        return symbol
-            .GetAttributes()
-            .Any(x => SymbolEqualityComparer.Default.Equals(x.AttributeClass, serializableAttr))
-            ? symbol
-            : null;
-    }
-
-    private static void Execute(SourceProductionContext context, INamedTypeSymbol symbol)
-    {
-        string source = GeneratePartialClass(symbol);
-
-        context.AddSource($"{symbol.Name}_API.g.cs", SourceText.From(source, Encoding.UTF8));
+        context.RegisterSourceOutput(
+            provider,
+            static (spc, source) =>
+                GeneratorHelper.Execute(spc, source!, Suffix, GeneratePartialClass)
+        );
     }
 
     private static string GeneratePartialClass(INamedTypeSymbol symbol)
     {
+        var sb = new StringBuilder();
+
+        sb.AppendLine("#nullable enable");
+
         var namespaceName = symbol.ContainingNamespace.IsGlobalNamespace
             ? null
             : $"namespace {symbol.ContainingNamespace.ToDisplayString()}\n{{\n";
-
-        var sb = new StringBuilder();
 
         if (namespaceName != null)
             sb.Append(namespaceName);
@@ -65,7 +46,9 @@ public sealed class DeferreableAPIGenerator : IIncrementalGenerator
 
         sb.AppendLine($"    {accessibility} static partial class {symbol.Name}");
         sb.AppendLine("    {");
-        sb.AppendLine("        private static readonly DeferreableAPI API = new();");
+        sb.AppendLine(
+            "        private static readonly Ethereal.Classes.API.DeferrableAPI API = new();"
+        );
 
         if (!symbol.GetMembers("SetReady").OfType<IMethodSymbol>().Any())
         {
@@ -76,6 +59,11 @@ public sealed class DeferreableAPIGenerator : IIncrementalGenerator
             sb.AppendLine("        internal static void SetReady() => API.SetReady();");
         }
 
+        sb.AppendLine();
+        sb.AppendLine(
+            "        internal static System.Threading.Tasks.Task<bool> Task => API.TaskSource.Task;"
+        );
+
         sb.AppendLine("    }");
 
         if (namespaceName != null)
@@ -84,5 +72,3 @@ public sealed class DeferreableAPIGenerator : IIncrementalGenerator
         return sb.ToString();
     }
 }
-
-#nullable disable

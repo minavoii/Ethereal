@@ -1,33 +1,30 @@
-using Ethereal.Generator;
+using System;
+using Ethereal.Attributes;
 using UnityEngine;
 
 namespace Ethereal.API;
 
-[Deferreable]
+[Deferrable]
 public static partial class Buffs
 {
     /// <summary>
     /// Get a buff by id.
     /// </summary>
     /// <param name="id"></param>
-    /// <returns>a buff if one was found; otherwise null.</returns>
     [TryGet]
-    private static Buff Get(int id)
-    {
-        return Prefabs.Instance.AllBuffs.Find(x => x.ID == id)
-            ?? Prefabs.Instance.AllDebuffs.Find(x => x.ID == id);
-    }
+    private static Buff Get(int id) => Get(x => x?.ID == id);
 
     /// <summary>
     /// Get a buff by name.
     /// </summary>
     /// <param name="name"></param>
-    /// <returns>a buff if one was found; otherwise null.</returns>
     [TryGet]
-    private static Buff Get(string name)
+    private static Buff Get(string name) => Get(x => x?.Name == name);
+
+    private static Buff Get(Predicate<Buff?> predicate)
     {
-        return Prefabs.Instance.AllBuffs.Find(x => x.Name == name)
-            ?? Prefabs.Instance.AllDebuffs.Find(x => x.Name == name);
+        return Prefabs.Instance.AllBuffs.Find(predicate)
+            ?? Prefabs.Instance.AllDebuffs.Find(predicate);
     }
 
     /// <summary>
@@ -35,7 +32,7 @@ public static partial class Buffs
     /// </summary>
     /// <param name="id"></param>
     /// <param name="icon"></param>
-    [Deferreable]
+    [Deferrable]
     private static void UpdateIcon_Impl(int id, Sprite icon)
     {
         if (TryGet(id, out var buff))
@@ -47,7 +44,7 @@ public static partial class Buffs
     /// </summary>
     /// <param name="name"></param>
     /// <param name="icon"></param>
-    [Deferreable]
+    [Deferrable]
     private static void UpdateIcon_Impl(string name, Sprite icon)
     {
         if (TryGet(name, out var buff))
@@ -68,7 +65,7 @@ public static partial class Buffs
     /// Create a new buff and add it to the game's data.
     /// </summary>
     /// <param name="buff"></param>
-    [Deferreable]
+    [Deferrable]
     private static void Add_Impl(Buff buff)
     {
         GameObject buff_go = Utils.GameObjects.IntoGameObject(buff);
@@ -79,7 +76,7 @@ public static partial class Buffs
         }
 
         buff_go.GetComponent<Buff>().InitializeReferenceable();
-        WorldData.Instance.Referenceables.Add(buff_go.GetComponent<Buff>());
+        Referenceables.Add(buff_go.GetComponent<Buff>());
 
         if (buff.BuffType == EBuffType.Buff)
             Prefabs.Instance.AllBuffs.Add(buff_go.GetComponent<Buff>());

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using Ethereal.Generator;
+using Ethereal.Attributes;
 using Ethereal.Utils;
 using HarmonyLib;
 using Newtonsoft.Json;
@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace Ethereal.API;
 
-[Deferreable]
+[Deferrable]
 public static partial class Localisation
 {
     /// <summary>
@@ -87,7 +87,7 @@ public static partial class Localisation
     /// Add new localisation to the game's data.
     /// </summary>
     /// <param name="entry"></param>
-    [Deferreable]
+    [Deferrable]
     private static void AddLocalisedText_Impl(LocalisationData.LocalisationDataEntry entry)
     {
         // Already translated
@@ -160,7 +160,7 @@ public static partial class Localisation
     /// </summary>
     /// <param name="entry"></param>
     /// <param name="customLanguageEntries"></param>
-    [Deferreable]
+    [Deferrable]
     private static void AddLocalisedText_Impl(
         LocalisationData.LocalisationDataEntry entry,
         Dictionary<string, string> customLanguageEntries
@@ -201,7 +201,9 @@ public static partial class Localisation
                 continue;
 
             string json = file.OpenText().ReadToEnd();
-            Language language = JsonConvert.DeserializeObject<Language>(json);
+
+            if (JsonConvert.DeserializeObject<Language>(json) is not Language language)
+                continue;
 
             // Remove the "don't edit this file" warning from the template
             //   in case a modder forgot to remove it
@@ -392,9 +394,9 @@ public static partial class Localisation
         try
         {
             string template_json = File.ReadAllText(Path.Join(LocalesPath, TemplateName));
-            Language lang = JsonConvert.DeserializeObject<Language>(template_json);
+            Language? lang = JsonConvert.DeserializeObject<Language>(template_json);
 
-            return lang.GameVersion ?? "0.0.0.0";
+            return lang?.GameVersion ?? "0.0.0.0";
         }
         catch
         {

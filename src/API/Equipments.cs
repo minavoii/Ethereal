@@ -1,10 +1,11 @@
+using System;
 using System.Collections.Generic;
-using Ethereal.Generator;
+using Ethereal.Attributes;
 using UnityEngine;
 
 namespace Ethereal.API;
 
-[Deferreable]
+[Deferrable]
 public static partial class Equipments
 {
     /// <summary>
@@ -28,7 +29,7 @@ public static partial class Equipments
 
         public bool? AutomaticPricing { get; set; } = true;
 
-        public Sprite Icon { get; set; }
+        public Sprite? Icon { get; set; }
 
         public List<PassiveEffect> PassiveEffects { get; set; } = [];
     }
@@ -38,56 +39,55 @@ public static partial class Equipments
     /// </summary>
     /// <param name="id"></param>
     /// <param name="rarity"></param>
-    /// <returns>an equipment if one was found; otherwise null.</returns>
     [TryGet]
-    private static Equipment Get(int id, ERarity rarity)
-    {
-        return rarity switch
-        {
-            ERarity.Epic => GameController
-                .Instance.ItemManager.Equipments.Find(x => x.EpicItem?.ID == id)
-                ?.BaseItem as Equipment,
-
-            ERarity.Rare => GameController
-                .Instance.ItemManager.Equipments.Find(x => x.RareItem?.ID == id)
-                ?.RareItem as Equipment,
-
-            ERarity.Common or _ => GameController
-                .Instance.ItemManager.Equipments.Find(x => x.BaseItem?.ID == id)
-                ?.BaseItem as Equipment,
-        };
-    }
+    private static Equipment? Get(int id, ERarity rarity) =>
+        Get(
+            x => x?.BaseItem.ID == id,
+            x => x?.RareItem.ID == id,
+            x => x?.EpicItem.ID == id,
+            rarity
+        );
 
     /// <summary>
     /// Get an equipment by name.
     /// </summary>
     /// <param name="name"></param>
     /// <param name="rarity"></param>
-    /// <returns>an equipment if one was found; otherwise null.</returns>
     [TryGet]
-    private static Equipment Get(string name, ERarity rarity)
-    {
-        return rarity switch
+    private static Equipment? Get(string name, ERarity rarity) =>
+        Get(
+            x => x?.BaseItem.Name == name,
+            x => x?.RareItem.Name == name,
+            x => x?.EpicItem.Name == name,
+            rarity
+        );
+
+    private static Equipment? Get(
+        Predicate<ItemManager.EquipmentItemInstance?> predicateBase,
+        Predicate<ItemManager.EquipmentItemInstance?> predicateRare,
+        Predicate<ItemManager.EquipmentItemInstance?> predicateEpic,
+        ERarity rarity
+    ) =>
+        rarity switch
         {
             ERarity.Epic => GameController
-                .Instance.ItemManager.Equipments.Find(x => x.EpicItem?.Name == name)
-                ?.BaseItem as Equipment,
+                .Instance.ItemManager.Equipments.Find(predicateEpic)
+                ?.EpicItem as Equipment,
 
             ERarity.Rare => GameController
-                .Instance.ItemManager.Equipments.Find(x => x.RareItem?.Name == name)
+                .Instance.ItemManager.Equipments.Find(predicateRare)
                 ?.RareItem as Equipment,
 
             ERarity.Common or _ => GameController
-                .Instance.ItemManager.Equipments.Find(x => x.BaseItem?.Name == name)
+                .Instance.ItemManager.Equipments.Find(predicateBase)
                 ?.BaseItem as Equipment,
         };
-    }
 
     /// <summary>
     /// Create a new equipment and add it to the game's data.
     /// </summary>
     /// <param name="descriptor"></param>
-    [Deferreable]
+    [Deferrable]
     private static void Add_Impl(EquipmentDescriptor descriptor)
     {
         LocalisationData.LocalisationDataEntry defaultLocalisation = new()
@@ -97,7 +97,7 @@ public static partial class Equipments
             StringContentEnglish = descriptor.Name,
         };
 
-        Add(descriptor, defaultLocalisation);
+        Add_Impl(descriptor, defaultLocalisation);
     }
 
     /// <summary>
@@ -107,14 +107,14 @@ public static partial class Equipments
     /// <param name="descriptor"></param>
     /// <param name="localisationData"></param>
     /// <param name="customLanguageEntries"></param>
-    [Deferreable]
+    [Deferrable]
     private static void Add_Impl(
         EquipmentDescriptor descriptor,
         LocalisationData.LocalisationDataEntry localisationData,
         Dictionary<string, string> customLanguageEntries
     )
     {
-        Add(descriptor);
+        Add_Impl(descriptor);
 
         Localisation.AddLocalisedText(localisationData, customLanguageEntries);
     }
@@ -124,7 +124,7 @@ public static partial class Equipments
     /// </summary>
     /// <param name="descriptor"></param>
     /// <param name="localisationData"></param>
-    [Deferreable]
+    [Deferrable]
     private static void Add_Impl(
         EquipmentDescriptor descriptor,
         LocalisationData.LocalisationDataEntry localisationData
@@ -148,9 +148,6 @@ public static partial class Equipments
             PassiveEffectList = [],
         };
 
-        equipment.Icon.name = objectName;
-        equipment.Icon.texture.name = objectName;
-
         Utils.GameObjects.CopyToGameObject(ref go, equipment);
         go.GetComponent<Equipment>().name = go.name;
 
@@ -172,7 +169,7 @@ public static partial class Equipments
         equItemInst.Validate();
 
         GameController.Instance.ItemManager.Equipments.Add(equItemInst);
-        WorldData.Instance.Referenceables.Add(go.GetComponent<Equipment>());
+        Referenceables.Add(go.GetComponent<Equipment>());
 
         Localisation.AddLocalisedText(localisationData);
 
@@ -184,7 +181,7 @@ public static partial class Equipments
     /// </summary>
     /// <param name="id"></param>
     /// <param name="descriptor"></param>
-    [Deferreable]
+    [Deferrable]
     private static void Update_Impl(int id, EquipmentDescriptor descriptor)
     {
         if (TryGet(id, ERarity.Common, out var common))
@@ -201,7 +198,7 @@ public static partial class Equipments
     /// <param name="name"></param>
     /// <param name="rarity"></param>
     /// <param name="descriptor"></param>
-    [Deferreable]
+    [Deferrable]
     private static void Update_Impl(string name, ERarity rarity, EquipmentDescriptor descriptor)
     {
         if (TryGet(name, rarity, out var equipment))
@@ -243,7 +240,7 @@ public static partial class Equipments
         {
             foreach (PassiveEffect comp in equipment.GetComponents<PassiveEffect>())
             {
-                Object.DestroyImmediate(comp);
+                GameObject.DestroyImmediate(comp);
             }
 
             GameObject go = equipment.gameObject;

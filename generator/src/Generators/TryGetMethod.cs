@@ -1,26 +1,29 @@
-using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
+using Generators.Helpers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Text;
 
 namespace Generators;
 
-#nullable enable
 [Generator]
 public sealed class TryGetMethodGenerator : IIncrementalGenerator
 {
-    private const string Attribute = "Ethereal.Generator.TryGet";
+    private const string Attribute = "Ethereal.Attributes.TryGet";
+
+    private const string Suffix = "TryGet";
+
+    private const string AdditionalComments =
+        "/// <param name=\"result\"></param>\n"
+        + "/// <returns>true if the API is ready and it was found; otherwise, false.</returns>";
 
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         var provider = context
             .SyntaxProvider.CreateSyntaxProvider(
                 static (node, _) => node is MethodDeclarationSyntax m && m.AttributeLists.Count > 0,
-                static (ctx, _) => GetMethodWithAttribute(ctx)
+                static (ctx, _) => MethodHelper.GetWithAttribute(ctx, Attribute)
             )
             .Where(static m => m is not null);
 
@@ -28,93 +31,21 @@ public sealed class TryGetMethodGenerator : IIncrementalGenerator
 
         context.RegisterSourceOutput(
             compilation,
-            static (spc, source) => Execute(spc, source.Right!)
-        );
-    }
-
-    private static SymbolWithComments? GetMethodWithAttribute(GeneratorSyntaxContext context)
-    {
-        var declaration = (MethodDeclarationSyntax)context.Node;
-
-        if (context.SemanticModel.GetDeclaredSymbol(declaration) is not IMethodSymbol symbol)
-            return null;
-
-        var serializableAttr = context.SemanticModel.Compilation.GetTypeByMetadataName(Attribute);
-
-        if (serializableAttr == null)
-            return null;
-
-        return symbol
-            .GetAttributes()
-            .Any(x => SymbolEqualityComparer.Default.Equals(x.AttributeClass, serializableAttr))
-            ? new SymbolWithComments() { Comments = GetComments(declaration), Symbol = symbol }
-            : null;
-    }
-
-    private static string GetComments(MethodDeclarationSyntax declaration)
-    {
-        SyntaxTriviaList leadingTrivia = declaration.GetLeadingTrivia();
-
-        var comments = leadingTrivia
-            .Where(t =>
-                t.IsKind(Microsoft.CodeAnalysis.CSharp.SyntaxKind.SingleLineCommentTrivia)
-                || t.IsKind(Microsoft.CodeAnalysis.CSharp.SyntaxKind.MultiLineCommentTrivia)
-                || t.IsKind(
-                    Microsoft.CodeAnalysis.CSharp.SyntaxKind.SingleLineDocumentationCommentTrivia
+            static (spc, source) =>
+                GeneratorHelper.ExecuteGroup<MethodMetadata, IMethodSymbol>(
+                    spc,
+                    source.Right!,
+                    Suffix,
+                    GeneratePartialClass
                 )
-            )
-            .Select(x =>
-            {
-                var res = x.ToString();
-
-                // Transform the <return> property into a <param> of name `result`
-                if (res.Contains("<returns>"))
-                    return res.Replace("<returns>", "<param name=\"result\">")
-                        .Replace("</returns>", "</param>");
-                else
-                    return res;
-            })
-            .Where(x => x != String.Empty)
-            .Concat(
-                [
-                    "/// <returns>true if the API is ready and it was found; otherwise, false.</returns>",
-                ]
-            );
-
-        return string.Join("\n", comments.Select(t => t.ToString())) ?? String.Empty;
-    }
-
-    private static void Execute(
-        SourceProductionContext context,
-        ImmutableArray<SymbolWithComments> methods
-    )
-    {
-        if (methods.IsDefaultOrEmpty)
-            return;
-
-        // Emit a single partial class
-        var classes = methods.GroupBy(
-            m => m.Symbol!.ContainingType,
-            SymbolEqualityComparer.Default
         );
-
-        foreach (var partialClass in classes)
-        {
-            ISymbol type = partialClass.Key!;
-
-            context.AddSource(
-                $"{type.Name}_TryGet.g.cs",
-                SourceText.From(GeneratePartialClass(type, partialClass), Encoding.UTF8)
-            );
-        }
     }
 
-    private static string GeneratePartialClass(
-        ISymbol symbol,
-        IEnumerable<SymbolWithComments> methods
-    )
+    private static string GeneratePartialClass(ISymbol symbol, IEnumerable<MethodMetadata> methods)
     {
         StringBuilder sb = new();
+
+        sb.AppendLine("#nullable enable");
 
         string @namespace = symbol.ContainingNamespace.ToDisplayString();
 
@@ -128,20 +59,22 @@ public sealed class TryGetMethodGenerator : IIncrementalGenerator
         sb.AppendLine($"    {accessibility} static partial class {symbol.Name}");
         sb.AppendLine("    {");
 
-        foreach (SymbolWithComments data in methods)
+        foreach (MethodMetadata data in methods)
         {
             var method = data.Symbol!;
             var name = method.Name.Replace("Get", "TryGet");
             var args = string.Join(", ", method.Parameters.Select(p => p.Name));
-            var @params = string.Join(
-                ", ",
-                method.Parameters.Select(p => $"{p.Type.ToDisplayString()} {p.Name}")
-            );
-            var param_separator = @params == String.Empty ? "" : ", ";
+            var @params = string.Join(", ", data.Parameters?.Select(x => x.AsArgument()));
+            var paramSeparator = @params == string.Empty ? "" : ", ";
+            var returnType = method.ReturnType.ToString();
 
-            sb.AppendLine($"        /// {data.Comments}");
+            if (returnType.EndsWith("?"))
+                returnType = returnType.Remove(returnType.Length - 1);
+
+            sb.AppendLine($"        /// {string.Join("\n", data.Comments)}");
+            sb.AppendLine(AdditionalComments);
             sb.AppendLine(
-                $"        public static bool {name}({@params}{param_separator}out {method.ReturnType} result)"
+                $"        public static bool {name}({@params}{paramSeparator}out {returnType} result)"
             );
             sb.AppendLine("        {");
             sb.AppendLine($"            result = API.IsReady ? {method.Name}({args}) : null;");
@@ -158,5 +91,3 @@ public sealed class TryGetMethodGenerator : IIncrementalGenerator
         return sb.ToString();
     }
 }
-
-#nullable disable

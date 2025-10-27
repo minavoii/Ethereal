@@ -1,11 +1,15 @@
+using System;
 using System.Collections.Generic;
-using Ethereal.Generator;
+using System.Linq;
+using Ethereal.Attributes;
+using Ethereal.Classes.Builders;
+using Ethereal.Classes.Wrappers;
 using HarmonyLib;
 using UnityEngine;
 
 namespace Ethereal.API;
 
-[Deferreable]
+[Deferrable]
 public static partial class Actions
 {
     /// <summary>
@@ -17,7 +21,7 @@ public static partial class Actions
 
         public string Description { get; set; } = "";
 
-        public Aether Cost { get; set; }
+        public Aether? Cost { get; set; }
 
         public ETargetType? TargetType { get; set; }
 
@@ -29,11 +33,11 @@ public static partial class Actions
 
         public List<EActionSubType> SubTypes { get; set; } = [];
 
-        public Sprite Icon { get; set; }
+        public Sprite? Icon { get; set; }
 
-        public Sprite IconSmall { get; set; }
+        public Sprite? IconSmall { get; set; }
 
-        public Sprite IconCutSmall { get; set; }
+        public Sprite? IconCutSmall { get; set; }
 
         public ESkillType? SkillType { get; set; }
     }
@@ -42,65 +46,95 @@ public static partial class Actions
     /// Get an action by id.
     /// </summary>
     /// <param name="id"></param>
-    /// <returns>an action if one was found; otherwise null.</returns>
     [TryGet]
-    private static BaseAction Get(int id)
-    {
-        // Find action by monster type
-        foreach (MonsterType type in GameController.Instance.MonsterTypes)
-        {
-            BaseAction action = type.Actions.Find(x => x.ID == id);
-
-            if (action != null)
-                return action;
-        }
-
-        return null;
-    }
+    private static BaseAction? Get(int id) => Get(x => x?.ID == id);
 
     /// <summary>
     /// Get an action by name.
     /// </summary>
     /// <param name="name"></param>
-    /// <returns>an action if one was found; otherwise null.</returns>
     [TryGet]
-    private static BaseAction Get(string name)
-    {
-        // Find action by monster type
-        foreach (MonsterType type in GameController.Instance.MonsterTypes)
-        {
-            BaseAction action = type.Actions.Find(x => x.Name == name);
+    private static BaseAction? Get(string name) => Get(x => x?.Name == name);
 
-            if (action != null)
-                return action;
-        }
-
-        return null;
-    }
+    private static BaseAction? Get(Func<BaseAction?, bool> predicate) =>
+        GameController
+            .Instance.MonsterTypes.SelectMany(x => x.Actions)
+            .Where(predicate)
+            .FirstOrDefault()
+        ?? WorldData.Instance.Referenceables.OfType<BaseAction>().FirstOrDefault(predicate);
 
     /// <summary>
     /// Get all actions.
     /// </summary>
     /// <returns></returns>
     [TryGet]
-    private static List<BaseAction> GetAll()
-    {
-        List<BaseAction> actions = [];
+    private static List<BaseAction> GetAll() =>
+        [
+            .. GameController
+                .Instance.MonsterTypes.SelectMany(x => x.Actions)
+                .Where(x => x.Name != "?????" && x.Name != "PoiseBreaker")
+                .Distinct(),
+        ];
 
-        foreach (MonsterType type in GameController.Instance.MonsterTypes)
+    /// <summary>
+    /// Create a new action and add it to the game's data.
+    /// </summary>
+    /// <param name="action"></param>
+    /// <param name="modifiers"></param>
+    /// <param name="learnable"></param>
+    [Deferrable]
+    private static void Add_Impl(
+        BaseActionBuilder action,
+        List<ActionModifier> modifiers,
+        bool learnable = false
+    ) => Add_Impl(action.Build(), modifiers, learnable);
+
+    /// <summary>
+    /// Create a new action and add it to the game's data.
+    /// </summary>
+    /// <param name="action"></param>
+    /// <param name="modifiers"></param>
+    /// <param name="learnable"></param>
+    [Deferrable]
+    private static void Add_Impl(
+        BaseAction action,
+        List<ActionModifier> modifiers,
+        bool learnable = false
+    )
+    {
+        GameObject go = Utils.GameObjects.IntoGameObject(action);
+        go.GetComponent<BaseAction>().enabled = false;
+
+        if (action.IsFreeAction())
+            go.GetComponent<BaseAction>().SetFreeAction(true);
+
+        foreach (var modifier in modifiers)
         {
-            foreach (BaseAction action in type.Actions)
+            if (modifier is ActionDamageWrapper damageWrapper)
+                damageWrapper.Unwrap();
+
+            Utils.GameObjects.CopyToGameObject(ref go, modifier);
+
+            // Set the `Buffs` property here because it's private
+            if (modifier is ActionApplyBuffWrapper applyBuff)
             {
-                if (
-                    !actions.Contains(action)
-                    && action.Name != "?????"
-                    && action.Name != "PoiseBreaker"
-                )
-                    actions.Add(action);
+                AccessTools
+                    .Field(typeof(ActionApplyBuff), "Buffs")
+                    .SetValue(
+                        go.GetComponent<ActionApplyBuff>(),
+                        applyBuff.BuffDefines.Select(x => x.Build()).ToList()
+                    );
             }
         }
 
-        return actions;
+        go.GetComponent<BaseAction>().InitializeReferenceable();
+        Referenceables.Add(go.GetComponent<BaseAction>());
+
+        if (learnable)
+        {
+            foreach (GameObject monsterType in action.Types)
+                monsterType.GetComponent<MonsterType>().Actions.Add(go.GetComponent<BaseAction>());
+        }
     }
 
     /// <summary>
@@ -108,7 +142,7 @@ public static partial class Actions
     /// </summary>
     /// <param name="id"></param>
     /// <param name="descriptor"></param>
-    [Deferreable]
+    [Deferrable]
     private static void Update_Impl(int id, ActionDescriptor descriptor)
     {
         if (TryGet(id, out var action))
@@ -120,7 +154,7 @@ public static partial class Actions
     /// </summary>
     /// <param name="name"></param>
     /// <param name="descriptor"></param>
-    [Deferreable]
+    [Deferrable]
     private static void Update_Impl(string name, ActionDescriptor descriptor)
     {
         if (TryGet(name, out var action))
