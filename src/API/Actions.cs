@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Ethereal.Attributes;
 using Ethereal.Classes.Builders;
+using Ethereal.Classes.Wrappers;
 using HarmonyLib;
 using UnityEngine;
 
