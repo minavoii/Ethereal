@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Ethereal.Attributes;
 using Ethereal.Classes.Builders;
+using Ethereal.Classes.LazyValues;
 using UnityEngine;
 
 namespace Ethereal.API;
