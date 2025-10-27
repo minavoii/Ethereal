@@ -64,7 +64,8 @@ public static partial class Traits
                 .Instance.ActiveMonsterList.Select(x =>
                     x.GetComponent<SkillManager>()?.SignatureTrait?.GetComponent<Trait>()
                 )
-                .FirstOrDefault(predicate);
+                .FirstOrDefault(predicate)
+            ?? WorldData.Instance.Referenceables.OfType<Trait>().FirstOrDefault(predicate);
     }
 
     /// <summary>
