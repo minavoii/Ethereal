@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Ethereal.API;
+using Ethereal.Classes.Builders;
+using Ethereal.Classes.LazyValues;
 using HarmonyLib;
 using Newtonsoft.Json;
 
@@ -41,33 +43,38 @@ internal class Randomizer
 
             (EElement, EElement) elements = Random.GetRandomUniqueElements();
             List<EMonsterType> types = Random.GetRandomTypes();
+            Trait signatureTrait = Random.GetRandomTrait(types, false, usedSignatureTraits);
 
             Monsters.MonsterDescriptor descriptor = new()
             {
                 Elements = elements,
                 Types = types,
                 MainType = Random.GetRandomMainType(),
-                Perks = Random.GetRandomPerks(),
-                Scripting = Random.GetRandomScripting(elements, types, monster.Name == "Mephisto"),
-                WildTraits =
+                Perks = [.. Random.GetRandomPerks().Select(x => new PerkInfosBuilder(x))],
+                Scripting =
                 [
-                    new()
-                    {
-                        Trait = Random.GetRandomTrait(types, true).gameObject,
-                        MinDifficulty = EDifficulty.Heroic,
-                    },
+                    .. Random
+                        .GetRandomScripting(elements, types, monster.Name == "Mephisto")
+                        .Select(x => new MonsterAIActionBuilder(
+                            x.Action.GetComponent<BaseAction>(),
+                            x.Conditions,
+                            x.IsTemporary
+                        )),
                 ],
-                EliteTrait = Random.GetRandomTrait(types, true),
-                StartingActions = Random.GetRandomStartingActions(elements, types),
-                SignatureTrait = Random.GetRandomTrait(types, false),
+                WildTraits = [new(Random.GetRandomTrait(types, true), EDifficulty.Heroic)],
+                EliteTrait = new(Random.GetRandomTrait(types, true)),
+                StartingActions =
+                [
+                    .. Random
+                        .GetRandomStartingActions(elements, types)
+                        .Select(x => new LazyAction(x)),
+                ],
+                SignatureTrait = new(signatureTrait),
             };
 
-            while (usedSignatureTraits.Contains(descriptor.SignatureTrait.ID))
-                descriptor.SignatureTrait = Random.GetRandomTrait(types, false);
+            usedSignatureTraits.Add(signatureTrait.ID);
 
-            usedSignatureTraits.Add(descriptor.SignatureTrait.ID);
-
-            randomized.Add(monster.MonID, descriptor);
+            randomized.Add(monster.ID, descriptor);
         }
 
         foreach ((int id, Monsters.MonsterDescriptor descriptor) in randomized)

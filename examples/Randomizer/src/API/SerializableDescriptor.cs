@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Ethereal.API;
+using Ethereal.Classes.Builders;
+using Ethereal.Classes.LazyValues;
 
 namespace Randomizer.API;
 
@@ -22,9 +24,9 @@ internal class SerializableDescriptor()
 
     public List<int> Perks { get; set; } = [];
 
-    public List<(int, List<MonsterAIActionCondition>)> Scripting { get; set; } = [];
+    public List<(int id, List<MonsterAIActionCondition> conditions)> Scripting { get; set; } = [];
 
-    public List<(int, EDifficulty)> WildTraits { get; set; } = [];
+    public List<(int id, EDifficulty difficulty)> WildTraits { get; set; } = [];
 
     public int EliteTrait { get; set; }
 
@@ -37,23 +39,23 @@ internal class SerializableDescriptor()
     {
         MainType = descriptor.MainType;
         Types = descriptor.Types;
-        Elements = descriptor.Elements;
-        SignatureTrait = descriptor.SignatureTrait.ID;
-        StartingActions = [.. descriptor.StartingActions.Select(x => x.ID)];
-        Perks = [.. descriptor.Perks.Select(x => x.Perk.GetComponent<Perk>().ID)];
+        Elements = descriptor.Elements.Value;
+        SignatureTrait = descriptor.SignatureTrait.Get().ID;
+        StartingActions = [.. descriptor.StartingActions.Select(x => x.Get().ID)];
+        Perks = [.. descriptor.Perks.Select(x => x.Build().Perk.GetComponent<Perk>().ID)];
         Scripting =
         [
             .. descriptor.Scripting.Select(x =>
-                (x.Action.GetComponent<BaseAction>().ID, x.Conditions)
+                (x.Action.Get().GetComponent<BaseAction>().ID, x.Conditions)
             ),
         ];
         WildTraits =
         [
             .. descriptor.WildTraits.Select(x =>
-                (x.Trait.GetComponent<Trait>().ID, x.MinDifficulty)
+                (x.Trait.Get().GetComponent<Trait>().ID, x.MinDifficulty)
             ),
         ];
-        EliteTrait = descriptor.EliteTrait.ID;
+        EliteTrait = descriptor.EliteTrait.Get().ID;
     }
 
     /// <summary>
@@ -66,48 +68,46 @@ internal class SerializableDescriptor()
         {
             Elements = Elements,
             MainType = MainType,
-            Perks = [],
-            Scripting = [],
-            StartingActions = [],
             Types = Types,
-            WildTraits = [],
+            EliteTrait = Traits.TryGet(EliteTrait, out Trait eliteTrait) ? new(eliteTrait) : null,
+            SignatureTrait = Traits.TryGet(SignatureTrait, out Trait signatureTrait)
+                ? new(signatureTrait)
+                : null,
+            Perks =
+            [
+                .. Perks.Select(x => new PerkInfosBuilder(
+                    Data.AllPerks.Find(y => y.Perk.GetComponent<Perk>().ID == x)
+                )),
+            ],
+            Scripting =
+            [
+                .. Scripting
+                    .Select(x =>
+                        Actions.TryGet(x.id, out BaseAction action)
+                            ? new MonsterAIActionBuilder(action, x.conditions)
+                            : null
+                    )
+                    .Where(x => x is not null),
+            ],
+            StartingActions =
+            [
+                .. StartingActions
+                    .Select(x =>
+                        Actions.TryGet(x, out BaseAction action) ? new LazyAction(action) : null
+                    )
+                    .Where(x => x is not null),
+            ],
+            WildTraits =
+            [
+                .. WildTraits
+                    .Select(x =>
+                        Traits.TryGet(x.id, out Trait trait)
+                            ? new MonsterAITraitBuilder(trait, x.difficulty)
+                            : null
+                    )
+                    .Where(x => x is not null),
+            ],
         };
-
-        if (Traits.TryGet(EliteTrait, out var eliteTrait))
-            descriptor.EliteTrait = eliteTrait;
-
-        if (Traits.TryGet(SignatureTrait, out var signatureTrait))
-            descriptor.SignatureTrait = signatureTrait;
-
-        foreach (int id in Perks)
-        {
-            PerkInfos perk = Data.AllPerks.Find(x => x.Perk.GetComponent<Perk>().ID == id);
-
-            if (perk != null)
-                descriptor.Perks.Add(perk);
-        }
-
-        foreach ((int id, List<MonsterAIActionCondition> conditions) in Scripting)
-        {
-            if (Actions.TryGet(id, out BaseAction action))
-                descriptor.Scripting.Add(
-                    new() { Action = action.gameObject, Conditions = conditions }
-                );
-        }
-
-        foreach (int id in StartingActions)
-        {
-            if (Actions.TryGet(id, out var action))
-                descriptor.StartingActions.Add(action);
-        }
-
-        foreach ((int id, EDifficulty difficulty) in WildTraits)
-        {
-            if (Traits.TryGet(id, out var trait))
-                descriptor.WildTraits.Add(
-                    new() { Trait = trait.gameObject, MinDifficulty = difficulty }
-                );
-        }
 
         return descriptor;
     }
