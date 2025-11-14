@@ -21,7 +21,6 @@ internal static class Rotation
         MonsterHUDIcon = Icon,
         MonsterHUDIconSmall = Icon,
         IsAfflictionDebuff = false,
-        IsCrowdControl = false,
         IsDamagingBuff = false,
         VFXApply = new(),
         SfxApply = new(),
