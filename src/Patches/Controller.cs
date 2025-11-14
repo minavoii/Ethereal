@@ -24,7 +24,5 @@ internal static class Controller
         API.Elements.SetReady();
         API.Actions.SetReady();
         API.Traits.SetReady();
-        API.Monsters.SetReady();
-        API.Mementos.SetReady();
     }
 }
