@@ -82,6 +82,7 @@ public static partial class Monsters
     private static void Add_Impl(GameObject monster)
     {
         GameController.Instance.CompleteMonsterList.Add(monster);
+        GameController.Instance.ActiveMonsterList.Add(monster);
         Referenceables.Add(monster.GetComponent<Monster>());
     }
 
