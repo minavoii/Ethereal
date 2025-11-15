@@ -177,7 +177,7 @@ internal static class WaterWheel
         Description: "",
         Sidenote: "",
         Cost: 100,
-        CostCurrency: ECollectibleLoot.Aether,
+        CostCurrency: ECollectibleLoot.AetherCrystals,
         UpgradeType: EMetaUpgradeType.UnlockMonster,
         UnlockedMonster: new(Monster)
     );

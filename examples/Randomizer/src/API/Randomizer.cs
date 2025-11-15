@@ -23,7 +23,7 @@ internal class Randomizer
                     + (string)
                         AccessTools
                             .Field(typeof(SaveFileManager), "selectedProfileID")
-                            .GetValue(SaveFileManager.instance)
+                            .GetValue(SaveFileManager.Instance)
                     + ".json"
             );
         }
