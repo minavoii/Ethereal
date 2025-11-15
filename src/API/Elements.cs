@@ -13,8 +13,6 @@ public static partial class Elements
     {
         public Sprite? Icon { get; set; }
 
-        public Sprite? IconSmall { get; set; }
-
         public Sprite? IconSmallEmpty { get; set; }
 
         public Sprite? IconSmallFilled { get; set; }
@@ -30,9 +28,6 @@ public static partial class Elements
     {
         if (descriptor.Icon != null)
             Prefabs.Instance.ElementIcons[(int)element] = descriptor.Icon;
-
-        if (descriptor.IconSmall != null)
-            Prefabs.Instance.ElementIconsSmall[(int)element] = descriptor.IconSmall;
 
         if (descriptor.IconSmallEmpty != null)
             Prefabs.Instance.ElementIconsSmallEmpty[(int)element] = descriptor.IconSmallEmpty;

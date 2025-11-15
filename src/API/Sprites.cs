@@ -318,11 +318,6 @@ public static partial class Sprites
             name = name[..(name.Length - 7)];
             descriptor.IconSmallFilled = icon ?? LoadFromImage(SpriteType.ElementSmall, iconPath);
         }
-        else if (name.EndsWith("Normal"))
-        {
-            name = name[..(name.Length - 7)];
-            descriptor.IconSmall = icon ?? LoadFromImage(SpriteType.ElementSmall, iconPath);
-        }
         else
             descriptor.Icon = icon ?? LoadFromImage(SpriteType.Element, iconPath);
 

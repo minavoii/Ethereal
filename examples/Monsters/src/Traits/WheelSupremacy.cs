@@ -20,7 +20,6 @@ internal static class WheelSupremacy
         [
             new PassiveGrantBuffWrapper(new(Rotation.Buff))
             {
-                BuffType = EBuffType.Buff,
                 Trigger = PassiveTriggeredEffect.ETriggerType.TurnStart,
                 Target = PassiveTriggeredEffect.ETriggerTarget.TriggeringMonster,
                 ElementType = EElement.Water,
