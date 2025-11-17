@@ -3,11 +3,23 @@ using System.IO;
 using Ethereal.API;
 using Ethereal.Classes.Builders;
 using Ethereal.Classes.Wrappers;
+using UnityEngine;
 
 namespace ExampleMonsters.CustomActions;
 
 internal static class ManyEyed
 {
+    private static readonly AnimationClip Animation = Animations.LoadFromAsset(
+        Path.Join(Plugin.CustomMonstersPath, "ManyEyed"),
+        "assets/animations/actions/manyeyed.prefab"
+    );
+
+    private static readonly VFX.ChildVFX VFX = new()
+    {
+        VFX = VFXs.CreateCosmetic(Animation),
+        SpawnForEveryEnemy = true,
+    };
+
     internal static readonly BaseActionBuilder Action = new(
         ID: 1904,
         Name: "Many Eyed",
@@ -30,7 +42,8 @@ internal static class ManyEyed
             Sprites.SpriteType.ActionCutSmall,
             Path.Join(Plugin.CustomMonstersPath, "ActionManyEyed_SmallCut.png")
         ),
-        AnimationBuildupTime: 1.1f
+        AnimationBuildupTime: 1.1f,
+        VFXs: [VFX]
     );
 
     internal static List<ActionModifier> Modifiers => [Damage, ApplyBuff];

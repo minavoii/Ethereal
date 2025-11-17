@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Linq;
 using System.Reflection;
 using BepInEx;
 using BepInEx.Logging;
@@ -7,6 +8,7 @@ using ExampleMonsters.CustomActions;
 using ExampleMonsters.CustomBuffs;
 using ExampleMonsters.CustomMonsters;
 using ExampleMonsters.CustomTraits;
+using UnityEngine;
 
 namespace ExampleMonsters;
 
@@ -28,21 +30,53 @@ public class Plugin : BaseUnityPlugin
     {
         Logger = base.Logger;
 
-        Buffs.Add(Rotation.Buff);
+        APIManager.RunWhenReady(
+            EtherealAPI.Buffs | EtherealAPI.Actions | EtherealAPI.Monsters,
+            () =>
+            {
+                if (Buffs.TryGet("Age", out Buff age))
+                {
+                    Gradient gradient = age
+                        .VFXApply.GetComponent<CosmeticVfxAnimator>()
+                        .ColorOverLifetime;
 
-        Actions.Add(ManyEyed.Action, ManyEyed.Modifiers, true);
-        Actions.Add(TwistedGarden.Action, TwistedGarden.Modifiers);
-        Actions.Add(FountainOfLife.Action, FountainOfLife.Modifiers);
+                    // Apply effects to the Rotation buff
+                    Rotation.Buff.SfxApply = age.SfxApply;
+                    Rotation.Buff.VFXApply.GetComponent<CosmeticVfxAnimator>().ColorOverLifetime =
+                        gradient;
 
-        Actions.Add(WheelSupremacyAction.Action, WheelSupremacyAction.Modifiers);
-        Traits.Add(WheelSupremacy.Trait);
+                    // Apply effects to Wheel Supremacy's action
+                    WheelSupremacyAction
+                        .VFX.VFX.GetComponent<CosmeticVfxAnimator>()
+                        .ColorOverLifetime = gradient;
+                    WheelSupremacyAction.VFX.FlipX = true;
+                }
 
-        Monsters.Add(WaterWheel.Builder);
-        Mementos.Add(
-            WaterWheel.Memento,
-            WaterWheel.MementoShifted,
-            WaterWheel.MetaUpgrade,
-            "Special"
+                // Use another action's VFX
+                if (Actions.TryGet("Moisturize", out var moisturize))
+                {
+                    FountainOfLife.Action.VFXs.Add(
+                        new() { VFX = moisturize.ActionVFX?.Children?.FirstOrDefault()?.VFX }
+                    );
+                }
+
+                Buffs.Add(Rotation.Buff);
+
+                Actions.Add(ManyEyed.Action, ManyEyed.Modifiers, true);
+                Actions.Add(TwistedGarden.Action, TwistedGarden.Modifiers);
+                Actions.Add(FountainOfLife.Action, FountainOfLife.Modifiers);
+
+                Actions.Add(WheelSupremacyAction.Action, WheelSupremacyAction.Modifiers);
+                Traits.Add(WheelSupremacy.Trait);
+
+                Monsters.Add(WaterWheel.Builder);
+                Mementos.Add(
+                    WaterWheel.Memento,
+                    WaterWheel.MementoShifted,
+                    WaterWheel.MetaUpgrade,
+                    "Special"
+                );
+            }
         );
     }
 }

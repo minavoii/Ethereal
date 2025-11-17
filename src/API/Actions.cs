@@ -87,7 +87,7 @@ public static partial class Actions
         BaseActionBuilder action,
         List<ActionModifier> modifiers,
         bool learnable = false
-    ) => Add_Impl(action.Build(), modifiers, learnable);
+    ) => Add_Impl(action.Build(), modifiers, action.VFXs, learnable);
 
     /// <summary>
     /// Create a new action and add it to the game's data.
@@ -99,6 +99,7 @@ public static partial class Actions
     private static void Add_Impl(
         BaseAction action,
         List<ActionModifier> modifiers,
+        List<VFX.ChildVFX> vfxChildren,
         bool learnable = false
     )
     {
@@ -125,6 +126,13 @@ public static partial class Actions
                         applyBuff.BuffDefines.Select(x => x.Build()).ToList()
                     );
             }
+        }
+
+        if (vfxChildren.Count > 0)
+        {
+            VFX vfx = go.AddComponent<VFX>();
+            vfx.enabled = false;
+            vfx.Children = vfxChildren;
         }
 
         go.GetComponent<BaseAction>().InitializeReferenceable();

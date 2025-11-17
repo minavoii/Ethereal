@@ -14,6 +14,11 @@ internal static class MonsterState
     private static void Prefix(BaseAction __instance)
     {
         if (!CombatStateManager.Instance.IsPreview)
+        {
             __instance.enabled = true;
+
+            if (__instance.GetComponent<VFX>() is VFX vfx)
+                vfx.enabled = true;
+        }
     }
 }
