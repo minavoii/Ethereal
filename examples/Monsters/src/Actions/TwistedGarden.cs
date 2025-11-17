@@ -3,11 +3,23 @@ using System.IO;
 using Ethereal.API;
 using Ethereal.Classes.Builders;
 using Ethereal.Classes.Wrappers;
+using UnityEngine;
 
 namespace ExampleMonsters.CustomActions;
 
 internal static class TwistedGarden
 {
+    private static readonly AnimationClip Animation = Animations.LoadFromAsset(
+        Path.Join(Plugin.CustomMonstersPath, "TwistedGarden"),
+        "assets/animations/actions/twistedgarden.prefab"
+    );
+
+    private static readonly VFX.ChildVFX VFX = new()
+    {
+        VFX = VFXs.CreateCosmetic(Animation),
+        SpawnForEveryEnemy = true,
+    };
+
     internal static readonly BaseActionBuilder Action = new(
         ID: 1902,
         Name: "Twisted Garden",
@@ -30,7 +42,8 @@ internal static class TwistedGarden
             Sprites.SpriteType.ActionCutSmall,
             Path.Join(Plugin.CustomMonstersPath, "ActionTwistedGarden_SmallCut.png")
         ),
-        AnimationBuildupTime: 0.6f
+        AnimationBuildupTime: 0.6f,
+        VFXs: [VFX]
     );
 
     internal static List<ActionModifier> Modifiers => [Damage, ApplyBuff];

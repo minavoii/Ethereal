@@ -29,7 +29,8 @@ internal static class FountainOfLife
         ActionIconCutSmall: Sprites.LoadFromImage(
             Sprites.SpriteType.ActionCutSmall,
             Path.Join(Plugin.CustomMonstersPath, "ActionFountainOfLife_SmallCut.png")
-        )
+        ),
+        VFXs: []
     );
 
     internal static List<ActionModifier> Modifiers => [Heal, RemoveBuff, ApplyBuff];

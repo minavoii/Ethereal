@@ -6,6 +6,11 @@ namespace ExampleMonsters.CustomBuffs;
 
 internal static class Rotation
 {
+    internal static readonly AnimationClip Animation = Animations.LoadFromAsset(
+        Path.Join(Plugin.CustomMonstersPath, "Rotation"),
+        "assets/animations/waterwheel/rotation.prefab"
+    );
+
     private static readonly Sprite Icon = Sprites.LoadFromImage(
         Sprites.SpriteType.Buff,
         Path.Join(Plugin.CustomMonstersPath, "Status_Rotation.png")
@@ -22,7 +27,7 @@ internal static class Rotation
         MonsterHUDIconSmall = Icon,
         IsAfflictionDebuff = false,
         IsDamagingBuff = false,
-        VFXApply = new(),
+        VFXApply = VFXs.CreateCosmetic(Animation),
         SfxApply = new(),
         PassiveEffectList = [],
     };

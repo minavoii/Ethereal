@@ -20,6 +20,7 @@ namespace Ethereal.Classes.Builders;
 /// <param name="ActionIconBig"></param>
 /// <param name="ActionIconSmall"></param>
 /// <param name="ActionIconCutSmall"></param>
+/// <param name="VFXs"></param>
 /// <param name="FreeAction"></param>
 /// <param name="MaverickSkill"></param>
 /// <param name="AnimationBuildupTime"></param>
@@ -37,6 +38,7 @@ public sealed record BaseActionBuilder(
     Sprite ActionIconBig,
     Sprite ActionIconSmall,
     Sprite ActionIconCutSmall,
+    List<VFX.ChildVFX> VFXs,
     bool FreeAction = false,
     bool MaverickSkill = false,
     float AnimationBuildupTime = 0f,
