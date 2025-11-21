@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using System.IO;
 using Ethereal.API;
+using Ethereal.Classes.Builders;
 using UnityEngine;
 
 namespace ExampleMonsters.CustomBuffs;
@@ -31,4 +33,25 @@ internal static class Rotation
         SfxApply = new(),
         PassiveEffectList = [],
     };
+
+    internal static readonly LocalisationData.LocalisationDataEntry LocalisationData = new()
+    {
+        ID = 170001,
+        StringContent = "Rotation",
+        StringContentEnglish = "Rotation",
+        StringContentSpanish = "Rotación",
+    };
+
+    internal static readonly Dictionary<string, string> CustomLanguageEntries = new()
+    {
+        // Assuming a custom language named `Newlang` exists
+        { "Newlang", "Rotator" },
+    };
+
+    internal static readonly KeywordBuilder Keyword = new(
+        "Rotation",
+        ["Rotation"],
+        new Color(0.6745098f, 0.8784314f, 0.6941177f),
+        "No innate effect. {Rotation} traits increase in strength every turn."
+    );
 }
