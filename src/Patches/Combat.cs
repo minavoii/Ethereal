@@ -9,5 +9,6 @@ internal static class Combat
     private static void Postfix()
     {
         API.Monsters.SetReady();
+        API.Encounters.SetReady();
     }
 }
