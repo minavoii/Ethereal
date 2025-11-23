@@ -17,6 +17,7 @@ public class Plugin : BaseUnityPlugin
         Logger = base.Logger;
 
         Settings.AddTab(new("Custom"));
+        Settings.AddTab(new("Custom2"));
         Settings.AddSetting(
             new BooleanCustomSetting("Accessibility", "Test Accessibility", "This is a test accessibility boolean value", "Accessibility_test", false)
             {
@@ -36,5 +37,11 @@ public class Plugin : BaseUnityPlugin
                 PositionOverrideX = 250,
                 PositionOverrideY = 0
             });
+        Settings.AddSetting(
+            new SelectCustomSetting<string>("Custom2", "Test Select", "This is a test select option", "Custom2_select", [
+                new("Option 1", "value1"),
+                new("Option 2", "value2"),
+                new("Option 3", "value3")
+            ]));
     }
 }

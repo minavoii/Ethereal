@@ -1,52 +1,58 @@
-using System.Linq;
-using TMPro;
-using UnityEngine;
 
 namespace Ethereal.Classes.Settings;
+
+public interface IPrefWriter<TSnapshot>
+{
+    void StoreToPrefs(TSnapshot data);
+}
+
+public interface IPrefReader<TSetting>
+{
+    TSetting ReadSettingFromPrefs();
+}
+
+public interface ISnapshotConverter<TSetting, TSnapshot>
+{
+    TSnapshot ToSnapshot(TSetting data);
+    TSetting ToSetting(TSnapshot data);
+}
 
 /// <summary>
 /// Basic implementation of a custom setting that stores only one value
 /// </summary>
-/// <typeparam name="T"></typeparam>
-public interface IBasicCustomSetting<T> : ICustomSetting
+/// <typeparam name="TSnapshot">Type stored in the snapshot or from the control</typeparam>
+/// <typeparam name="TData">Type stored in player prefs</typeparam>
+public abstract class BasicCustomSetting<TSetting, TSnapshot> : ICustomSetting where TSnapshot : notnull where TSetting : notnull
 {
-    /// <summary>
-    /// Key to store the custom setting
-    /// </summary>
-    public string Key { get; set; }
-    /// <summary>
-    /// Default value for the setting
-    /// </summary>
-    public T DefaultValue { get; set; }
-}
-
-public class BooleanCustomSetting : IBasicCustomSetting<bool>
-{
-    public string Tab { get; set; }
-    public string Name { get; set; }
-    public string Description { get; set; }
-    public string Key { get; set; }
-    public bool DefaultValue { get; set; }
-    public System.Func<bool> IsEnabled { get; set; } = () => true;
-    private MenuListItemToggle? _control { get; set; }
-    public float? WidthOverride { get; set; }
+    public string Tab { get; }
+    public string Name { get; }
+    public string Description { get; }
+    public abstract float Height { get; }
     public float? PositionOverrideX { get; set; }
     public float? PositionOverrideY { get; set; }
-    public float Height => 33;
+    public TSnapshot DefaultValue { get; }
 
-    public BooleanCustomSetting(
+    protected ISnapshotConverter<TSetting, TSnapshot> SnapshotConverter;
+    protected IPrefWriter<TSnapshot> PrefWriter;
+    protected IPrefReader<TSetting> PrefReader;
+
+    public BasicCustomSetting(
         string tab,
         string name,
         string description,
-        string key,
-        bool defaultValue
+        TSnapshot defaultValue,
+        ISnapshotConverter<TSetting, TSnapshot> snapshotConverter,
+        IPrefWriter<TSnapshot> prefWriter,
+        IPrefReader<TSetting> prefReader
     )
     {
         Tab = tab;
         Name = name;
         Description = description;
-        Key = key;
         DefaultValue = defaultValue;
+        SnapshotConverter = snapshotConverter;
+        PrefWriter = prefWriter;
+        PrefReader = prefReader;
     }
 
     public void SetDefaultSnapshot(ExtendedSettingsSnapshot defaultSettings)
@@ -55,72 +61,22 @@ public class BooleanCustomSetting : IBasicCustomSetting<bool>
     }
     public void SetRollbackSnapshot(ExtendedSettingsSnapshot rollbackSnapshot)
     {
-        rollbackSnapshot.CustomSettings.Add(Name, GameSettingsController.Instance.GetCustom<bool>(Name));
+        rollbackSnapshot.CustomSettings.Add(Name, SnapshotConverter.ToSnapshot(GameSettingsController.Instance.GetCustom<TSetting>(Name)));
     }
-    public void ApplySnapshot(ExtendedSettingsSnapshot snapshot)
+    public virtual void ApplySnapshot(ExtendedSettingsSnapshot snapshot)
     {
-        if (!IsEnabled())
-        {
-            return;
-        }
-
-        bool newValue = (bool)snapshot.CustomSettings[Name];
-        SetValue(GameSettingsController.Instance.Extension(), newValue);
+        TSnapshot newValue = (TSnapshot)snapshot.CustomSettings[Name];
+        GameSettingsController.Instance.Extension().Set(Name, SnapshotConverter.ToSetting(newValue));
+        PrefWriter.StoreToPrefs(newValue);
         UpdateControlState();
     }
+
+    public abstract MenuListItem BuildControl(SettingsMenu menu);
+
     public void InitializeValue(ExtendedGameSettingsController controller)
     {
-        controller.Set(Name, PlayerPrefsManager.GetInt(Key) > 0);
+        controller.Set(Name, PrefReader.ReadSettingFromPrefs());
     }
 
-    public void SetValue(ExtendedGameSettingsController controller, bool value)
-    {
-        controller.Set(Name, value);
-        PlayerPrefsManager.SetInt(Key, value ? 1 : 0);
-    }
-
-    public MenuListItem BuildControl(SettingsMenu menu)
-    {
-        MenuListItemToggle menuItem = menu.GetComponentsInChildren<MenuListItemToggle>(true)
-            .FirstOrDefault(m => m.name == "MenuItem_ColorblindAether");
-
-        GameObject newGameObject = Object.Instantiate(menuItem.gameObject);
-        newGameObject.name = $"MenuItem_{Name}";
-        MenuListItemToggle newToggle = newGameObject.GetComponent<MenuListItemToggle>();
-        newToggle.ItemDescription = Description;
-
-        TextMeshPro text = newGameObject.GetComponentInChildren<TextMeshPro>();
-        text.text = Name;
-
-        // Disable all persistent listeners
-        for (int i = 0; i < newToggle.OnToggle.GetPersistentEventCount(); i++)
-        {
-            newToggle.OnToggle.SetPersistentListenerState(i, UnityEngine.Events.UnityEventCallState.Off);
-        }
-
-        newToggle.OnToggle.AddListener((value) =>
-        {
-            SetValue(GameSettingsController.Instance.Extension(), value);
-            menu.EnableRevertSettings();
-        });
-        newToggle.OnToggle.AddListener((value) =>
-        {
-            newGameObject.GetComponent<WwiseSFX>().PlayEventByName("Play_SFX_menu_toggle");
-        });
-
-        if (WidthOverride != null)
-        {
-            newToggle.ItemSize = new(WidthOverride.Value, newToggle.ItemSize.y);
-            newToggle.ItemOffset = new((WidthOverride.Value - 5) / 2, 0);
-        }
-
-        _control = newToggle;
-        return newToggle;
-    }
-
-    public void UpdateControlState()
-    {
-        _control?.SetState(GameSettingsController.Instance.GetCustom<bool>(Name), shouldFireEvent: false);
-        _control?.SetDisabled(!IsEnabled());
-    }
+    public abstract void UpdateControlState();
 }
