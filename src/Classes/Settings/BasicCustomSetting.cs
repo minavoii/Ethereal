@@ -29,14 +29,17 @@ public class BooleanCustomSetting : IBasicCustomSetting<bool>
     public bool DefaultValue { get; set; }
     public System.Func<bool> IsEnabled { get; set; } = () => true;
     private MenuListItemToggle? _control { get; set; }
+    public float? WidthOverride { get; set; }
+    public float? PositionOverrideX { get; set; }
+    public float? PositionOverrideY { get; set; }
+    public float Height => 33;
 
     public BooleanCustomSetting(
         string tab,
         string name,
         string description,
         string key,
-        bool defaultValue,
-        System.Func<bool>? isEnabled = null
+        bool defaultValue
     )
     {
         Tab = tab;
@@ -44,7 +47,6 @@ public class BooleanCustomSetting : IBasicCustomSetting<bool>
         Description = description;
         Key = key;
         DefaultValue = defaultValue;
-        IsEnabled = isEnabled ?? (() => true);
     }
 
     public void SetDefaultSnapshot(ExtendedSettingsSnapshot defaultSettings)
@@ -57,14 +59,12 @@ public class BooleanCustomSetting : IBasicCustomSetting<bool>
     }
     public void ApplySnapshot(ExtendedSettingsSnapshot snapshot)
     {
-        Debug.Log($"Attempting apply snapshot - {Name}");
         if (!IsEnabled())
         {
             return;
         }
 
         bool newValue = (bool)snapshot.CustomSettings[Name];
-        Debug.Log($"Apply snapshot - {Name} - {newValue}");
         SetValue(GameSettingsController.Instance.Extension(), newValue);
         UpdateControlState();
     }
@@ -79,7 +79,7 @@ public class BooleanCustomSetting : IBasicCustomSetting<bool>
         PlayerPrefsManager.SetInt(Key, value ? 1 : 0);
     }
 
-    public (MenuListItem, float) BuildControl(SettingsMenu menu)
+    public MenuListItem BuildControl(SettingsMenu menu)
     {
         MenuListItemToggle menuItem = menu.GetComponentsInChildren<MenuListItemToggle>(true)
             .FirstOrDefault(m => m.name == "MenuItem_ColorblindAether");
@@ -108,13 +108,18 @@ public class BooleanCustomSetting : IBasicCustomSetting<bool>
             newGameObject.GetComponent<WwiseSFX>().PlayEventByName("Play_SFX_menu_toggle");
         });
 
+        if (WidthOverride != null)
+        {
+            newToggle.ItemSize = new(WidthOverride.Value, newToggle.ItemSize.y);
+            newToggle.ItemOffset = new((WidthOverride.Value - 5) / 2, 0);
+        }
+
         _control = newToggle;
-        return (newToggle, 33);
+        return newToggle;
     }
 
     public void UpdateControlState()
     {
-        Debug.Log($"Update state - {Name} - {_control}");
         _control?.SetState(GameSettingsController.Instance.GetCustom<bool>(Name), shouldFireEvent: false);
         _control?.SetDisabled(!IsEnabled());
     }

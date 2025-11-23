@@ -10,15 +10,27 @@ public interface ICustomSetting
     /// <summary>
     /// Settings Tab that this custom setting should be added to.
     /// </summary>
-    public string Tab { get; set; }
+    public string Tab { get; }
     /// <summary>
     /// Name of the setting
     /// </summary>
-    public string Name { get; set; }
+    public string Name { get; }
     /// <summary>
     /// Description of the setting
     /// </summary>
-    public string Description { get; set; }
+    public string Description { get; }
+    /// <summary>
+    /// Height of the control. Used for auto-positioning
+    /// </summary>
+    public float Height { get; }
+    /// <summary>
+    /// Override the X coordinate position
+    /// </summary>
+    public float? PositionOverrideX { get; }
+    /// <summary>
+    /// Override the Y coordinate position
+    /// </summary>
+    public float? PositionOverrideY { get; }
     /// <summary>
     /// Stores the default setting snapshot value
     /// Used in the reverting settings to default workflow
@@ -46,7 +58,7 @@ public interface ICustomSetting
     /// </summary>
     /// <param name="menu"></param>
     /// <returns></returns>
-    public (MenuListItem, float) BuildControl(SettingsMenu menu);
+    public MenuListItem BuildControl(SettingsMenu menu);
     /// <summary>
     /// Refreshes the control state
     /// </summary>

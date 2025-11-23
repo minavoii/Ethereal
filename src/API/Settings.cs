@@ -163,10 +163,13 @@ public static partial class Settings
         MenuList tab = GetTab(setting.Tab);
         Transform root = tab.transform.GetChild(0);
 
-        (MenuListItem newControl, float height) = setting.BuildControl(menu);
+        MenuListItem newControl = setting.BuildControl(menu);
 
-        newControl.transform.position = new Vector3(newControl.transform.position.x, Cache.CachedPosition[setting.Tab], newControl.transform.position.z);
-        Cache.CachedPosition[setting.Tab] -= height;
+        newControl.transform.position = new Vector3(
+            setting.PositionOverrideX ?? newControl.transform.position.x,
+            setting.PositionOverrideY ?? Cache.CachedPosition[setting.Tab],
+            newControl.transform.position.z);
+        Cache.CachedPosition[setting.Tab] = setting.PositionOverrideY ?? Cache.CachedPosition[setting.Tab] - setting.Height;
 
         // Add to tab
         newControl.transform.SetParent(root, false);

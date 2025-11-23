@@ -17,7 +17,24 @@ public class Plugin : BaseUnityPlugin
         Logger = base.Logger;
 
         Settings.AddTab(new("Custom"));
-        Settings.AddSetting(new BooleanCustomSetting("Accessibility", "Test Accessibility", "This is a test accessibility boolean value", "Accessibility_test", false));
+        Settings.AddSetting(
+            new BooleanCustomSetting("Accessibility", "Test Accessibility", "This is a test accessibility boolean value", "Accessibility_test", false)
+            {
+                WidthOverride = 100,
+            }
+        );
         Settings.AddSetting(new BooleanCustomSetting("Custom", "Test Custom", "This is a test boolean value on a new page", "Custom_test", true));
+        Settings.AddSetting(new BooleanCustomSetting("Custom", "Test Custom2", "This is a test boolean value to show position is automatic", "Custom_test_2", false));
+        Settings.AddSetting(
+            new BooleanCustomSetting("Custom", "Test Very Long name with width override", "This is a test value to show you can override the width of the box", "Custom_test_4", false)
+            {
+                WidthOverride = 230
+            });
+        Settings.AddSetting(
+            new BooleanCustomSetting("Custom", "Test Position Override", "This shows you can override the position of the setting. May not play well with auto-positioning", "Custom_test_5", false)
+            {
+                PositionOverrideX = 250,
+                PositionOverrideY = 0
+            });
     }
 }
