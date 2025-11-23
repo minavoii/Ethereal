@@ -2,6 +2,7 @@
 using BepInEx.Logging;
 using Ethereal.API;
 using Ethereal.Classes.Settings;
+using HarmonyLib;
 
 namespace ExampleSetting;
 
@@ -16,14 +17,23 @@ public class Plugin : BaseUnityPlugin
     {
         Logger = base.Logger;
 
+        Harmony harmony = new(MyPluginInfo.PLUGIN_GUID);
+
+        harmony.PatchAll(typeof(Patches.InventoryManagerPatch));
+        harmony.PatchAll(typeof(Patches.MonsterShrineMenuPatch));
+        harmony.PatchAll(typeof(Patches.MonsterShrineTriggerPatch));
+        harmony.PatchAll(typeof(Patches.SkillSelectMenuPatch));
+
         Settings.AddTab(new("Custom"));
         Settings.AddTab(new("Custom2"));
+
         Settings.AddSetting(
-            new BooleanCustomSetting("Accessibility", "Test Accessibility", "This is a test accessibility boolean value", "Accessibility_test", false)
+            new BooleanCustomSetting("Accessibility", "Build Tester Mode", "Turns on Build Testing mode; All available monsters in Monster Shrines, Infinite skill rerolls", "Accessibility_build_tester_mode", false)
             {
-                WidthOverride = 100,
+                IsEnabled = () => GameStateManager.Instance.IsMainMenu || ExplorationController.Instance.CurrentArea == EArea.PilgrimsRest
             }
         );
+
         Settings.AddSetting(new BooleanCustomSetting("Custom", "Test Custom", "This is a test boolean value on a new page", "Custom_test", true));
         Settings.AddSetting(new BooleanCustomSetting("Custom", "Test Custom2", "This is a test boolean value to show position is automatic", "Custom_test_2", false));
         Settings.AddSetting(

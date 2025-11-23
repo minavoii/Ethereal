@@ -11,11 +11,11 @@ public static class GameSettingsControllerExtensions
     private static readonly ConditionalWeakTable<GameSettingsController, ExtendedGameSettingsController> _extra
         = new();
 
-    public static ExtendedGameSettingsController Extension(this GameSettingsController menu)
-        => _extra.GetOrCreateValue(menu);
+    public static ExtendedGameSettingsController Extension(this GameSettingsController controller)
+        => _extra.GetOrCreateValue(controller);
 
-    public static T GetCustom<T>(this GameSettingsController menu, string setting)
-        => _extra.GetOrCreateValue(menu).Get<T>(setting);
+    public static T GetCustom<T>(this GameSettingsController controller, string setting)
+        => _extra.GetOrCreateValue(controller).Get<T>(setting);
 }
 
 public class ExtendedGameSettingsController
