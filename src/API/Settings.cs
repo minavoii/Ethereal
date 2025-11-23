@@ -121,11 +121,11 @@ public static partial class Settings
     {
         // Fixing header widths
         int totalTabs = Tabs.Count;
-        float currentSpacing = 95; // Width between headers
+        float currentSpacing = 95; // default width between headers
         float requiredSpacing = 5 * currentSpacing / totalTabs;
-        float currentWidth = 85; // Width of labels
+        float currentWidth = 85; // default width of labels
         float requiredWidth = 5 * currentWidth / totalTabs;
-        float currentBorder = 96;
+        float currentBorder = 96; // default width of border
         float requiredBorder = 5 * currentBorder / totalTabs;
         for (int i = 0; i < totalTabs; i++)
         {
