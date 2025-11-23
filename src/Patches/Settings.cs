@@ -73,5 +73,6 @@ internal static class Settings
 
             customSetting.ApplySnapshot(snapshot.Extra());
         }
+        __instance.EnableRevertSettings();
     }
 }
