@@ -1,23 +1,14 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Ethereal.Attributes;
+using Ethereal.Classes.Builders;
+using Ethereal.Classes.Settings;
 using HarmonyLib;
 using TMPro;
 using UnityEngine;
 
 namespace Ethereal.API;
-
-public interface ICustomSetting { }
-public class SettingsTabBuilder
-{
-    public string Name { get; set; } = "";
-    public int MaxItemsPerColumn { get; set; } = 5;
-    public bool FixedItemPositions { get; set; } = true;
-    public MenuList.ItemPlacementMode PlacementMode { get; set; } = MenuList.ItemPlacementMode.Default;
-    public bool VariableSize { get; set; }
-    public bool HasPaging { get; set; }
-    public int MaxItemsPerPage { get; set; }
-}
 
 [Deferrable]
 public static partial class Settings
@@ -31,6 +22,33 @@ public static partial class Settings
     ];
 
     private static SettingsMenu menu => Traverse.Create(UIController.Instance).Field("SettingsMenu").GetValue<SettingsMenu>();
+    internal static List<ICustomSetting> CustomSettings { get; set; } = [];
+
+    public class SettingsPageCache
+    {
+        public Dictionary<string, float> CachedPosition { get; set; } = new();
+    }
+
+    public static SettingsPageCache Cache { get; set; } = new();
+
+    /// <summary>
+    /// Mark the API as ready and run all deferred methods.
+    /// </summary>
+    internal static void SetReady()
+    {
+        InitializeCache();
+
+        API.SetReady();
+    }
+
+    private static void InitializeCache()
+    {
+        Cache.CachedPosition["General"] = -199;
+        Cache.CachedPosition["Input"] = -210;
+        Cache.CachedPosition["Audio"] = -165;
+        Cache.CachedPosition["Video"] = -110;
+        Cache.CachedPosition["Accessibility"] = -165;
+    }
 
     /// <summary>
     /// Add a new settings tab
@@ -44,8 +62,7 @@ public static partial class Settings
         Tabs.Add(page);
 
         // Adding page tab
-        GameObject pageObject = menu.GetComponentsInChildren<Transform>(true)
-            .FirstOrDefault(m => m.name == "Page_Accessibility").gameObject;
+        GameObject pageObject = GetTab("Accessibility").gameObject;
         GameObject newPageObject = Object.Instantiate(pageObject);
         newPageObject.transform.SetParent(pageObject.transform.parent, false);
         newPageObject.transform.SetSiblingIndex(tabIndex);
@@ -67,8 +84,7 @@ public static partial class Settings
         menuList.MaxItemsPerPage = tabBuilder.MaxItemsPerPage;
 
         // Adding header
-        GameObject headerObject = menu.GetComponentsInChildren<PagingHeader>(true)
-            .FirstOrDefault(m => m.name == $"Header_Accessibility").gameObject;
+        GameObject headerObject = GetTabHeader("Accessibility").gameObject;
         GameObject newHeaderObject = Object.Instantiate(headerObject);
         newHeaderObject.transform.SetParent(headerObject.gameObject.transform.parent, false);
         newHeaderObject.transform.SetSiblingIndex(tabIndex + 1);
@@ -94,6 +110,8 @@ public static partial class Settings
         TextMeshPro text = newHeaderObject.GetComponentInChildren<TextMeshPro>();
         text.text = page;
 
+        Cache.CachedPosition[page] = 0;
+
         // Inject into SettingsMenu
         menu.Pages = [.. menu.Pages, newHeader];
         menu.RevertChangesButtons = [.. menu.RevertChangesButtons, newPageObject.GetComponentsInChildren<MenuListItem>().First(menu => menu.gameObject.name == "MenuItem_Revert")];
@@ -101,7 +119,6 @@ public static partial class Settings
 
     public static void FixTabHeaders()
     {
-        Debug.Log($"Fixing Tab headers");
         // Fixing header widths
         int totalTabs = Tabs.Count;
         float currentSpacing = 95; // Width between headers
@@ -131,5 +148,40 @@ public static partial class Settings
     {
         return menu.GetComponentsInChildren<MenuList>(true)
             .FirstOrDefault(m => m.name == $"Page_{name}");
+    }
+
+    /// <summary>
+    /// Add a new setting
+    /// </summary>
+    /// <param name="setting"></param>
+    [Deferrable]
+    private static void AddSetting_Impl(ICustomSetting setting)
+    {
+        CustomSettings.Add(setting);
+
+        PagingHeader header = GetTabHeader(setting.Tab);
+        MenuList tab = GetTab(setting.Tab);
+        Transform root = tab.transform.GetChild(0);
+
+        (MenuListItem newControl, float height) = setting.BuildControl(menu);
+
+        newControl.transform.position = new Vector3(newControl.transform.position.x, Cache.CachedPosition[setting.Tab], newControl.transform.position.z);
+        Cache.CachedPosition[setting.Tab] -= height;
+
+        // Add to tab
+        newControl.transform.SetParent(root, false);
+        newControl.transform.SetSiblingIndex(root.childCount - 3);  // On top of back/revert/default
+
+        // Add to header
+        FieldInfo field = typeof(PagingHeader).GetField("pageMenuItems", BindingFlags.NonPublic | BindingFlags.Instance);
+        List<MenuListItem> oldArray = (field.GetValue(header) as MenuListItem[]).ToList();
+        oldArray.Insert(oldArray.Count - 3, newControl);
+        field.SetValue(header, oldArray.ToArray());
+
+        // Setting up default value
+        setting.SetDefaultSnapshot(menu.defaultSettings.Extra());
+
+        // Initializing value
+        setting.InitializeValue(GameSettingsController.Instance.Extension());
     }
 }
