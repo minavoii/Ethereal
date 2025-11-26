@@ -28,5 +28,6 @@ internal class Plugin : BaseUnityPlugin
         harmony.PatchAll(typeof(Patches.Action));
         harmony.PatchAll(typeof(Patches.PilgrimsRest));
         harmony.PatchAll(typeof(Patches.MonsterState));
+        harmony.PatchAll(typeof(Patches.CombatState));
     }
 }
