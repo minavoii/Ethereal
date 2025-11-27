@@ -114,6 +114,9 @@ public static partial class Actions
             if (modifier is ActionDamageWrapper damageWrapper)
                 damageWrapper.Unwrap();
 
+            if (modifier is ActionSummonWrapper summonWrapper)
+                summonWrapper.Unwrap();
+
             Utils.GameObjects.CopyToGameObject(ref go, modifier);
 
             // Set the `Buffs` property here because it's private

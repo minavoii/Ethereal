@@ -21,6 +21,7 @@ public enum EtherealAPI
     Referenceables = 1 << 12,
     Sprites = 1 << 13,
     Traits = 1 << 14,
+    Summons = 1 << 15,
 }
 
 public static partial class APIManager
@@ -89,5 +90,8 @@ public static partial class APIManager
 
         if (apis.HasFlag(EtherealAPI.Traits))
             await Traits.Task;
+
+        if (apis.HasFlag(EtherealAPI.Summons))
+            await Summons.Task;
     }
 }

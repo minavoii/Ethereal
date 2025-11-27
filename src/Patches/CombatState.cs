@@ -8,6 +8,7 @@ internal static class CombatState
     [HarmonyPostfix]
     private static void Postfix()
     {
+        API.Summons.SetReady();
         API.Monsters.SetReady();
     }
 }
