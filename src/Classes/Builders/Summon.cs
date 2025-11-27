@@ -1,3 +1,4 @@
+using Ethereal.API;
 using HarmonyLib;
 using UnityEngine;
 
@@ -24,38 +25,41 @@ public sealed record SummonBuilder(
     public GameObject Build()
     {
         GameObject summon_go = new();
-
         Summon.Animator = Animator;
-
-        Utils.GameObjects.CopyToGameObject(ref summon_go, Animator);
-        summon_go.AddComponent<SpriteRenderer>();
-        Utils.GameObjects.CopyToGameObject(ref summon_go, SkillManager.Build());
-        Utils.GameObjects.CopyToGameObject(ref summon_go, Stats.Build());
-        Utils.GameObjects.CopyToGameObject(ref summon_go, AI.Build());
         Utils.GameObjects.CopyToGameObject(ref summon_go, Summon);
-        GameObject.Destroy(summon_go.GetComponent<SpriteAnim>());
 
-        if (Bounds.Bounds != null)
+        LateReferenceables.Queue(() =>
         {
+            Debug.Log($"Setting up Summon {Summon.Name} in late update");
+            Utils.GameObjects.CopyToGameObject(ref summon_go, Animator);
+            summon_go.AddComponent<SpriteRenderer>();
+            Utils.GameObjects.CopyToGameObject(ref summon_go, SkillManager.Build());
+            Utils.GameObjects.CopyToGameObject(ref summon_go, Stats.Build());
+            Utils.GameObjects.CopyToGameObject(ref summon_go, AI.Build());
+            GameObject.Destroy(summon_go.GetComponent<SpriteAnim>());
+
+            if (Bounds.Bounds != null)
+            {
+                AccessTools
+                    .Field(typeof(Summon), "Bounds")
+                    .SetValue(summon_go.GetComponent<Summon>(), Bounds.Bounds);
+            }
+            if (Bounds.BoundsOffset != null)
+            {
+                AccessTools
+                    .Field(typeof(Summon), "BoundsOffset")
+                    .SetValue(summon_go.GetComponent<Summon>(), Bounds.BoundsOffset);
+            }
+
+            Transform focusPointTransform = new GameObject("FocusPoint").transform;
+
+            if (Bounds.FocusPoint is Vector3 focusPoint)
+                focusPointTransform.position = focusPoint;
+
             AccessTools
-                .Field(typeof(Summon), "Bounds")
-                .SetValue(summon_go.GetComponent<Summon>(), Bounds.Bounds);
-        }
-        if (Bounds.BoundsOffset != null)
-        {
-            AccessTools
-                .Field(typeof(Summon), "BoundsOffset")
-                .SetValue(summon_go.GetComponent<Summon>(), Bounds.BoundsOffset);
-        }
-
-        Transform focusPointTransform = new GameObject("FocusPoint").transform;
-
-        if (Bounds.FocusPoint is Vector3 focusPoint)
-            focusPointTransform.position = focusPoint;
-
-        AccessTools
-            .Field(typeof(Summon), "FocusPoint")
-            .SetValue(summon_go.GetComponent<Summon>(), focusPointTransform);
+                .Field(typeof(Summon), "FocusPoint")
+                .SetValue(summon_go.GetComponent<Summon>(), focusPointTransform);
+        });
 
         return summon_go;
     }

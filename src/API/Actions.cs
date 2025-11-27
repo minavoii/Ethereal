@@ -109,27 +109,30 @@ public static partial class Actions
         if (action.IsFreeAction())
             go.GetComponent<BaseAction>().SetFreeAction(true);
 
-        foreach (var modifier in modifiers)
+        LateReferenceables.Queue(() =>
         {
-            if (modifier is ActionDamageWrapper damageWrapper)
-                damageWrapper.Unwrap();
-
-            if (modifier is ActionSummonWrapper summonWrapper)
-                summonWrapper.Unwrap();
-
-            Utils.GameObjects.CopyToGameObject(ref go, modifier);
-
-            // Set the `Buffs` property here because it's private
-            if (modifier is ActionApplyBuffWrapper applyBuff)
+            foreach (var modifier in modifiers)
             {
-                AccessTools
-                    .Field(typeof(ActionApplyBuff), "Buffs")
-                    .SetValue(
-                        go.GetComponent<ActionApplyBuff>(),
-                        applyBuff.BuffDefines.Select(x => x.Build()).ToList()
-                    );
+                if (modifier is ActionDamageWrapper damageWrapper)
+                    damageWrapper.Unwrap();
+
+                if (modifier is ActionSummonWrapper summonWrapper)
+                    summonWrapper.Unwrap();
+
+                Utils.GameObjects.CopyToGameObject(ref go, modifier);
+
+                // Set the `Buffs` property here because it's private
+                if (modifier is ActionApplyBuffWrapper applyBuff)
+                {
+                    AccessTools
+                        .Field(typeof(ActionApplyBuff), "Buffs")
+                        .SetValue(
+                            go.GetComponent<ActionApplyBuff>(),
+                            applyBuff.BuffDefines.Select(x => x.Build()).ToList()
+                        );
+                }
             }
-        }
+        });
 
         if (vfxChildren.Count > 0)
         {
