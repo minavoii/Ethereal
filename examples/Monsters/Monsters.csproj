@@ -38,7 +38,7 @@
       <Private>false</Private>
     </Reference>
     <Reference Include="AK.Wwise.Unity.API.WwiseTypes.dll">
-      <HintPath>lib\AK.Wwise.Unity.API.WwiseTypes.dll</HintPath>
+      <HintPath>..\..\lib\AK.Wwise.Unity.API.WwiseTypes.dll</HintPath>
       <Private>false</Private>
     </Reference>
   </ItemGroup>
