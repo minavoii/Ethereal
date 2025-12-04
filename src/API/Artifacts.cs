@@ -136,10 +136,10 @@ public static partial class Artifacts
     /// <summary>
     /// Cleans up all added custom artifacts
     /// </summary>
-    public static void Cleanup()
+    public static void Cleanup(string? scope = null)
     {
         List<ItemManager.BaseItemInstance> custom = GameController.Instance.ItemManager.Consumables
-            .Where(c => c.BaseItem.gameObject.IsCustomObject())
+            .Where(c => c.BaseItem.gameObject.IsCustomObject(scope))
             .ToList();
 
         foreach (var artifact in custom)

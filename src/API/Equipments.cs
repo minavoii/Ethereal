@@ -182,10 +182,10 @@ public static partial class Equipments
     /// <summary>
     /// Cleans up all added custom equipment
     /// </summary>
-    public static void Cleanup()
+    public static void Cleanup(string? scope = null)
     {
         List<ItemManager.EquipmentItemInstance> equips = GameController.Instance.ItemManager.Equipments
-            .Where(b => b.BaseItem.gameObject.IsCustomObject())
+            .Where(b => b.BaseItem.gameObject.IsCustomObject(scope))
             .ToList();
 
         foreach (var equip in equips)

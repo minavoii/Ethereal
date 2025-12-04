@@ -32,7 +32,7 @@ public static partial class Referenceables
     /// <summary>
     /// Cleans up all added referenceables
     /// </summary>
-    public static void Cleanup()
+    public static void Cleanup(string? scope = null)
     {
         var cache =
             (Dictionary<int, Referenceable>)
@@ -40,7 +40,7 @@ public static partial class Referenceables
                     .Field(typeof(WorldData), "referenceableCache")
                     .GetValue(WorldData.Instance);
 
-        List<KeyValuePair<int, Referenceable>> custom = cache.Where(kvp => kvp.Value.gameObject.IsCustomObject()).ToList();
+        List<KeyValuePair<int, Referenceable>> custom = cache.Where(kvp => kvp.Value.gameObject.IsCustomObject(scope)).ToList();
         foreach (var kvp in custom)
         {
             cache.Remove(kvp.Key);

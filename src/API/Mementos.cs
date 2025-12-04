@@ -150,10 +150,10 @@ public static partial class Mementos
     /// <summary>
     /// Cleans up all added custom mementos
     /// </summary>
-    public static void Cleanup()
+    public static void Cleanup(string? scope = null)
     {
         List<ItemManager.MonsterMementoInstance> mementos = GameController.Instance.ItemManager.MonsterMementos
-            .Where(b => b.BaseItem.gameObject.IsCustomObject())
+            .Where(b => b.BaseItem.gameObject.IsCustomObject(scope))
             .ToList();
 
         foreach (var memento in mementos)

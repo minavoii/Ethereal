@@ -10,6 +10,6 @@ internal static class CombatState
     {
         API.Summons.SetReady();
         API.Monsters.SetReady();
-        API.LateReferenceables.SetReady();
+        API.LateReferenceables.Execute();
     }
 }

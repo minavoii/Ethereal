@@ -40,7 +40,7 @@ public static partial class MetaUpgrades
     /// <summary>
     /// Cleans up all added meta upgrades
     /// </summary>
-    public static void Cleanup()
+    public static void Cleanup(string? scope = null)
     {
         List<MetaUpgradeDialogueEventManager> dialogues =
         [
@@ -52,7 +52,7 @@ public static partial class MetaUpgrades
             foreach (var pageData in dialogue.AvailableUpgrades)
             {
                 List<MetaUpgrade> upgrades = pageData.AvailableUpgrades
-                    .Where(u => u.gameObject.IsCustomObject())
+                    .Where(u => u.gameObject.IsCustomObject(scope))
                     .ToList();
 
                 foreach (var upgrade in upgrades)

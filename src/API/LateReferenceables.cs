@@ -1,17 +1,27 @@
 using System;
-using Ethereal.Attributes;
+using System.Collections.Generic;
+using HarmonyLib;
 
 namespace Ethereal.API;
 
-[Deferrable]
-public static partial class LateReferenceables
+internal static partial class LateReferenceables
 {
+    private static Queue<Action> _actions = new Queue<Action>();
+
     /// <summary>
     /// Enqueues a late task for hooking up Referenceables
     /// </summary>
-    [Deferrable]
-    private static void Queue_Impl(Action action)
+    internal static void Queue(Action action)
     {
-        action();
+        _actions.AddItem(action);
+    }
+
+    internal static void Execute()
+    {
+        while (_actions.Count > 0)
+        {
+            Action action = _actions.Dequeue();
+            action();
+        }
     }
 }

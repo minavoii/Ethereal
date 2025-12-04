@@ -181,11 +181,11 @@ public static partial class Traits
     /// <summary>
     /// Cleans up all added custom traits
     /// </summary>
-    public static void Cleanup()
+    public static void Cleanup(string? scope = null)
     {
         foreach (var monsterType in GameController.Instance.MonsterTypes)
         {
-            List<Trait> customTraits = monsterType.Traits.Where(t => t.gameObject.IsCustomObject()).ToList();
+            List<Trait> customTraits = monsterType.Traits.Where(t => t.gameObject.IsCustomObject(scope)).ToList();
             foreach (var trait in customTraits)
             {
                 monsterType.Traits.Remove(trait);

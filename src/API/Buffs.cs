@@ -91,13 +91,13 @@ public static partial class Buffs
     /// <summary>
     /// Cleans up all added custom buffs
     /// </summary>
-    public static void Cleanup()
+    public static void Cleanup(string? scope = null)
     {
         List<Buff> buffs = Prefabs.Instance.AllBuffs
-            .Where(b => b.gameObject.IsCustomObject())
+            .Where(b => b.gameObject.IsCustomObject(scope))
             .ToList();
         List<Buff> debuffs = Prefabs.Instance.AllDebuffs
-            .Where(b => b.gameObject.IsCustomObject())
+            .Where(b => b.gameObject.IsCustomObject(scope))
             .ToList();
 
         foreach (var buff in buffs)

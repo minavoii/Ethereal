@@ -91,10 +91,10 @@ public static partial class Monsters
     /// <summary>
     /// Cleans up all added monsters
     /// </summary>
-    public static void Cleanup()
+    public static void Cleanup(string? scope = null)
     {
-        GameController.Instance.CompleteMonsterList = GameController.Instance.CompleteMonsterList.Where(go => !go.IsCustomObject()).ToList();
-        GameController.Instance.ActiveMonsterList = GameController.Instance.ActiveMonsterList.Where(go => !go.IsCustomObject()).ToList();
+        GameController.Instance.CompleteMonsterList = GameController.Instance.CompleteMonsterList.Where(go => !go.IsCustomObject(scope)).ToList();
+        GameController.Instance.ActiveMonsterList = GameController.Instance.ActiveMonsterList.Where(go => !go.IsCustomObject(scope)).ToList();
     }
 
     /// <summary>

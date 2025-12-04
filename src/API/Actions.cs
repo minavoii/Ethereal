@@ -156,11 +156,11 @@ public static partial class Actions
     /// <summary>
     /// Cleans up all added custom actions
     /// </summary>
-    public static void Cleanup()
+    public static void Cleanup(string? scope = null)
     {
         foreach (var monsterType in GameController.Instance.MonsterTypes)
         {
-            List<BaseAction> customActions = monsterType.Actions.Where(a => a.gameObject.IsCustomObject()).ToList();
+            List<BaseAction> customActions = monsterType.Actions.Where(a => a.gameObject.IsCustomObject(scope)).ToList();
             foreach (var action in customActions)
             {
                 monsterType.Actions.Remove(action);
