@@ -1,5 +1,6 @@
 using System;
 using Ethereal.Attributes;
+using Ethereal.CustomFlags;
 using UnityEngine;
 
 namespace Ethereal.API;
@@ -69,6 +70,7 @@ public static partial class Buffs
     private static void Add_Impl(Buff buff)
     {
         GameObject buff_go = Utils.GameObjects.IntoGameObject(buff);
+        buff_go.AddComponent<CustomTagComponent>();
 
         foreach (PassiveEffect passive in buff.PassiveEffectList)
         {

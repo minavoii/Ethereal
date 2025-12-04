@@ -1,4 +1,4 @@
-using Ethereal.Classes.Builders;
+using Ethereal.CustomFlags;
 using HarmonyLib;
 using UnityEngine;
 
@@ -16,7 +16,7 @@ internal static class MonsterInit
     [HarmonyPrefix]
     private static void Prefix(MonsterManager __instance, GameObject monsterPrefab)
     {
-        if (monsterPrefab.IsCustomMonster())
+        if (monsterPrefab.IsCustomObject())
         {
             monsterPrefab.SetActive(true);
         }
@@ -32,7 +32,7 @@ internal static class MonsterInit
     [HarmonyPostfix]
     private static void Postfix(MonsterManager __instance, GameObject monsterPrefab)
     {
-        if (monsterPrefab.IsCustomMonster())
+        if (monsterPrefab.IsCustomObject())
         {
             monsterPrefab.SetActive(false);
         }

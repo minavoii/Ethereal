@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Ethereal.Attributes;
+using Ethereal.CustomFlags;
 using UnityEngine;
 
 namespace Ethereal.API;
@@ -119,6 +120,7 @@ public static partial class Artifacts
         );
         action.transform.parent = parent.transform;
         artifact.Action = action.gameObject;
+        artifact.gameObject.AddComponent<CustomTagComponent>();
         parent.SetActive(false);
 
         GameController.Instance.ItemManager.Consumables.Insert(0, new() { BaseItem = artifact });

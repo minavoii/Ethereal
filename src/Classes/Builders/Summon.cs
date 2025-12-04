@@ -1,4 +1,5 @@
 using Ethereal.API;
+using Ethereal.CustomFlags;
 using HarmonyLib;
 using UnityEngine;
 
@@ -27,6 +28,7 @@ public sealed record SummonBuilder(
         GameObject summon_go = new();
         Summon.Animator = Animator;
         Utils.GameObjects.CopyToGameObject(ref summon_go, Summon);
+        summon_go.AddComponent<CustomTagComponent>();
 
         LateReferenceables.Queue(() =>
         {

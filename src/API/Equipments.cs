@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Ethereal.Attributes;
+using Ethereal.CustomFlags;
 using UnityEngine;
 
 namespace Ethereal.API;
@@ -133,6 +134,7 @@ public static partial class Equipments
         string objectName = descriptor.Name.Replace(" ", "");
 
         GameObject go = new($"Equipment{objectName}_{descriptor.Rarity}");
+        go.AddComponent<CustomTagComponent>();
 
         Equipment equipment = new()
         {

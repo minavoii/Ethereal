@@ -1,4 +1,5 @@
 using Ethereal.API;
+using Ethereal.CustomFlags;
 using HarmonyLib;
 using UnityEngine;
 
@@ -12,15 +13,6 @@ namespace Ethereal.Classes.Builders;
 /// <param name="FocusPoint"></param>
 public sealed record MonsterBounds(Vector2? Bounds, Vector2? BoundsOffset, Vector3? FocusPoint);
 
-public sealed class CustomMonsterComponent : MonoBehaviour { }
-
-public static class MonsterExtensions
-{
-    public static bool IsCustomMonster(this GameObject monsterPrefab)
-    {
-        return monsterPrefab?.GetComponent<CustomMonsterComponent>() != null;
-    }
-}
 
 /// <summary>
 /// A helper record that creates a Monster at runtime.
@@ -50,7 +42,7 @@ public sealed record MonsterBuilder(
     {
         GameObject monster_go = new();
         monster_go.name = $"Monster{Monster.Name.Replace(" ", "")}";
-        monster_go.AddComponent<CustomMonsterComponent>();
+        monster_go.AddComponent<CustomTagComponent>();
         Monster.Animator = Animator;
         Utils.GameObjects.CopyToGameObject(ref monster_go, Monster);
 

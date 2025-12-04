@@ -4,6 +4,7 @@ using System.Linq;
 using Ethereal.Attributes;
 using Ethereal.Classes.Builders;
 using Ethereal.Classes.Wrappers;
+using Ethereal.CustomFlags;
 using HarmonyLib;
 using UnityEngine;
 
@@ -105,6 +106,7 @@ public static partial class Actions
     {
         GameObject go = Utils.GameObjects.IntoGameObject(action);
         go.GetComponent<BaseAction>().enabled = false;
+        go.AddComponent<CustomTagComponent>();
 
         if (action.IsFreeAction())
             go.GetComponent<BaseAction>().SetFreeAction(true);

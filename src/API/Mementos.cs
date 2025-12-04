@@ -1,6 +1,7 @@
 using System;
 using Ethereal.Attributes;
 using Ethereal.Classes.Builders;
+using Ethereal.CustomFlags;
 using UnityEngine;
 
 namespace Ethereal.API;
@@ -116,6 +117,9 @@ public static partial class Mementos
     {
         MetaUpgrade goUpgrade = Utils.GameObjects.WithinGameObject(metaUpgrade);
         MonsterMemento goMemento = Utils.GameObjects.WithinGameObject(memento);
+
+        goUpgrade.gameObject.AddComponent<CustomTagComponent>();
+        goMemento.gameObject.AddComponent<CustomTagComponent>();
 
         if (shiftedMemento is not null)
         {
