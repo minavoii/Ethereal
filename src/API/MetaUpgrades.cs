@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Ethereal.Attributes;
+using Ethereal.CustomFlags;
 using UnityEngine;
 using static MetaUpgradeDialogueEventManager;
 
@@ -33,6 +34,32 @@ public static partial class MetaUpgrades
         )
         {
             pageData.AvailableUpgrades.Add(upgrade);
+        }
+    }
+
+    /// <summary>
+    /// Cleans up all added meta upgrades
+    /// </summary>
+    public static void Cleanup()
+    {
+        List<MetaUpgradeDialogueEventManager> dialogues =
+        [
+            .. Resources.FindObjectsOfTypeAll<MetaUpgradeDialogueEventManager>(),
+        ];
+
+        foreach (var dialogue in dialogues)
+        {
+            foreach (var pageData in dialogue.AvailableUpgrades)
+            {
+                List<MetaUpgrade> upgrades = pageData.AvailableUpgrades
+                    .Where(u => u.gameObject.IsCustomObject())
+                    .ToList();
+
+                foreach (var upgrade in upgrades)
+                {
+                    pageData.AvailableUpgrades.Remove(upgrade);
+                }
+            }
         }
     }
 }

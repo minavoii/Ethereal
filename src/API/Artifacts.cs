@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Ethereal.Attributes;
 using Ethereal.CustomFlags;
 using UnityEngine;
@@ -130,6 +131,21 @@ public static partial class Artifacts
         Update_Impl(descriptor.Id, descriptor);
 
         Log.API.LogInfo($"Loaded artifact: {descriptor.Name}");
+    }
+
+    /// <summary>
+    /// Cleans up all added custom artifacts
+    /// </summary>
+    public static void Cleanup()
+    {
+        List<ItemManager.BaseItemInstance> custom = GameController.Instance.ItemManager.Consumables
+            .Where(c => c.BaseItem.gameObject.IsCustomObject())
+            .ToList();
+
+        foreach (var artifact in custom)
+        {
+            GameController.Instance.ItemManager.Consumables.Remove(artifact);
+        }
     }
 
     /// <summary>

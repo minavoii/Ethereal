@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Ethereal.Attributes;
 using Ethereal.Classes.Builders;
 using Ethereal.CustomFlags;
@@ -143,5 +145,20 @@ public static partial class Mementos
 
         if (witchCategory != null)
             MetaUpgrades.AddToNPC(EMetaUpgradeNPC.Witch, witchCategory, goUpgrade);
+    }
+
+    /// <summary>
+    /// Cleans up all added custom mementos
+    /// </summary>
+    public static void Cleanup()
+    {
+        List<ItemManager.MonsterMementoInstance> mementos = GameController.Instance.ItemManager.MonsterMementos
+            .Where(b => b.BaseItem.gameObject.IsCustomObject())
+            .ToList();
+
+        foreach (var memento in mementos)
+        {
+            GameController.Instance.ItemManager.MonsterMementos.Remove(memento);
+        }
     }
 }

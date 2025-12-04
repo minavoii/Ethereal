@@ -179,6 +179,21 @@ public static partial class Traits
     }
 
     /// <summary>
+    /// Cleans up all added custom traits
+    /// </summary>
+    public static void Cleanup()
+    {
+        foreach (var monsterType in GameController.Instance.MonsterTypes)
+        {
+            List<Trait> customTraits = monsterType.Traits.Where(t => t.gameObject.IsCustomObject()).ToList();
+            foreach (var trait in customTraits)
+            {
+                monsterType.Traits.Remove(trait);
+            }
+        }
+    }
+
+    /// <summary>
     /// Overwrite a trait's properties with values from a descriptor.
     /// </summary>
     /// <param name="id"></param>

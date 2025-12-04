@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Ethereal.Attributes;
 using Ethereal.CustomFlags;
 using UnityEngine;
@@ -84,5 +86,28 @@ public static partial class Buffs
             Prefabs.Instance.AllBuffs.Add(buff_go.GetComponent<Buff>());
         else if (buff.BuffType == EBuffType.Debuff)
             Prefabs.Instance.AllDebuffs.Add(buff_go.GetComponent<Buff>());
+    }
+
+    /// <summary>
+    /// Cleans up all added custom buffs
+    /// </summary>
+    public static void Cleanup()
+    {
+        List<Buff> buffs = Prefabs.Instance.AllBuffs
+            .Where(b => b.gameObject.IsCustomObject())
+            .ToList();
+        List<Buff> debuffs = Prefabs.Instance.AllDebuffs
+            .Where(b => b.gameObject.IsCustomObject())
+            .ToList();
+
+        foreach (var buff in buffs)
+        {
+            Prefabs.Instance.AllBuffs.Remove(buff);
+        }
+
+        foreach (var debuff in debuffs)
+        {
+            Prefabs.Instance.AllDebuffs.Remove(debuff);
+        }
     }
 }

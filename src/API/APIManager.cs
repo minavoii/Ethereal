@@ -94,4 +94,21 @@ public static partial class APIManager
         if (apis.HasFlag(EtherealAPI.Summons))
             await Summons.Task;
     }
+
+    /// <summary>
+    /// Triggers cleaning up all custom API content added
+    /// </summary>
+    /// <returns></returns>
+    public static void CleanupAPIs()
+    {
+        Actions.Cleanup();
+        Artifacts.Cleanup();
+        Buffs.Cleanup();
+        Equipments.Cleanup();
+        Mementos.Cleanup();
+        MetaUpgrades.Cleanup();
+        Monsters.Cleanup();
+        Referenceables.Cleanup();
+        Traits.Cleanup();
+    }
 }

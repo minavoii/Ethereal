@@ -154,6 +154,21 @@ public static partial class Actions
     }
 
     /// <summary>
+    /// Cleans up all added custom actions
+    /// </summary>
+    public static void Cleanup()
+    {
+        foreach (var monsterType in GameController.Instance.MonsterTypes)
+        {
+            List<BaseAction> customActions = monsterType.Actions.Where(a => a.gameObject.IsCustomObject()).ToList();
+            foreach (var action in customActions)
+            {
+                monsterType.Actions.Remove(action);
+            }
+        }
+    }
+
+    /// <summary>
     /// Overwrite an action's properties with values from a descriptor.
     /// </summary>
     /// <param name="id"></param>

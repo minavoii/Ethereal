@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Ethereal.Attributes;
+using Ethereal.CustomFlags;
 using HarmonyLib;
 
 namespace Ethereal.API;
@@ -26,6 +27,25 @@ public static partial class Referenceables
 
         if (!WorldData.Instance.Referenceables.Any(x => x?.ID == referenceable.ID))
             WorldData.Instance.Referenceables.Add(referenceable);
+    }
+
+    /// <summary>
+    /// Cleans up all added referenceables
+    /// </summary>
+    public static void Cleanup()
+    {
+        var cache =
+            (Dictionary<int, Referenceable>)
+                AccessTools
+                    .Field(typeof(WorldData), "referenceableCache")
+                    .GetValue(WorldData.Instance);
+
+        List<KeyValuePair<int, Referenceable>> custom = cache.Where(kvp => kvp.Value.gameObject.IsCustomObject()).ToList();
+        foreach (var kvp in custom)
+        {
+            cache.Remove(kvp.Key);
+            WorldData.Instance.Referenceables.Remove(kvp.Value);
+        }
     }
 
     /// <summary>

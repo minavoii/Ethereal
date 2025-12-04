@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Ethereal.Attributes;
 using Ethereal.Classes.Builders;
 using Ethereal.Classes.LazyValues;
+using Ethereal.CustomFlags;
 using UnityEngine;
 
 namespace Ethereal.API;
@@ -84,6 +86,15 @@ public static partial class Monsters
         GameController.Instance.CompleteMonsterList.Add(monster);
         GameController.Instance.ActiveMonsterList.Add(monster);
         Referenceables.Add(monster.GetComponent<Monster>());
+    }
+
+    /// <summary>
+    /// Cleans up all added monsters
+    /// </summary>
+    public static void Cleanup()
+    {
+        GameController.Instance.CompleteMonsterList = GameController.Instance.CompleteMonsterList.Where(go => !go.IsCustomObject()).ToList();
+        GameController.Instance.ActiveMonsterList = GameController.Instance.ActiveMonsterList.Where(go => !go.IsCustomObject()).ToList();
     }
 
     /// <summary>

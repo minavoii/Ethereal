@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Ethereal.Attributes;
 using Ethereal.CustomFlags;
 using UnityEngine;
@@ -176,6 +177,21 @@ public static partial class Equipments
         Localisation.AddLocalisedText(localisationData);
 
         Log.API.LogInfo($"Loaded equipment: {descriptor.Name}");
+    }
+
+    /// <summary>
+    /// Cleans up all added custom equipment
+    /// </summary>
+    public static void Cleanup()
+    {
+        List<ItemManager.EquipmentItemInstance> equips = GameController.Instance.ItemManager.Equipments
+            .Where(b => b.BaseItem.gameObject.IsCustomObject())
+            .ToList();
+
+        foreach (var equip in equips)
+        {
+            GameController.Instance.ItemManager.Equipments.Remove(equip);
+        }
     }
 
     /// <summary>
