@@ -4,6 +4,7 @@ using System.Linq;
 using Ethereal.Attributes;
 using Ethereal.Classes.Builders;
 using Ethereal.Classes.Wrappers;
+using Ethereal.CustomFlags;
 using HarmonyLib;
 using UnityEngine;
 
@@ -105,28 +106,35 @@ public static partial class Actions
     {
         GameObject go = Utils.GameObjects.IntoGameObject(action);
         go.GetComponent<BaseAction>().enabled = false;
+        go.AddCustomTag();
 
         if (action.IsFreeAction())
             go.GetComponent<BaseAction>().SetFreeAction(true);
 
-        foreach (var modifier in modifiers)
+        LateReferenceables.Queue(() =>
         {
-            if (modifier is ActionDamageWrapper damageWrapper)
-                damageWrapper.Unwrap();
-
-            Utils.GameObjects.CopyToGameObject(ref go, modifier);
-
-            // Set the `Buffs` property here because it's private
-            if (modifier is ActionApplyBuffWrapper applyBuff)
+            foreach (var modifier in modifiers)
             {
-                AccessTools
-                    .Field(typeof(ActionApplyBuff), "Buffs")
-                    .SetValue(
-                        go.GetComponent<ActionApplyBuff>(),
-                        applyBuff.BuffDefines.Select(x => x.Build()).ToList()
-                    );
+                if (modifier is ActionDamageWrapper damageWrapper)
+                    damageWrapper.Unwrap();
+
+                if (modifier is ActionSummonWrapper summonWrapper)
+                    summonWrapper.Unwrap();
+
+                Utils.GameObjects.CopyToGameObject(ref go, modifier);
+
+                // Set the `Buffs` property here because it's private
+                if (modifier is ActionApplyBuffWrapper applyBuff)
+                {
+                    AccessTools
+                        .Field(typeof(ActionApplyBuff), "Buffs")
+                        .SetValue(
+                            go.GetComponent<ActionApplyBuff>(),
+                            applyBuff.BuffDefines.Select(x => x.Build()).ToList()
+                        );
+                }
             }
-        }
+        });
 
         if (vfxChildren.Count > 0)
         {
@@ -142,6 +150,21 @@ public static partial class Actions
         {
             foreach (GameObject monsterType in action.Types)
                 monsterType.GetComponent<MonsterType>().Actions.Add(go.GetComponent<BaseAction>());
+        }
+    }
+
+    /// <summary>
+    /// Cleans up all added custom actions
+    /// </summary>
+    public static void Cleanup(string? scope = null)
+    {
+        foreach (var monsterType in GameController.Instance.MonsterTypes)
+        {
+            List<BaseAction> customActions = monsterType.Actions.Where(a => a.gameObject.IsCustomObject(scope)).ToList();
+            foreach (var action in customActions)
+            {
+                monsterType.Actions.Remove(action);
+            }
         }
     }
 

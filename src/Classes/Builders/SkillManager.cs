@@ -36,7 +36,7 @@ public sealed record SkillManagerBuilder(
         new()
         {
             MainType = MainType,
-            SignatureTrait = SignatureTrait.Get()?.gameObject,
+            SignatureTrait = SignatureTrait?.Get()?.gameObject,
             MonsterTypes =
             [
                 .. MonsterTypes.Select(x =>
@@ -46,7 +46,7 @@ public sealed record SkillManagerBuilder(
             Elements = Elements,
             StaggerDefines = StaggerDefines,
             StartActions = [.. StartActions.Select(x => x.Get()?.gameObject)],
-            EliteTrait = EliteTrait.Get()?.gameObject,
+            EliteTrait = EliteTrait?.Get()?.gameObject,
             BossStagger = BossStagger,
             BossAlternativeStagger = BossAlternativeStagger,
             ImpossibleToStagger = ImpossibleToStagger,

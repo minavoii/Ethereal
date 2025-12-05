@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Ethereal.Attributes;
+using Ethereal.CustomFlags;
 using UnityEngine;
 
 namespace Ethereal.API;
@@ -119,6 +121,7 @@ public static partial class Artifacts
         );
         action.transform.parent = parent.transform;
         artifact.Action = action.gameObject;
+        artifact.gameObject.AddCustomTag();
         parent.SetActive(false);
 
         GameController.Instance.ItemManager.Consumables.Insert(0, new() { BaseItem = artifact });
@@ -128,6 +131,21 @@ public static partial class Artifacts
         Update_Impl(descriptor.Id, descriptor);
 
         Log.API.LogInfo($"Loaded artifact: {descriptor.Name}");
+    }
+
+    /// <summary>
+    /// Cleans up all added custom artifacts
+    /// </summary>
+    public static void Cleanup(string? scope = null)
+    {
+        List<ItemManager.BaseItemInstance> custom = GameController.Instance.ItemManager.Consumables
+            .Where(c => c.BaseItem.gameObject.IsCustomObject(scope))
+            .ToList();
+
+        foreach (var artifact in custom)
+        {
+            GameController.Instance.ItemManager.Consumables.Remove(artifact);
+        }
     }
 
     /// <summary>

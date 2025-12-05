@@ -4,6 +4,7 @@ using System.Linq;
 using Ethereal.Attributes;
 using Ethereal.Classes.Builders;
 using Ethereal.Classes.Wrappers;
+using Ethereal.CustomFlags;
 using UnityEngine;
 
 namespace Ethereal.API;
@@ -116,6 +117,7 @@ public static partial class Traits
     private static void Add_Impl(Trait trait, bool learnable = false)
     {
         var go = Utils.GameObjects.IntoGameObject(trait);
+        go.AddCustomTag();
 
         foreach (PassiveEffect passive in trait.PassiveEffectList)
         {
@@ -174,6 +176,21 @@ public static partial class Traits
         }
 
         Referenceables.Add(go.GetComponent<Trait>());
+    }
+
+    /// <summary>
+    /// Cleans up all added custom traits
+    /// </summary>
+    public static void Cleanup(string? scope = null)
+    {
+        foreach (var monsterType in GameController.Instance.MonsterTypes)
+        {
+            List<Trait> customTraits = monsterType.Traits.Where(t => t.gameObject.IsCustomObject(scope)).ToList();
+            foreach (var trait in customTraits)
+            {
+                monsterType.Traits.Remove(trait);
+            }
+        }
     }
 
     /// <summary>

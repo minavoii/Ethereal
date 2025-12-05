@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Ethereal.Attributes;
 using Ethereal.Classes.Builders;
+using Ethereal.CustomFlags;
 using UnityEngine;
 
 namespace Ethereal.API;
@@ -117,6 +120,9 @@ public static partial class Mementos
         MetaUpgrade goUpgrade = Utils.GameObjects.WithinGameObject(metaUpgrade);
         MonsterMemento goMemento = Utils.GameObjects.WithinGameObject(memento);
 
+        goUpgrade.gameObject.AddCustomTag();
+        goMemento.gameObject.AddCustomTag();
+
         if (shiftedMemento is not null)
         {
             MonsterMemento goShifted = Utils.GameObjects.WithinGameObject(shiftedMemento);
@@ -139,5 +145,20 @@ public static partial class Mementos
 
         if (witchCategory != null)
             MetaUpgrades.AddToNPC(EMetaUpgradeNPC.Witch, witchCategory, goUpgrade);
+    }
+
+    /// <summary>
+    /// Cleans up all added custom mementos
+    /// </summary>
+    public static void Cleanup(string? scope = null)
+    {
+        List<ItemManager.MonsterMementoInstance> mementos = GameController.Instance.ItemManager.MonsterMementos
+            .Where(b => b.BaseItem.gameObject.IsCustomObject(scope))
+            .ToList();
+
+        foreach (var memento in mementos)
+        {
+            GameController.Instance.ItemManager.MonsterMementos.Remove(memento);
+        }
     }
 }

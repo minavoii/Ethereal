@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Ethereal.Attributes;
+using Ethereal.CustomFlags;
 using UnityEngine;
 
 namespace Ethereal.API;
@@ -69,6 +72,7 @@ public static partial class Buffs
     private static void Add_Impl(Buff buff)
     {
         GameObject buff_go = Utils.GameObjects.IntoGameObject(buff);
+        buff_go.AddCustomTag();
 
         foreach (PassiveEffect passive in buff.PassiveEffectList)
         {
@@ -82,5 +86,28 @@ public static partial class Buffs
             Prefabs.Instance.AllBuffs.Add(buff_go.GetComponent<Buff>());
         else if (buff.BuffType == EBuffType.Debuff)
             Prefabs.Instance.AllDebuffs.Add(buff_go.GetComponent<Buff>());
+    }
+
+    /// <summary>
+    /// Cleans up all added custom buffs
+    /// </summary>
+    public static void Cleanup(string? scope = null)
+    {
+        List<Buff> buffs = Prefabs.Instance.AllBuffs
+            .Where(b => b.gameObject.IsCustomObject(scope))
+            .ToList();
+        List<Buff> debuffs = Prefabs.Instance.AllDebuffs
+            .Where(b => b.gameObject.IsCustomObject(scope))
+            .ToList();
+
+        foreach (var buff in buffs)
+        {
+            Prefabs.Instance.AllBuffs.Remove(buff);
+        }
+
+        foreach (var debuff in debuffs)
+        {
+            Prefabs.Instance.AllDebuffs.Remove(debuff);
+        }
     }
 }

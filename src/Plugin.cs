@@ -9,6 +9,7 @@ namespace Ethereal;
 [BepInProcess("Aethermancer.exe")]
 internal class Plugin : BaseUnityPlugin
 {
+
     private static readonly string PluginsPath = Path.GetDirectoryName(
         Assembly.GetExecutingAssembly().Location
     );
@@ -18,8 +19,7 @@ internal class Plugin : BaseUnityPlugin
     private void Awake()
     {
         Log.Plugin = Logger;
-
-        Harmony harmony = new(MyPluginInfo.PLUGIN_GUID);
+        Harmony harmony = new Harmony(MyPluginInfo.PLUGIN_GUID);
 
         harmony.PatchAll(typeof(Patches.Controller));
         harmony.PatchAll(typeof(Patches.Fonts));
@@ -28,5 +28,8 @@ internal class Plugin : BaseUnityPlugin
         harmony.PatchAll(typeof(Patches.Action));
         harmony.PatchAll(typeof(Patches.PilgrimsRest));
         harmony.PatchAll(typeof(Patches.MonsterState));
+        harmony.PatchAll(typeof(Patches.CombatState));
+        harmony.PatchAll(typeof(Patches.Projectiles));
+        harmony.PatchAll(typeof(Patches.MonsterInit));
     }
 }

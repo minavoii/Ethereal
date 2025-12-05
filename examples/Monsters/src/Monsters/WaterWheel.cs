@@ -41,7 +41,7 @@ internal static class WaterWheel
     private static readonly Texture2D ExplorationSpritesheet = new(0, 0);
 
     internal static MonsterBuilder Builder =>
-        new(Monster, Animator, Bounds, SkillManager, Stats, AI, OverworldBehaviour, Shift);
+        new(Monster, null, Animator, Bounds, SkillManager, Stats, AI, OverworldBehaviour, Shift);
 
     private static readonly Monster Monster = new()
     {
