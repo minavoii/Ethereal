@@ -28,7 +28,7 @@ public sealed record SummonBuilder(
         GameObject summon_go = new();
         Summon.Animator = Animator;
         Utils.GameObjects.CopyToGameObject(ref summon_go, Summon);
-        summon_go.AddComponent<CustomTagComponent>();
+        summon_go.AddCustomTag();
 
         LateReferenceables.Queue(() =>
         {
@@ -53,7 +53,9 @@ public sealed record SummonBuilder(
                     .SetValue(summon_go.GetComponent<Summon>(), Bounds.BoundsOffset);
             }
 
-            Transform focusPointTransform = new GameObject("FocusPoint").transform;
+            GameObject focusObj = new GameObject();
+            focusObj.transform.SetParent(summon_go.transform);
+            Transform focusPointTransform = focusObj.transform;
 
             if (Bounds.FocusPoint is Vector3 focusPoint)
                 focusPointTransform.position = focusPoint;

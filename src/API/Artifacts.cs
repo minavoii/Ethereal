@@ -121,7 +121,7 @@ public static partial class Artifacts
         );
         action.transform.parent = parent.transform;
         artifact.Action = action.gameObject;
-        artifact.gameObject.AddComponent<CustomTagComponent>();
+        artifact.gameObject.AddCustomTag();
         parent.SetActive(false);
 
         GameController.Instance.ItemManager.Consumables.Insert(0, new() { BaseItem = artifact });

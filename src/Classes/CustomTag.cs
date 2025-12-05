@@ -12,13 +12,21 @@ public static class GameObjectExtensions
 {
     public static void AddCustomTag(this GameObject go)
     {
-        CustomTagComponent tag = go.AddComponent<CustomTagComponent>();
-        tag.Scope = API.Scopes.CurrentScope;
+        CustomTagComponent? tag = go?.AddComponent<CustomTagComponent>();
+        if (tag != null)
+            tag.Scope = API.Scopes.CurrentScope;
     }
 
     public static bool IsCustomObject(this GameObject go, string? scope = null)
     {
-        CustomTagComponent? tag = go?.GetComponent<CustomTagComponent>();
+        if (go == null)
+        {
+            return false;
+        }
+        if (!go.TryGetComponent(out CustomTagComponent tag))
+        {
+            return false;
+        }
         if (tag == null)
         {
             return false;

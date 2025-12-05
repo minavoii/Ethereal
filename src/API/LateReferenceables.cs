@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using HarmonyLib;
+using UnityEngine;
 
 namespace Ethereal.API;
 
@@ -13,11 +13,13 @@ internal static partial class LateReferenceables
     /// </summary>
     internal static void Queue(Action action)
     {
-        _actions.AddItem(action);
+        Debug.Log("Queueing late reference action");
+        _actions.Enqueue(action);
     }
 
     internal static void Execute()
     {
+        Debug.Log($"Executing {_actions.Count} late reference actions");
         while (_actions.Count > 0)
         {
             Action action = _actions.Dequeue();

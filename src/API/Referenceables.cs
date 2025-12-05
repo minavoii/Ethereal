@@ -1,8 +1,11 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Ethereal.Attributes;
 using Ethereal.CustomFlags;
+using Ethereal.Patches;
 using HarmonyLib;
+using UnityEngine;
 
 namespace Ethereal.API;
 
@@ -27,6 +30,8 @@ public static partial class Referenceables
 
         if (!WorldData.Instance.Referenceables.Any(x => x?.ID == referenceable.ID))
             WorldData.Instance.Referenceables.Add(referenceable);
+
+        referenceable.transform.SetParent(UIController.Instance.Storage());
     }
 
     /// <summary>
@@ -45,6 +50,7 @@ public static partial class Referenceables
         {
             cache.Remove(kvp.Key);
             WorldData.Instance.Referenceables.Remove(kvp.Value);
+            GameObject.Destroy(kvp.Value.gameObject);
         }
     }
 

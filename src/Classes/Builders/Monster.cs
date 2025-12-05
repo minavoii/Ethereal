@@ -42,9 +42,13 @@ public sealed record MonsterBuilder(
     {
         GameObject monster_go = new();
         monster_go.name = $"Monster{Monster.Name.Replace(" ", "")}";
-        monster_go.AddComponent<CustomTagComponent>();
+        monster_go.AddCustomTag();
         Monster.Animator = Animator;
         Utils.GameObjects.CopyToGameObject(ref monster_go, Monster);
+        if (Monster.Projectile != null)
+        {
+            Monster.Projectile.transform.SetParent(monster_go.transform);
+        }
 
         LateReferenceables.Queue(() =>
         {
@@ -72,7 +76,9 @@ public sealed record MonsterBuilder(
                     .SetValue(monster_go.GetComponent<Monster>(), Bounds.BoundsOffset);
             }
 
-            Transform focusPointTransform = new GameObject("FocusPoint").transform;
+            GameObject focusObj = new GameObject();
+            focusObj.transform.SetParent(monster_go.transform);
+            Transform focusPointTransform = focusObj.transform;
 
             if (Bounds.FocusPoint is Vector3 focusPoint)
                 focusPointTransform.position = focusPoint;

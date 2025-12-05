@@ -120,8 +120,8 @@ public static partial class Mementos
         MetaUpgrade goUpgrade = Utils.GameObjects.WithinGameObject(metaUpgrade);
         MonsterMemento goMemento = Utils.GameObjects.WithinGameObject(memento);
 
-        goUpgrade.gameObject.AddComponent<CustomTagComponent>();
-        goMemento.gameObject.AddComponent<CustomTagComponent>();
+        goUpgrade.gameObject.AddCustomTag();
+        goMemento.gameObject.AddCustomTag();
 
         if (shiftedMemento is not null)
         {

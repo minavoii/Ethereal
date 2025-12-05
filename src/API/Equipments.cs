@@ -135,7 +135,7 @@ public static partial class Equipments
         string objectName = descriptor.Name.Replace(" ", "");
 
         GameObject go = new($"Equipment{objectName}_{descriptor.Rarity}");
-        go.AddComponent<CustomTagComponent>();
+        go.AddCustomTag();
 
         Equipment equipment = new()
         {

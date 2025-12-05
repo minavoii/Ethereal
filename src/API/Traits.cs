@@ -117,7 +117,7 @@ public static partial class Traits
     private static void Add_Impl(Trait trait, bool learnable = false)
     {
         var go = Utils.GameObjects.IntoGameObject(trait);
-        go.AddComponent<CustomTagComponent>();
+        go.AddCustomTag();
 
         foreach (PassiveEffect passive in trait.PassiveEffectList)
         {

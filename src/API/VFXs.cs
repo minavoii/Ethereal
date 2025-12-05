@@ -8,7 +8,7 @@ public static class VFXs
     public static GameObject CreateCosmetic(AnimationClip animation)
     {
         GameObject go = new();
-        go.AddComponent<CustomTagComponent>();
+        go.AddCustomTag();
         VFX vfx = go.AddComponent<VFX>();
         SpriteRenderer spriteRenderer = go.AddComponent<SpriteRenderer>();
         CosmeticVfxAnimator vfxAnimator = go.AddComponent<CosmeticVfxAnimator>();

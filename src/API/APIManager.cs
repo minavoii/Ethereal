@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace Ethereal.API;
 
@@ -101,6 +102,7 @@ public static partial class APIManager
     /// <returns></returns>
     public static void CleanupAPIs(string? scope)
     {
+        Debug.Log($"Cleaning up custom objects of scope {scope}");
         Actions.Cleanup(scope);
         Artifacts.Cleanup(scope);
         Buffs.Cleanup(scope);
@@ -114,6 +116,7 @@ public static partial class APIManager
 
     public static void Rebuild()
     {
+        Debug.Log($"Executing late reference actions");
         LateReferenceables.Execute();
     }
 }

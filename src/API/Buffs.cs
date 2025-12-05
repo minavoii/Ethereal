@@ -72,7 +72,7 @@ public static partial class Buffs
     private static void Add_Impl(Buff buff)
     {
         GameObject buff_go = Utils.GameObjects.IntoGameObject(buff);
-        buff_go.AddComponent<CustomTagComponent>();
+        buff_go.AddCustomTag();
 
         foreach (PassiveEffect passive in buff.PassiveEffectList)
         {

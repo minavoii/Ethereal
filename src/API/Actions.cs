@@ -106,7 +106,7 @@ public static partial class Actions
     {
         GameObject go = Utils.GameObjects.IntoGameObject(action);
         go.GetComponent<BaseAction>().enabled = false;
-        go.AddComponent<CustomTagComponent>();
+        go.AddCustomTag();
 
         if (action.IsFreeAction())
             go.GetComponent<BaseAction>().SetFreeAction(true);
