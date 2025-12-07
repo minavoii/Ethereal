@@ -37,48 +37,48 @@ internal class Randomizer
         Dictionary<int, Monsters.MonsterDescriptor> randomized = [];
         List<int> usedSignatureTraits = [];
 
-        foreach (var gameObject in GameController.Instance.ActiveMonsterList)
+        if (Monsters.TryGetAll(out List<Monster> monsters))
         {
-            Monster monster = gameObject.GetComponent<Monster>();
-
-            (EElement, EElement) elements = Random.GetRandomUniqueElements();
-            List<EMonsterType> types = Random.GetRandomTypes();
-            Trait signatureTrait = Random.GetRandomTrait(types, false, usedSignatureTraits);
-
-            Monsters.MonsterDescriptor descriptor = new()
+            foreach (Monster monster in monsters)
             {
-                Elements = elements,
-                Types = types,
-                MainType = Random.GetRandomMainType(),
-                Perks = [.. Random.GetRandomPerks().Select(x => new PerkInfosBuilder(x))],
-                Scripting =
-                [
-                    .. Random
-                        .GetRandomScripting(elements, types, monster.Name == "Mephisto")
-                        .Select(x => new MonsterAIActionBuilder(
-                            x.Action.GetComponent<BaseAction>(),
-                            x.Conditions,
-                            x.IsTemporary
-                        )),
-                ],
-                WildTraits = [new(Random.GetRandomTrait(types, true), EDifficulty.Heroic)],
-                EliteTrait = new(Random.GetRandomTrait(types, true)),
-                StartingActions =
-                [
-                    .. Random
-                        .GetRandomStartingActions(elements, types)
-                        .Select(x => new LazyAction(x)),
-                ],
-                SignatureTrait = new(signatureTrait),
-            };
+                (EElement, EElement) elements = Random.GetRandomUniqueElements();
+                List<EMonsterType> types = Random.GetRandomTypes();
+                Trait signatureTrait = Random.GetRandomTrait(types, false, usedSignatureTraits);
 
-            usedSignatureTraits.Add(signatureTrait.ID);
+                Monsters.MonsterDescriptor descriptor = new()
+                {
+                    Elements = elements,
+                    Types = types,
+                    MainType = Random.GetRandomMainType(),
+                    Perks = [.. Random.GetRandomPerks().Select(x => new PerkInfosBuilder(x))],
+                    Scripting =
+                    [
+                        .. Random
+                            .GetRandomScripting(elements, types, monster.Name == "Mephisto")
+                            .Select(x => new MonsterAIActionBuilder(
+                                x.Action.GetComponent<BaseAction>(),
+                                x.Conditions,
+                                x.IsTemporary
+                            )),
+                    ],
+                    WildTraits = [new(Random.GetRandomTrait(types, true), EDifficulty.Heroic)],
+                    EliteTrait = new(Random.GetRandomTrait(types, true)),
+                    StartingActions =
+                    [
+                        .. Random
+                            .GetRandomStartingActions(elements, types)
+                            .Select(x => new LazyAction(x)),
+                    ],
+                    SignatureTrait = new(signatureTrait),
+                };
 
-            randomized.Add(monster.ID, descriptor);
+                usedSignatureTraits.Add(signatureTrait.ID);
+                randomized.Add(monster.ID, descriptor);
+            }
+
+            foreach ((int id, Monsters.MonsterDescriptor descriptor) in randomized)
+                Monsters.Update(id, descriptor);
         }
-
-        foreach ((int id, Monsters.MonsterDescriptor descriptor) in randomized)
-            Monsters.Update(id, descriptor);
 
         SaveData(randomized);
     }

@@ -29,7 +29,7 @@ public static partial class Perks
     /// <returns></returns>
     private static Perk? Get(Func<Perk?, bool> predicate) =>
         GameController
-            .Instance.ActiveMonsterList.SelectMany(x =>
+            .Instance.CompleteMonsterList.SelectMany(x =>
                 x?.GetComponent<MonsterStats>()?.PerkInfosList
             )
             .Select(x => x?.Perk.GetComponent<Perk>())
@@ -43,7 +43,7 @@ public static partial class Perks
     private static List<Perk> GetAll() =>
         [
             .. GameController
-                .Instance.ActiveMonsterList.SelectMany(x =>
+                .Instance.CompleteMonsterList.SelectMany(x =>
                     x?.GetComponent<MonsterStats>()?.PerkInfosList
                 )
                 .Select(x => x?.Perk.GetComponent<Perk>()!)

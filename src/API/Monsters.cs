@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Ethereal.Attributes;
 using Ethereal.Classes.Builders;
 using Ethereal.Classes.LazyValues;
@@ -68,6 +69,19 @@ public static partial class Monsters
 
     private static Monster? Get(Predicate<GameObject?> predicate) =>
         GameController.Instance.CompleteMonsterList.Find(predicate)?.GetComponent<Monster>();
+
+    /// <summary>
+    /// Get all monsters.
+    /// </summary>
+    /// <returns></returns>
+    [TryGet]
+    private static List<Monster> GetAll() =>
+        [
+            .. GameController
+                .Instance.CompleteMonsterList.Select(x => x?.GetComponent<Monster>()!)
+                .Where(x => x is not null && x.Name != "Target Dummy")
+                .Distinct(),
+        ];
 
     /// <summary>
     /// Create a new monster and add it to the game's data.

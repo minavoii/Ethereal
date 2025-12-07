@@ -27,7 +27,7 @@ internal static class Data
     internal static List<PerkInfos> GetAllPerkInfos() =>
         [
             .. GameController
-                .Instance.ActiveMonsterList.SelectMany(x =>
+                .Instance.CompleteMonsterList.SelectMany(x =>
                     x?.GetComponent<MonsterStats>().PerkInfosList
                 )
                 .Where(x => x?.Perk.GetComponent<Perk>().Name != "?????")
