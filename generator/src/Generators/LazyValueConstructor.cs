@@ -19,17 +19,17 @@ public sealed class LazyValueConstructor : IIncrementalGenerator
 
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        IncrementalValuesProvider<ConstructorMetadata?> provider = context
+        IncrementalValuesProvider<ConstructorMetadata> provider = context
             .SyntaxProvider.CreateSyntaxProvider(
                 static (node, _) => node is ConstructorDeclarationSyntax,
                 static (ctx, _) =>
-                    ConstructorHelper.GetWithAttributeAndProperty(ctx, Attribute, Property)
+                    ConstructorHelper.GetWithAttributeAndProperty(ctx, Attribute, Property)!
             )
             .Where(static m => m is not null);
 
         IncrementalValueProvider<(
             Compilation Left,
-            ImmutableArray<ConstructorMetadata?> Right
+            ImmutableArray<ConstructorMetadata> Right
         )> compilation = context.CompilationProvider.Combine(provider.Collect());
 
         context.RegisterSourceOutput(

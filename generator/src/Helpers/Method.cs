@@ -43,8 +43,9 @@ internal static class MethodHelper
             .. symbol.Parameters.Select(x => new Member(
                 x.Type.ToDisplayString(),
                 x.Name,
-                x.HasExplicitDefaultValue
-                    ? MemberHelper.ParseDefaultValue(x.ExplicitDefaultValue ?? "null")
+                x.Type.NullableAnnotation == NullableAnnotation.Annotated ? "null"
+                    : x.HasExplicitDefaultValue
+                        ? MemberHelper.ParseDefaultValue(x.ExplicitDefaultValue ?? "null")
                     : null
             )),
         ];

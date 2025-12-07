@@ -16,10 +16,10 @@ public sealed class PrivatePrimaryConstructor : IIncrementalGenerator
 
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        IncrementalValuesProvider<NamedTypeMetadata?> provider = context
+        IncrementalValuesProvider<NamedTypeMetadata> provider = context
             .SyntaxProvider.CreateSyntaxProvider(
                 static (node, _) => node is RecordDeclarationSyntax m && m.AttributeLists.Count > 0,
-                static (ctx, _) => RecordHelper.GetWithAttribute(ctx, Attribute)
+                static (ctx, _) => RecordHelper.GetWithAttribute(ctx, Attribute)!
             )
             .Where(static c => c is not null);
 

@@ -15,10 +15,10 @@ public sealed class DeferrableAPIGenerator : IIncrementalGenerator
 
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        IncrementalValuesProvider<INamedTypeSymbol?> provider = context
+        IncrementalValuesProvider<INamedTypeSymbol> provider = context
             .SyntaxProvider.CreateSyntaxProvider(
                 static (node, _) => node is ClassDeclarationSyntax m && m.AttributeLists.Count > 0,
-                static (ctx, _) => ClassHelper.GetWithAttribute(ctx, Attribute)
+                static (ctx, _) => ClassHelper.GetWithAttribute(ctx, Attribute)!
             )
             .Where(static c => c is not null);
 
