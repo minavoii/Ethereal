@@ -173,8 +173,6 @@ public static partial class Equipments
         Referenceables.Add(goEquipment);
 
         Localisation.AddLocalisedText(localisationData);
-
-        Log.API.LogInfo($"Loaded equipment: {descriptor.Name}");
     }
 
     /// <summary>
