@@ -27,6 +27,14 @@ public static partial class MonsterTypes
             .SelectMany(x => x?.GetComponent<SkillManager>()?.MonsterTypes)
             .FirstOrDefault(x => x?.GetComponent<MonsterType>()?.Type == monsterType);
 
+    [TryGet]
+    private static List<MonsterType> GetAll() =>
+        [
+            .. GameController.Instance.MonsterTypes.Where(x =>
+                x.Type != EMonsterType.EnemySkills && x.Type != EMonsterType.UiSkills
+            ),
+        ];
+
     /// <summary>
     /// Set a monster type's icon.
     /// </summary>
