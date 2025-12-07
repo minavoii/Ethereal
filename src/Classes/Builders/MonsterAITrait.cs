@@ -10,22 +10,16 @@ namespace Ethereal.Classes.Builders;
 public sealed partial record MonsterAITraitBuilder
 {
     [LazyValueConstructor]
-    public MonsterAITraitBuilder(Trait trait, EDifficulty minDifficulty)
-        : this(new(trait), minDifficulty, false) { }
-
-    [LazyValueConstructor]
     public MonsterAITraitBuilder(
         Trait trait,
         EDifficulty minDifficulty,
-        EMonsterShift shiftRestriction
+        EMonsterShift? shiftRestriction = null
     )
-        : this(new(trait), minDifficulty, true, shiftRestriction) { }
+        : this(new LazyTrait(trait), minDifficulty, shiftRestriction) { }
 
     public LazyTrait Trait { get; init; }
 
     public EDifficulty MinDifficulty { get; init; }
-
-    public bool HasShiftRestriction { get; init; }
 
     public EMonsterShift? ShiftRestriction { get; init; }
 
@@ -34,7 +28,7 @@ public sealed partial record MonsterAITraitBuilder
         {
             Trait = Trait.Get()?.gameObject,
             MinDifficulty = MinDifficulty,
-            HasShiftRestriction = HasShiftRestriction,
-            ShiftRestriction = HasShiftRestriction ? EMonsterShift.Normal : default,
+            HasShiftRestriction = ShiftRestriction.HasValue,
+            ShiftRestriction = ShiftRestriction ?? EMonsterShift.Normal,
         };
 }

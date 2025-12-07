@@ -118,7 +118,7 @@ internal static class WaterWheel
 
     private static readonly MonsterStatsBuilder Stats = new(
         BaseMaxHealth: 100,
-        PerkInfosList: [new(628, 1), new(871, 1), new(1343, 1)]
+        Perks: [new(628, 1), new(871, 1), new(1343, 1)]
     );
 
     private static readonly SkillManagerBuilder SkillManager = new(
@@ -147,7 +147,11 @@ internal static class WaterWheel
         ResetAction: null,
         CannotUseDefaultAttack: false,
         ExcludedFromTurnOrder: false,
-        Traits: [new("Auto Heal", EDifficulty.Heroic)],
+        Traits:
+        [
+            new("Auto Heal", EDifficulty.Heroic, EMonsterShift.Normal),
+            new("Outlast", EDifficulty.Heroic, EMonsterShift.Shifted),
+        ],
         Scripting:
         [
             new(
@@ -158,8 +162,7 @@ internal static class WaterWheel
                         Condition = MonsterAIActionCondition.ECondition.HealthBelowPercent,
                         Value = 0.8f,
                     },
-                ],
-                false
+                ]
             ),
             new(
                 "Foreboding Rain",
@@ -169,24 +172,57 @@ internal static class WaterWheel
                         Condition = MonsterAIActionCondition.ECondition.HealthBelowPercent,
                         Value = 0.9f,
                     },
-                ],
-                false
+                    new()
+                    {
+                        Condition = MonsterAIActionCondition.ECondition.MonsterShift,
+                        MonsterShift = EMonsterShift.Normal,
+                    },
+                ]
             ),
-            new(TwistedGarden.Action.ID, [], false),
-            new(ManyEyed.Action.ID, [], false),
+            new(
+                TwistedGarden.Action.ID,
+                [
+                    new()
+                    {
+                        Condition = MonsterAIActionCondition.ECondition.MonsterShift,
+                        MonsterShift = EMonsterShift.Normal,
+                    },
+                ]
+            ),
+            new(
+                "Mud Tide",
+                [
+                    new()
+                    {
+                        Condition = MonsterAIActionCondition.ECondition.MonsterShift,
+                        MonsterShift = EMonsterShift.Shifted,
+                    },
+                ]
+            ),
+            new(
+                "Crystal Charge",
+                [
+                    new()
+                    {
+                        Condition = MonsterAIActionCondition.ECondition.MonsterShift,
+                        MonsterShift = EMonsterShift.Shifted,
+                    },
+                ]
+            ),
+            new(ManyEyed.Action.ID, []),
         ],
         VoidPerks: [],
         VoidPerksTier2: [],
         VoidPerksTier3: [],
-        ChampionPerks: [new(628, 2), new(871, 2), new(1343, 2), new(614, 2)]
+        ChampionPerks: [new(628, 1), new(871, 2), new(1343, 2), new(614, 2)]
     );
 
     private static readonly MonsterShiftBuilder Shift = new()
     {
         Health = 120,
-        Types = [EMonsterType.Aether, EMonsterType.Affliction, EMonsterType.Age],
-        Elements = [EElement.Wild, EElement.Earth],
-        SignatureTrait = new("Schadenfreude"),
+        Types = [EMonsterType.Heal, EMonsterType.Age, EMonsterType.Terror],
+        Elements = [EElement.Earth, EElement.Water],
+        Perks = [new(628, 1), new(1356, 1), new(1343, 1)],
     };
 
     internal static readonly MetaUpgradeBuilder MetaUpgrade = new(
