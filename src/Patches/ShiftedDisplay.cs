@@ -10,11 +10,7 @@ internal static class ShiftedDisplay
 {
     [HarmonyPatch(typeof(ShiftedMonsterDisplay), "InitializeShiftSprite")]
     [HarmonyPrefix]
-    private static bool Prefix(
-        ShiftedMonsterDisplay __instance,
-        Monster ___monster,
-        ref Dictionary<string, Sprite> ___Sprites
-    )
+    private static bool Prefix(Monster ___monster, ref Dictionary<string, Sprite> ___Sprites)
     {
         if (Sprites.ShiftedSprites.TryGetValue(___monster.ID, out Sprite[] sprites))
         {
