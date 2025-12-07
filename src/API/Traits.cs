@@ -61,7 +61,7 @@ public static partial class Traits
                 .Instance.MonsterTypes.SelectMany(x => x.Traits)
                 .FirstOrDefault(predicate)
             ?? GameController
-                .Instance.ActiveMonsterList.Select(x =>
+                .Instance.CompleteMonsterList.Select(x =>
                     x.GetComponent<SkillManager>()?.SignatureTrait?.GetComponent<Trait>()
                 )
                 .FirstOrDefault(predicate)
@@ -87,7 +87,7 @@ public static partial class Traits
     private static List<Trait> GetAllSignature() =>
         [
             .. GameController
-                .Instance.ActiveMonsterList.Select(x =>
+                .Instance.CompleteMonsterList.Select(x =>
                     x.GetComponent<SkillManager>()?.SignatureTrait?.GetComponent<Trait>()!
                 )
                 .Where(x => x is not null && x.Name != "?????")

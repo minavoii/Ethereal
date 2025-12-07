@@ -39,7 +39,7 @@ public static partial class MonsterTypes
     [TryGet]
     private static GameObject? GetObject(EMonsterType monsterType) =>
         GameController
-            .Instance.ActiveMonsterList.SelectMany(x =>
+            .Instance.CompleteMonsterList.SelectMany(x =>
                 x?.GetComponent<SkillManager>()?.MonsterTypes
             )
             .FirstOrDefault(x => x?.GetComponent<MonsterType>()?.Type == monsterType);
