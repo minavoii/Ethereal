@@ -6,9 +6,9 @@ namespace ExampleEquipments.Accessory;
 
 internal static class RedArmor
 {
-    internal const int Id = 9801;
+    private const int Id = 9801;
 
-    internal const string Name = "Red Armor";
+    private const string Name = "Red Armor";
 
     internal static readonly Equipments.EquipmentDescriptor Descriptor = new()
     {

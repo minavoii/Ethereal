@@ -19,6 +19,6 @@ internal static class Pear
     internal static readonly Dictionary<string, string> Extras = new()
     {
         // Assuming a custom language named `Newlang` exists
-        { "Newlang", "Raep" },
+        { "Newlang", "Paer" },
     };
 }

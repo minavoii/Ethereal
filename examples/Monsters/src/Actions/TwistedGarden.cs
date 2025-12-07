@@ -9,6 +9,10 @@ namespace ExampleMonsters.CustomActions;
 
 internal static class TwistedGarden
 {
+    private const int ID = 1902;
+
+    private const string Name = "Twisted Garden";
+
     private static readonly AnimationClip Animation = Animations.LoadFromAsset(
         Path.Join(Plugin.CustomMonstersPath, "TwistedGarden"),
         "assets/animations/actions/twistedgarden.prefab"
@@ -21,8 +25,8 @@ internal static class TwistedGarden
     };
 
     internal static readonly BaseActionBuilder Action = new(
-        ID: 1902,
-        Name: "Twisted Garden",
+        ID: ID,
+        Name: Name,
         Cost: new(2, 0, 0, 2),
         ActionType: EActionType.MassTarget,
         TargetType: ETargetType.AllEnemies,
