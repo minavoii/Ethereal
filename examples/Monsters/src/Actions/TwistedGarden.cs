@@ -13,7 +13,7 @@ internal static class TwistedGarden
 
     private const string Name = "Twisted Garden";
 
-    private static readonly AnimationClip Animation = Animations.LoadFromAsset(
+    private static readonly AnimationClip Animation = Animations.LoadFromBundle(
         Path.Join(Plugin.CustomMonstersPath, "TwistedGarden"),
         "assets/animations/actions/twistedgarden.prefab"
     );

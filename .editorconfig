@@ -8,3 +8,7 @@ dotnet_diagnostic.IDE0005.severity = warning
 
 # IDE0008: Use explicit type instead of var
 dotnet_diagnostic.IDE0008.severity = warning
+
+# IDE0040: Add accessibility modifiers
+dotnet_diagnostic.IDE0040.severity = warning
+dotnet_style_require_accessibility_modifiers = always

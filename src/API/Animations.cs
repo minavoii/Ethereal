@@ -11,9 +11,18 @@ public static class Animations
     /// <param name="path"></param>
     /// <param name="asset"></param>
     /// <returns></returns>
-    public static AnimationClip? LoadFromAsset(string path, string asset)
+    public static AnimationClip? LoadFromBundle(string path, string asset) =>
+        Assets.LoadBundle(path) is AssetBundle bundle ? LoadFromBundle(bundle, asset) : null;
+
+    /// <summary>
+    /// Load an animation clip from an asset bundle.
+    /// </summary>
+    /// <param name="bundle"></param>
+    /// <param name="asset"></param>
+    /// <returns></returns>
+    public static AnimationClip? LoadFromBundle(AssetBundle bundle, string asset)
     {
-        GameObject? go = Assets.LoadAsset(path, asset);
+        GameObject? go = Assets.LoadPrefab(bundle, asset);
         AnimationClip? clip = go
             ?.GetComponent<Animator>()
             .runtimeAnimatorController.animationClips.FirstOrDefault();

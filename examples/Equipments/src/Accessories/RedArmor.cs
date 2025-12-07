@@ -21,7 +21,7 @@ internal static class RedArmor
         Aura = false,
         Price = 100,
         AutomaticPricing = false,
-        Icon = Sprites.LoadFromAsset(
+        Icon = Sprites.LoadFromBundle(
             Path.Join(Plugin.EquipmentsPath, "RedArmor"),
             "Assets/Textures/Item/Item.prefab"
         ),

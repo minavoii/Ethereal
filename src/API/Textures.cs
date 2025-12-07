@@ -24,4 +24,27 @@ public static partial class Textures
 
         return texture;
     }
+
+    /// <summary>
+    /// Load a texture from an asset bundle.
+    /// </summary>
+    /// <param name="path"></param>
+    /// <param name="asset"></param>
+    /// <returns></returns>
+    public static Texture2D? LoadFromBundle(string path, string asset) =>
+        Assets.LoadBundle(path) is AssetBundle bundle ? LoadFromBundle(bundle, asset) : null;
+
+    /// <summary>
+    /// Load a texture from an asset bundle.
+    /// </summary>
+    /// <param name="bundle"></param>
+    /// <param name="asset"></param>
+    /// <returns></returns>
+    public static Texture2D? LoadFromBundle(AssetBundle bundle, string asset)
+    {
+        GameObject? go = Assets.LoadPrefab(bundle, asset);
+        Texture2D? texture = go?.GetComponent<Texture2D>();
+
+        return texture;
+    }
 }

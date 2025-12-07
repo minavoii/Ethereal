@@ -21,27 +21,45 @@ internal static class WaterWheel
 
     private const string Name = "Water Wheel";
 
-    private static readonly AnimationClip CombatIdle = Animations.LoadFromAsset(
-        Path.Join(Plugin.CustomMonstersPath, "WaterWheel_CombatIdle"),
-        "assets/animations/waterwheel/waterwheel_b_0.prefab"
+    private static readonly AssetBundle Bundle = Assets.LoadBundle(
+        Path.Join(Plugin.CustomMonstersPath, "WaterWheel")
     );
 
-    private static readonly AnimationClip CombatCast = Animations.LoadFromAsset(
-        Path.Join(Plugin.CustomMonstersPath, "WaterWheel_Cast"),
+    private static readonly AnimationClip CombatIdle = Animations.LoadFromBundle(
+        Bundle,
+        "assets/animations/waterwheel/waterwheel_combatidle.prefab"
+    );
+
+    private static readonly AnimationClip CombatCast = Animations.LoadFromBundle(
+        Bundle,
         "assets/animations/waterwheel/waterwheel_cast.prefab"
     );
 
-    private static readonly AnimationClip CombatCastEnd = Animations.LoadFromAsset(
-        Path.Join(Plugin.CustomMonstersPath, "WaterWheel_CastEnd"),
-        "assets/animations/waterwheel/waterwheel_castend2.prefab"
+    private static readonly AnimationClip CombatCastEnd = Animations.LoadFromBundle(
+        Bundle,
+        "assets/animations/waterwheel/waterwheel_castend.prefab"
     );
 
-    private static readonly Texture2D Texture = new(0, 0);
+    private static readonly Texture2D Texture = Sprites
+        .LoadFromBundle(Bundle, "assets/animations/waterwheel/waterwheel_combatidle.prefab")
+        .texture;
+
+    private static readonly Sprite[] ShiftedSprites = Sprites.LoadAllFromBundle(Bundle);
 
     private static readonly Texture2D ExplorationSpritesheet = new(0, 0);
 
     internal static MonsterBuilder Builder =>
-        new(Monster, Animator, Bounds, SkillManager, Stats, AI, OverworldBehaviour, Shift);
+        new(
+            Monster,
+            Animator,
+            Bounds,
+            SkillManager,
+            Stats,
+            AI,
+            OverworldBehaviour,
+            Shift,
+            ShiftedSprites
+        );
 
     private static readonly Monster Monster = new()
     {
@@ -100,7 +118,7 @@ internal static class WaterWheel
 
     private static readonly MonsterStatsBuilder Stats = new(
         BaseMaxHealth: 100,
-        PerkInfosList: [new(628, 1), new(871, 1), new(1343, 1)]
+        Perks: [new(628, 1), new(871, 1), new(1343, 1)]
     );
 
     private static readonly SkillManagerBuilder SkillManager = new(
@@ -129,7 +147,11 @@ internal static class WaterWheel
         ResetAction: null,
         CannotUseDefaultAttack: false,
         ExcludedFromTurnOrder: false,
-        Traits: [new("Auto Heal", EDifficulty.Heroic)],
+        Traits:
+        [
+            new("Auto Heal", EDifficulty.Heroic, EMonsterShift.Normal),
+            new("Outlast", EDifficulty.Heroic, EMonsterShift.Shifted),
+        ],
         Scripting:
         [
             new(
@@ -140,8 +162,7 @@ internal static class WaterWheel
                         Condition = MonsterAIActionCondition.ECondition.HealthBelowPercent,
                         Value = 0.8f,
                     },
-                ],
-                false
+                ]
             ),
             new(
                 "Foreboding Rain",
@@ -151,24 +172,57 @@ internal static class WaterWheel
                         Condition = MonsterAIActionCondition.ECondition.HealthBelowPercent,
                         Value = 0.9f,
                     },
-                ],
-                false
+                    new()
+                    {
+                        Condition = MonsterAIActionCondition.ECondition.MonsterShift,
+                        MonsterShift = EMonsterShift.Normal,
+                    },
+                ]
             ),
-            new(TwistedGarden.Action.ID, [], false),
-            new(ManyEyed.Action.ID, [], false),
+            new(
+                TwistedGarden.Action.ID,
+                [
+                    new()
+                    {
+                        Condition = MonsterAIActionCondition.ECondition.MonsterShift,
+                        MonsterShift = EMonsterShift.Normal,
+                    },
+                ]
+            ),
+            new(
+                "Mud Tide",
+                [
+                    new()
+                    {
+                        Condition = MonsterAIActionCondition.ECondition.MonsterShift,
+                        MonsterShift = EMonsterShift.Shifted,
+                    },
+                ]
+            ),
+            new(
+                "Crystal Charge",
+                [
+                    new()
+                    {
+                        Condition = MonsterAIActionCondition.ECondition.MonsterShift,
+                        MonsterShift = EMonsterShift.Shifted,
+                    },
+                ]
+            ),
+            new(ManyEyed.Action.ID, []),
         ],
         VoidPerks: [],
         VoidPerksTier2: [],
         VoidPerksTier3: [],
-        ChampionPerks: [new(628, 2), new(871, 2), new(1343, 2), new(614, 2)]
+        ChampionPerks: [new(628, 1), new(871, 2), new(1343, 2), new(614, 2)]
     );
 
     private static readonly MonsterShiftBuilder Shift = new()
     {
         Health = 120,
-        Types = [EMonsterType.Aether, EMonsterType.Affliction, EMonsterType.Age],
-        Elements = [EElement.Wild, EElement.Earth],
-        SignatureTrait = new("Schadenfreude"),
+        Types = [EMonsterType.Heal, EMonsterType.Age, EMonsterType.Terror],
+        Elements = [EElement.Earth, EElement.Water],
+        Perks = [new(628, 1), new(1356, 1), new(1343, 1)],
     };
 
     internal static readonly MetaUpgradeBuilder MetaUpgrade = new(

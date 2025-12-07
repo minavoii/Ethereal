@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using Ethereal.Attributes;
@@ -26,6 +27,8 @@ public static partial class Sprites
 
     private static readonly string SpritesPath = Path.Join(Plugin.EtherealPath, "Sprites");
 
+    internal static Dictionary<int, Sprite[]> ShiftedSprites { get; } = [];
+
     /// <summary>
     /// Mark the API as ready and run all deferred methods.
     /// </summary>
@@ -42,13 +45,37 @@ public static partial class Sprites
     /// <param name="path"></param>
     /// <param name="asset"></param>
     /// <returns></returns>
-    public static Sprite? LoadFromAsset(string path, string asset)
+    public static Sprite? LoadFromBundle(string path, string asset) =>
+        Assets.LoadBundle(path) is AssetBundle bundle ? LoadFromBundle(bundle, asset) : null;
+
+    /// <summary>
+    /// Load a sprite from an asset bundle.
+    /// </summary>
+    /// <param name="bundle"></param>
+    /// <param name="asset"></param>
+    /// <returns></returns>
+    public static Sprite? LoadFromBundle(AssetBundle bundle, string asset)
     {
-        GameObject? go = Assets.LoadAsset(path, asset);
+        GameObject? go = Assets.LoadPrefab(bundle, asset);
         Sprite? sprite = go?.GetComponent<SpriteRenderer>().sprite;
 
         return sprite;
     }
+
+    /// <summary>
+    /// Load all sprites from an asset bundle.
+    /// </summary>
+    /// <param name="path"></param>
+    /// <returns></returns>
+    public static Sprite[] LoadAllFromBundle(string path) =>
+        Assets.LoadBundle(path) is AssetBundle bundle ? LoadAllFromBundle(bundle) : [];
+
+    /// <summary>
+    /// Load all sprites from an asset bundle.
+    /// </summary>
+    /// <param name="bundle"></param>
+    /// <returns></returns>
+    public static Sprite[] LoadAllFromBundle(AssetBundle bundle) => bundle.LoadAllAssets<Sprite>();
 
     /// <summary>
     /// Create a sprite from an image file.
@@ -201,38 +228,38 @@ public static partial class Sprites
     [Deferrable]
     private static void BulkReplaceFromBundle_Impl(string path)
     {
-        AssetBundle bundle = AssetBundle.LoadFromFile(path);
+        AssetBundle? bundle = AssetBundle.LoadFromFile(path);
 
-        foreach (string assetName in bundle.GetAllAssetNames())
+        if (bundle is not null)
         {
-            Texture2D asset = bundle.LoadAsset<Texture2D>(assetName);
-
-            if (asset == null)
+            foreach (string assetName in bundle.GetAllAssetNames())
             {
-                Log.Plugin.LogError($"Could not load asset: {path}:{asset}");
-                continue;
+                Texture2D? asset = Assets.LoadAsset<Texture2D>(bundle, assetName);
+
+                if (asset is null)
+                    continue;
+
+                string dir = Path.GetDirectoryName(assetName)[7..];
+                string name = ToTitleCase(assetName);
+                Sprite icon = CreateBySize((asset.width, asset.height), asset);
+
+                if (dir == "actions")
+                    ReplaceIconAction(name, icon);
+                else if (dir == "artifacts")
+                    ReplaceIconArtifact(name, icon);
+                else if (dir == "buffs")
+                    ReplaceIconBuff(name, icon);
+                else if (dir == "elements")
+                    ReplaceIconElement(name, icon);
+                else if (dir == "equipments")
+                    ReplaceIconEquipment(name, icon);
+                else if (dir == "mementos")
+                    ReplaceIconMemento(name, icon);
+                else if (dir == "traits")
+                    ReplaceIconTrait(name, icon);
+                else if (dir == "types")
+                    ReplaceIconType(name, icon);
             }
-
-            string dir = Path.GetDirectoryName(assetName)[7..];
-            string name = ToTitleCase(assetName);
-            Sprite icon = CreateBySize((asset.width, asset.height), asset);
-
-            if (dir == "actions")
-                ReplaceIconAction(name, icon);
-            else if (dir == "artifacts")
-                ReplaceIconArtifact(name, icon);
-            else if (dir == "buffs")
-                ReplaceIconBuff(name, icon);
-            else if (dir == "elements")
-                ReplaceIconElement(name, icon);
-            else if (dir == "equipments")
-                ReplaceIconEquipment(name, icon);
-            else if (dir == "mementos")
-                ReplaceIconMemento(name, icon);
-            else if (dir == "traits")
-                ReplaceIconTrait(name, icon);
-            else if (dir == "types")
-                ReplaceIconType(name, icon);
         }
     }
 
