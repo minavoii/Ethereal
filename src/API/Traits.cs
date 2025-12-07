@@ -62,7 +62,7 @@ public static partial class Traits
                 .FirstOrDefault(predicate)
             ?? GameController
                 .Instance.CompleteMonsterList.Select(x =>
-                    x.GetComponent<SkillManager>()?.SignatureTrait?.GetComponent<Trait>()
+                    x?.GetComponent<SkillManager>()?.SignatureTrait?.GetComponent<Trait>()
                 )
                 .FirstOrDefault(predicate)
             ?? WorldData.Instance.Referenceables.OfType<Trait>().FirstOrDefault(predicate);
