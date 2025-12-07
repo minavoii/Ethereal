@@ -36,20 +36,20 @@ public sealed record MonsterBuilder(
 {
     public GameObject Build()
     {
-        GameObject monster_go = new();
-        Monster goMonster = monster_go.GetComponent<Monster>();
+        GameObject go = new();
+        Monster goMonster = go.GetComponent<Monster>();
 
         Monster.Animator = Animator;
 
-        GameObjects.CopyToGameObject(ref monster_go, Animator);
-        monster_go.AddComponent<SpriteRenderer>();
-        GameObjects.CopyToGameObject(ref monster_go, OverworldBehaviour);
-        GameObjects.CopyToGameObject(ref monster_go, SkillManager.Build());
-        GameObjects.CopyToGameObject(ref monster_go, Stats.Build());
-        GameObjects.CopyToGameObject(ref monster_go, AI.Build());
-        GameObjects.CopyToGameObject(ref monster_go, Monster);
-        GameObjects.CopyToGameObject(ref monster_go, Shift.Build());
-        GameObject.Destroy(monster_go.GetComponent<SpriteAnim>());
+        GameObjects.CopyToGameObject(ref go, Animator);
+        go.AddComponent<SpriteRenderer>();
+        GameObjects.CopyToGameObject(ref go, OverworldBehaviour);
+        GameObjects.CopyToGameObject(ref go, SkillManager.Build());
+        GameObjects.CopyToGameObject(ref go, Stats.Build());
+        GameObjects.CopyToGameObject(ref go, AI.Build());
+        GameObjects.CopyToGameObject(ref go, Monster);
+        GameObjects.CopyToGameObject(ref go, Shift.Build());
+        GameObject.Destroy(go.GetComponent<SpriteAnim>());
 
         if (Bounds.Bounds != null)
         {
@@ -69,6 +69,6 @@ public sealed record MonsterBuilder(
 
         AccessTools.Field(typeof(Monster), "FocusPoint").SetValue(goMonster, focusPointTransform);
 
-        return monster_go;
+        return go;
     }
 }

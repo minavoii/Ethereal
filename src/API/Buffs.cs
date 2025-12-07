@@ -68,12 +68,12 @@ public static partial class Buffs
     [Deferrable]
     private static void Add_Impl(Buff buff)
     {
-        GameObject buff_go = GameObjects.IntoGameObject(buff);
-        Buff goBuff = buff_go.GetComponent<Buff>();
+        GameObject go = GameObjects.IntoGameObject(buff);
+        Buff goBuff = go.GetComponent<Buff>();
 
         foreach (PassiveEffect passive in buff.PassiveEffectList)
         {
-            GameObjects.CopyToGameObject(ref buff_go, passive);
+            GameObjects.CopyToGameObject(ref go, passive);
         }
 
         goBuff.InitializeReferenceable();
