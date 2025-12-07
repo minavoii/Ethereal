@@ -14,6 +14,7 @@ internal static class Controller
         API.MonsterTypes.SetReady();
         API.Perks.SetReady();
         API.Sprites.SetReady();
+        API.Biomes.SetReady();
     }
 
     [HarmonyPatch(typeof(GameController), "Initialize")]
