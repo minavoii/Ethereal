@@ -114,12 +114,12 @@ public static partial class Mementos
         string? witchCategory = null
     )
     {
-        MetaUpgrade goUpgrade = Utils.GameObjects.WithinGameObject(metaUpgrade);
-        MonsterMemento goMemento = Utils.GameObjects.WithinGameObject(memento);
+        MetaUpgrade goUpgrade = GameObjects.WithinGameObject(metaUpgrade);
+        MonsterMemento goMemento = GameObjects.WithinGameObject(memento);
 
         if (shiftedMemento is not null)
         {
-            MonsterMemento goShifted = Utils.GameObjects.WithinGameObject(shiftedMemento);
+            MonsterMemento goShifted = GameObjects.WithinGameObject(shiftedMemento);
 
             GameController.Instance.ItemManager.MonsterMementos.Add(
                 new() { BaseItem = goMemento, ShiftedMemento = goShifted }

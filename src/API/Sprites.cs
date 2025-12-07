@@ -44,7 +44,7 @@ public static partial class Sprites
     /// <returns></returns>
     public static Sprite? LoadFromAsset(string path, string asset)
     {
-        GameObject? go = Utils.Assets.LoadAsset(path, asset);
+        GameObject? go = Assets.LoadAsset(path, asset);
         Sprite? sprite = go?.GetComponent<SpriteRenderer>().sprite;
 
         return sprite;

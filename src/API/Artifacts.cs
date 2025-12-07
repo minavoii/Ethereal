@@ -100,7 +100,7 @@ public static partial class Artifacts
     )
     {
         GameObject parent = new();
-        BaseAction action = Utils.GameObjects.WithinGameObject(
+        BaseAction action = GameObjects.WithinGameObject(
             new BaseAction()
             {
                 Name = descriptor.Name,
@@ -109,7 +109,7 @@ public static partial class Artifacts
                 Types = [],
             }
         );
-        Consumable artifact = Utils.GameObjects.WithinGameObject(
+        Consumable artifact = GameObjects.WithinGameObject(
             new Consumable()
             {
                 ID = descriptor.Id,
@@ -195,7 +195,7 @@ public static partial class Artifacts
             GameObject go = action.gameObject;
 
             foreach (ActionModifier modifier in descriptor.Actions)
-                Utils.GameObjects.CopyToGameObject(ref go, modifier);
+                GameObjects.CopyToGameObject(ref go, modifier);
 
             action.InitializeReferenceable();
         }
