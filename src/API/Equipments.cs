@@ -149,7 +149,8 @@ public static partial class Equipments
         };
 
         GameObjects.CopyToGameObject(ref go, equipment);
-        go.GetComponent<Equipment>().name = go.name;
+        Equipment goEquipment = go.GetComponent<Equipment>();
+        goEquipment.name = go.name;
 
         foreach (PassiveEffect passive in descriptor.PassiveEffects)
         {
@@ -157,19 +158,19 @@ public static partial class Equipments
         }
 
         // Copy PassiveEffect components into PassiveEffectList
-        go.GetComponent<Equipment>().InitializeReferenceable();
+        goEquipment.InitializeReferenceable();
 
         ItemManager.EquipmentItemInstance equItemInst = new()
         {
-            BaseItem = go.GetComponent<Equipment>(),
-            RareItem = go.GetComponent<Equipment>(),
-            EpicItem = go.GetComponent<Equipment>(),
+            BaseItem = goEquipment,
+            RareItem = goEquipment,
+            EpicItem = goEquipment,
         };
 
         equItemInst.Validate();
 
         GameController.Instance.ItemManager.Equipments.Add(equItemInst);
-        Referenceables.Add(go.GetComponent<Equipment>());
+        Referenceables.Add(goEquipment);
 
         Localisation.AddLocalisedText(localisationData);
 

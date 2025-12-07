@@ -405,8 +405,8 @@ public static partial class Localisation
     {
         try
         {
-            string template_json = File.ReadAllText(Path.Join(LocalesPath, TemplateName));
-            Language? lang = JsonConvert.DeserializeObject<Language>(template_json);
+            string jsonTemplate = File.ReadAllText(Path.Join(LocalesPath, TemplateName));
+            Language? lang = JsonConvert.DeserializeObject<Language>(jsonTemplate);
 
             return lang?.GameVersion ?? "0.0.0.0";
         }

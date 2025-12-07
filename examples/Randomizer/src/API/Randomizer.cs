@@ -136,8 +136,9 @@ internal class Randomizer
             // +4 damage and +1 stagger per additional aether
             if (Actions.TryGet(name, out BaseAction bolt))
             {
-                bolt.GetComponent<ActionDamage>().Damage = 7;
-                bolt.GetComponent<ActionDamage>().AdditionalDamage = 2;
+                ActionDamage damage = bolt.GetComponent<ActionDamage>();
+                damage.Damage = 7;
+                damage.AdditionalDamage = 2;
             }
         }
 

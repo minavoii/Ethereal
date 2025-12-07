@@ -36,31 +36,30 @@ public sealed record MonsterBuilder(
 {
     public GameObject Build()
     {
-        GameObject monster_go = new();
+        GameObject go = new();
+        Monster goMonster = go.GetComponent<Monster>();
 
         Monster.Animator = Animator;
 
-        GameObjects.CopyToGameObject(ref monster_go, Animator);
-        monster_go.AddComponent<SpriteRenderer>();
-        GameObjects.CopyToGameObject(ref monster_go, OverworldBehaviour);
-        GameObjects.CopyToGameObject(ref monster_go, SkillManager.Build());
-        GameObjects.CopyToGameObject(ref monster_go, Stats.Build());
-        GameObjects.CopyToGameObject(ref monster_go, AI.Build());
-        GameObjects.CopyToGameObject(ref monster_go, Monster);
-        GameObjects.CopyToGameObject(ref monster_go, Shift.Build());
-        GameObject.Destroy(monster_go.GetComponent<SpriteAnim>());
+        GameObjects.CopyToGameObject(ref go, Animator);
+        go.AddComponent<SpriteRenderer>();
+        GameObjects.CopyToGameObject(ref go, OverworldBehaviour);
+        GameObjects.CopyToGameObject(ref go, SkillManager.Build());
+        GameObjects.CopyToGameObject(ref go, Stats.Build());
+        GameObjects.CopyToGameObject(ref go, AI.Build());
+        GameObjects.CopyToGameObject(ref go, Monster);
+        GameObjects.CopyToGameObject(ref go, Shift.Build());
+        GameObject.Destroy(go.GetComponent<SpriteAnim>());
 
         if (Bounds.Bounds != null)
         {
-            AccessTools
-                .Field(typeof(Monster), "Bounds")
-                .SetValue(monster_go.GetComponent<Monster>(), Bounds.Bounds);
+            AccessTools.Field(typeof(Monster), "Bounds").SetValue(goMonster, Bounds.Bounds);
         }
         if (Bounds.BoundsOffset != null)
         {
             AccessTools
                 .Field(typeof(Monster), "BoundsOffset")
-                .SetValue(monster_go.GetComponent<Monster>(), Bounds.BoundsOffset);
+                .SetValue(goMonster, Bounds.BoundsOffset);
         }
 
         Transform focusPointTransform = new GameObject("FocusPoint").transform;
@@ -68,10 +67,8 @@ public sealed record MonsterBuilder(
         if (Bounds.FocusPoint is Vector3 focusPoint)
             focusPointTransform.position = focusPoint;
 
-        AccessTools
-            .Field(typeof(Monster), "FocusPoint")
-            .SetValue(monster_go.GetComponent<Monster>(), focusPointTransform);
+        AccessTools.Field(typeof(Monster), "FocusPoint").SetValue(goMonster, focusPointTransform);
 
-        return monster_go;
+        return go;
     }
 }

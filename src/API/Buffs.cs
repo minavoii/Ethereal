@@ -68,19 +68,20 @@ public static partial class Buffs
     [Deferrable]
     private static void Add_Impl(Buff buff)
     {
-        GameObject buff_go = GameObjects.IntoGameObject(buff);
+        GameObject go = GameObjects.IntoGameObject(buff);
+        Buff goBuff = go.GetComponent<Buff>();
 
         foreach (PassiveEffect passive in buff.PassiveEffectList)
         {
-            GameObjects.CopyToGameObject(ref buff_go, passive);
+            GameObjects.CopyToGameObject(ref go, passive);
         }
 
-        buff_go.GetComponent<Buff>().InitializeReferenceable();
-        Referenceables.Add(buff_go.GetComponent<Buff>());
+        goBuff.InitializeReferenceable();
+        Referenceables.Add(goBuff);
 
         if (buff.BuffType == EBuffType.Buff)
-            Prefabs.Instance.AllBuffs.Add(buff_go.GetComponent<Buff>());
+            Prefabs.Instance.AllBuffs.Add(goBuff);
         else if (buff.BuffType == EBuffType.Debuff)
-            Prefabs.Instance.AllDebuffs.Add(buff_go.GetComponent<Buff>());
+            Prefabs.Instance.AllDebuffs.Add(goBuff);
     }
 }
