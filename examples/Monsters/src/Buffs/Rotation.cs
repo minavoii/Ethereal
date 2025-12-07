@@ -1,5 +1,6 @@
 using System.IO;
 using Ethereal.API;
+using Ethereal.Classes.Builders;
 using UnityEngine;
 
 namespace ExampleMonsters.CustomBuffs;
@@ -20,7 +21,7 @@ internal static class Rotation
     {
         ID = 1900,
         Name = "Rotation",
-        Description = "No innate effect. Rotation traits increase in strength every turn.",
+        Description = "No innate effect. {Rotation} traits increase in strength every turn.",
         BuffType = EBuffType.Buff,
         Icon = Icon,
         MonsterHUDIcon = Icon,
@@ -31,4 +32,11 @@ internal static class Rotation
         SfxApply = new(),
         PassiveEffectList = [],
     };
+
+    internal static readonly KeywordBuilder Keyword = new(
+        Name: Buff.Name,
+        Description: Buff.Description,
+        Identifier: [Buff.Name],
+        Color: new(0.6745098f, 0.8784314f, 0.6941177f, 1f)
+    );
 }
