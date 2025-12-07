@@ -11,12 +11,14 @@ internal static class RecordHelper
         string attributeName
     )
     {
-        var declaration = (RecordDeclarationSyntax)context.Node;
+        RecordDeclarationSyntax declaration = (RecordDeclarationSyntax)context.Node;
 
         if (context.SemanticModel.GetDeclaredSymbol(declaration) is not INamedTypeSymbol symbol)
             return null;
 
-        var attribute = context.SemanticModel.Compilation.GetTypeByMetadataName(attributeName);
+        INamedTypeSymbol? attribute = context.SemanticModel.Compilation.GetTypeByMetadataName(
+            attributeName
+        );
 
         if (attribute == null)
             return null;

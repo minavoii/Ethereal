@@ -5,3 +5,6 @@ dotnet_diagnostic.IDE0130.severity = silent
 
 # IDE0005: Remove unnecessary import
 dotnet_diagnostic.IDE0005.severity = warning
+
+# IDE0008: Use explicit type instead of var
+dotnet_diagnostic.IDE0008.severity = warning

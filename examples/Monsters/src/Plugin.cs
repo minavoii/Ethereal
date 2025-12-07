@@ -53,7 +53,7 @@ public class Plugin : BaseUnityPlugin
                 }
 
                 // Use another action's VFX
-                if (Actions.TryGet("Moisturize", out var moisturize))
+                if (Actions.TryGet("Moisturize", out BaseAction moisturize))
                 {
                     FountainOfLife.Action.VFXs.Add(
                         new() { VFX = moisturize.ActionVFX?.Children?.FirstOrDefault()?.VFX }

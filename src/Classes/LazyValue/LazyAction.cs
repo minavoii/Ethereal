@@ -16,8 +16,8 @@ public sealed record LazyAction : LazyReferenceable<BaseAction>
     public override BaseAction? Get() =>
         base.Get()
         ?? (
-            Id.HasValue && Actions.TryGet(Id.Value, out var byId) ? byId
-            : Name != null && Actions.TryGet(Name, out var byName) ? byName
+            Id.HasValue && Actions.TryGet(Id.Value, out BaseAction byId) ? byId
+            : Name != null && Actions.TryGet(Name, out BaseAction byName) ? byName
             : null
         );
 }

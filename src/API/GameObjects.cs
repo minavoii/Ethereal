@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using UnityEngine;
 
 namespace Ethereal.API;
@@ -41,7 +42,7 @@ public static class GameObjects
         Type type = component.GetType();
         Component innerComponent = gameObject.AddComponent(type);
 
-        foreach (var property in type.GetProperties())
+        foreach (PropertyInfo property in type.GetProperties())
         {
             if (property.CanWrite)
             {
@@ -53,7 +54,7 @@ public static class GameObjects
             }
         }
 
-        foreach (var field in type.GetFields())
+        foreach (FieldInfo field in type.GetFields())
         {
             if (field.IsPublic)
             {

@@ -19,7 +19,7 @@ internal static class Data
     internal static List<Buff> GetTypeBuffs(List<EMonsterType> types) =>
         [
             .. types
-                .Select(x => Buffs.TryGet(x.ToString(), out var buff) ? buff : null)
+                .Select(x => Buffs.TryGet(x.ToString(), out Buff buff) ? buff : null)
                 .Where(x => x is not null)
                 .Distinct(),
         ];

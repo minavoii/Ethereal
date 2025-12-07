@@ -43,7 +43,7 @@ public static partial class Mementos
     [Deferrable]
     private static void UpdateIcon_Impl(int id, Sprite icon)
     {
-        if (TryGet(id, out var memento))
+        if (TryGet(id, out MonsterMemento memento))
             UpdateIcon(memento, icon);
     }
 
@@ -55,7 +55,7 @@ public static partial class Mementos
     [Deferrable]
     private static void UpdateIcon_Impl(string name, Sprite icon)
     {
-        if (TryGet(name, out var memento))
+        if (TryGet(name, out MonsterMemento memento))
             UpdateIcon(memento, icon);
     }
 

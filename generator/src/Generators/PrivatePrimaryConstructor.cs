@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using Generators.Helpers;
@@ -15,7 +16,7 @@ public sealed class PrivatePrimaryConstructor : IIncrementalGenerator
 
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        var provider = context
+        IncrementalValuesProvider<NamedTypeMetadata?> provider = context
             .SyntaxProvider.CreateSyntaxProvider(
                 static (node, _) => node is RecordDeclarationSyntax m && m.AttributeLists.Count > 0,
                 static (ctx, _) => RecordHelper.GetWithAttribute(ctx, Attribute)
@@ -36,18 +37,18 @@ public sealed class PrivatePrimaryConstructor : IIncrementalGenerator
 
     private static string GeneratePartialRecord(NamedTypeMetadata symbolMetadadta)
     {
-        var sb = new StringBuilder();
+        StringBuilder sb = new();
 
         sb.AppendLine("#nullable enable");
 
-        var symbol = symbolMetadadta.Symbol;
-        var parameters = symbolMetadadta.Parameters;
+        INamedTypeSymbol symbol = symbolMetadadta.Symbol;
+        ImmutableArray<Member>? parameters = symbolMetadadta.Parameters;
 
-        var namespaceName = symbol.ContainingNamespace.IsGlobalNamespace
-            ? null
+        string namespaceName = symbol.ContainingNamespace.IsGlobalNamespace
+            ? string.Empty
             : $"namespace {symbol.ContainingNamespace.ToDisplayString()}\n{{\n";
 
-        if (namespaceName != null)
+        if (!string.IsNullOrEmpty(namespaceName))
             sb.Append(namespaceName);
 
         string accessibility = symbol.DeclaredAccessibility.ToString().ToLowerInvariant();

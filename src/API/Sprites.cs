@@ -201,9 +201,9 @@ public static partial class Sprites
     [Deferrable]
     private static void BulkReplaceFromBundle_Impl(string path)
     {
-        var bundle = AssetBundle.LoadFromFile(path);
+        AssetBundle bundle = AssetBundle.LoadFromFile(path);
 
-        foreach (var assetName in bundle.GetAllAssetNames())
+        foreach (string assetName in bundle.GetAllAssetNames())
         {
             Texture2D asset = bundle.LoadAsset<Texture2D>(assetName);
 

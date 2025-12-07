@@ -95,9 +95,8 @@ public static partial class Localisation
         if (LocalisationData.Instance.LocaEntries.ContainsKey(entry.StringContent))
             return;
 
-        var pair = LocalisationData.Instance.LocaEntries.FirstOrDefault(x =>
-            x.Value.ID == entry.ID
-        );
+        KeyValuePair<string, LocalisationData.LocalisationDataEntry> pair =
+            LocalisationData.Instance.LocaEntries.FirstOrDefault(x => x.Value.ID == entry.ID);
 
         // Update text
         if (pair.Value != null)
@@ -141,7 +140,9 @@ public static partial class Localisation
                 {
                     CustomLocalisations.Add(entry.StringContent, new(entry.ID, []));
 
-                    foreach (var (langId, original) in CustomLocalisations[pair.Key].Data)
+                    foreach (
+                        (ELanguage langId, string original) in CustomLocalisations[pair.Key].Data
+                    )
                     {
                         CustomLocalisations[entry.StringContent].Data.Add(langId, original);
                     }
@@ -168,16 +169,23 @@ public static partial class Localisation
     {
         AddLocalisedText(entry);
 
-        foreach (var (langName, text) in customLanguageEntries)
+        foreach ((string langName, string text) in customLanguageEntries)
         {
-            var lang = CustomLanguages.FirstOrDefault(x => x.Value == langName);
+            KeyValuePair<ELanguage, string> lang = CustomLanguages.FirstOrDefault(x =>
+                x.Value == langName
+            );
 
             // Language not found found
             if (lang.Value == null)
                 continue;
 
             // Update text
-            if (CustomLocalisations.TryGetValue(entry.StringContent, out var localisation))
+            if (
+                CustomLocalisations.TryGetValue(
+                    entry.StringContent,
+                    out CustomLocaleData localisation
+                )
+            )
                 localisation.Data[lang.Key] = text;
             // Add text
             else
@@ -228,7 +236,7 @@ public static partial class Localisation
     /// <param name="language"></param>
     private static void CreateLanguage(Language language)
     {
-        var availableLanguages =
+        List<ELanguage> availableLanguages =
             (List<ELanguage>)
                 AccessTools
                     .Field(typeof(LocalisationData), "availableLanguages")
@@ -241,7 +249,7 @@ public static partial class Localisation
         AllLanguageNames.Add(language.Name);
         CustomLanguages.Add(langId, language.Name);
 
-        foreach (var (locaId, text) in language.Localisations)
+        foreach ((int locaId, string text) in language.Localisations)
         {
             if (
                 !LocalisationData.Instance.LocaEntries.TryGetKey(
@@ -264,7 +272,7 @@ public static partial class Localisation
             }
 
             // Already localised in another custom language
-            if (CustomLocalisations.TryGetValue(original, out var localisation1))
+            if (CustomLocalisations.TryGetValue(original, out CustomLocaleData localisation1))
                 localisation1.Data[langId] = text;
             // Not localised in any custom language yet
             else
@@ -272,7 +280,7 @@ public static partial class Localisation
         }
 
         // Add culture format
-        var CultureInfos =
+        Dictionary<ELanguage, CultureInfo> CultureInfos =
             (Dictionary<ELanguage, CultureInfo>)
                 AccessTools.Field(typeof(global::Utils), "CultureInfos").GetValue(null);
 
@@ -309,11 +317,10 @@ public static partial class Localisation
     /// <param name="language"></param>
     private static void UpdateLanguage(Language language)
     {
-        foreach (var (locaId, text) in language.Localisations)
+        foreach ((int locaId, string text) in language.Localisations)
         {
-            var (original, entry) = LocalisationData.Instance.LocaEntries.FirstOrDefault(x =>
-                x.Value.ID == locaId
-            );
+            (string original, LocalisationData.LocalisationDataEntry? entry) =
+                LocalisationData.Instance.LocaEntries.FirstOrDefault(x => x.Value.ID == locaId);
 
             // Create native localisation if it doesn't exist
             if (entry == null)
@@ -349,10 +356,10 @@ public static partial class Localisation
             else if (language.Name == Loca.GetLanguageString(ELanguage.Chinese))
                 entry.StringContentSimplifiedChinese = text;
             // Custom languages
-            else if (CustomLanguages.TryGetKey(x => x.Value == language.Name, out var langId))
+            else if (CustomLanguages.TryGetKey(x => x.Value == language.Name, out ELanguage langId))
             {
                 // Update text
-                if (CustomLocalisations.TryGetKey(x => x.Value.Id == locaId, out var key))
+                if (CustomLocalisations.TryGetKey(x => x.Value.Id == locaId, out string key))
                     CustomLocalisations[key].Data[langId] = text;
                 // Add text
                 else
@@ -375,7 +382,12 @@ public static partial class Localisation
         Language lang = new() { Name = "English", GameVersion = Application.version };
         lang.Localisations.Add(-1, TemplateWarning);
 
-        foreach (var (text, loca) in LocalisationData.Instance.LocaEntries.OrderBy(x => x.Value.ID))
+        foreach (
+            (
+                string text,
+                LocalisationData.LocalisationDataEntry loca
+            ) in LocalisationData.Instance.LocaEntries.OrderBy(x => x.Value.ID)
+        )
         {
             lang.Localisations.Add(loca.ID, text);
         }

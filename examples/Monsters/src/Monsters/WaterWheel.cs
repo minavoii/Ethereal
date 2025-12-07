@@ -106,7 +106,7 @@ internal static class WaterWheel
     private static readonly SkillManagerBuilder SkillManager = new(
         MainType: EMonsterMainType.Hybrid,
         SignatureTrait: new(WheelSupremacy.Trait.ID),
-        MonsterTypes: [EMonsterType.Heal, EMonsterType.Regeneration, EMonsterType.Terror],
+        Types: [EMonsterType.Heal, EMonsterType.Regeneration, EMonsterType.Terror],
         Elements: [EElement.Fire, EElement.Water],
         StaggerDefines:
         [
@@ -166,7 +166,7 @@ internal static class WaterWheel
     private static readonly MonsterShiftBuilder Shift = new()
     {
         Health = 120,
-        MonsterTypes = [EMonsterType.Aether, EMonsterType.Affliction, EMonsterType.Age],
+        Types = [EMonsterType.Aether, EMonsterType.Affliction, EMonsterType.Age],
         Elements = [EElement.Wild, EElement.Earth],
         SignatureTrait = new("Schadenfreude"),
     };

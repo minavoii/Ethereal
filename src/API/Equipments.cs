@@ -184,11 +184,11 @@ public static partial class Equipments
     [Deferrable]
     private static void Update_Impl(int id, EquipmentDescriptor descriptor)
     {
-        if (TryGet(id, ERarity.Common, out var common))
+        if (TryGet(id, ERarity.Common, out Equipment common))
             Update(common, descriptor);
-        else if (TryGet(id, ERarity.Rare, out var rare))
+        else if (TryGet(id, ERarity.Rare, out Equipment rare))
             Update(rare, descriptor);
-        else if (TryGet(id, ERarity.Epic, out var epic))
+        else if (TryGet(id, ERarity.Epic, out Equipment epic))
             Update(epic, descriptor);
     }
 
@@ -201,7 +201,7 @@ public static partial class Equipments
     [Deferrable]
     private static void Update_Impl(string name, ERarity rarity, EquipmentDescriptor descriptor)
     {
-        if (TryGet(name, rarity, out var equipment))
+        if (TryGet(name, rarity, out Equipment equipment))
             Update(equipment, descriptor);
     }
 

@@ -16,8 +16,8 @@ public sealed partial record LazyTrait : LazyReferenceable<Trait>
     public override Trait? Get() =>
         base.Get()
         ?? (
-            Id.HasValue && Traits.TryGet(Id.Value, out var byId) ? byId
-            : Name != null && Traits.TryGet(Name, out var byName) ? byName
+            Id.HasValue && Traits.TryGet(Id.Value, out Trait byId) ? byId
+            : Name != null && Traits.TryGet(Name, out Trait byName) ? byName
             : null
         );
 }

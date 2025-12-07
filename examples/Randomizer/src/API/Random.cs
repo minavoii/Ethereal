@@ -150,9 +150,9 @@ internal class Random
     {
         List<MonsterAIAction> script = [];
 
-        var first = GetRandomAction1(elements, types);
-        var second = GetRandomAction2(elements, types, BoolType.Either, first);
-        var third = GetRandomAction3(elements, types);
+        BaseAction first = GetRandomAction1(elements, types);
+        BaseAction second = GetRandomAction2(elements, types, BoolType.Either, first);
+        BaseAction third = GetRandomAction3(elements, types);
 
         if (skipConditions)
         {

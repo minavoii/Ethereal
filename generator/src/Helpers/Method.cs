@@ -14,12 +14,14 @@ internal static class MethodHelper
         string attributeName
     )
     {
-        var declaration = (MethodDeclarationSyntax)context.Node;
+        MethodDeclarationSyntax declaration = (MethodDeclarationSyntax)context.Node;
 
         if (context.SemanticModel.GetDeclaredSymbol(declaration) is not IMethodSymbol symbol)
             return null;
 
-        var attribute = context.SemanticModel.Compilation.GetTypeByMetadataName(attributeName);
+        INamedTypeSymbol? attribute = context.SemanticModel.Compilation.GetTypeByMetadataName(
+            attributeName
+        );
 
         if (attribute == null)
             return null;

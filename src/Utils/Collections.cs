@@ -21,7 +21,7 @@ public static class DictionaryExtensions
         out Key key
     )
     {
-        var pair = dictionary.FirstOrDefault(predicate);
+        KeyValuePair<Key, Value> pair = dictionary.FirstOrDefault(predicate);
         key = pair.Key;
 
         return pair.Value != null;

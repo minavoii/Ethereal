@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using Generators.Helpers;
@@ -18,7 +19,7 @@ public sealed class LazyValueConstructor : IIncrementalGenerator
 
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        var provider = context
+        IncrementalValuesProvider<ConstructorMetadata?> provider = context
             .SyntaxProvider.CreateSyntaxProvider(
                 static (node, _) => node is ConstructorDeclarationSyntax,
                 static (ctx, _) =>
@@ -26,7 +27,10 @@ public sealed class LazyValueConstructor : IIncrementalGenerator
             )
             .Where(static m => m is not null);
 
-        var compilation = context.CompilationProvider.Combine(provider.Collect());
+        IncrementalValueProvider<(
+            Compilation Left,
+            ImmutableArray<ConstructorMetadata?> Right
+        )> compilation = context.CompilationProvider.Combine(provider.Collect());
 
         context.RegisterSourceOutput(
             compilation,
@@ -42,15 +46,15 @@ public sealed class LazyValueConstructor : IIncrementalGenerator
 
     private string GeneratePartialClass(ISymbol symbol, IEnumerable<ConstructorMetadata> methods)
     {
-        var sb = new StringBuilder();
+        StringBuilder sb = new();
 
         sb.AppendLine("#nullable enable");
 
-        var namespaceName = symbol.ContainingNamespace.IsGlobalNamespace
-            ? null
+        string namespaceName = symbol.ContainingNamespace.IsGlobalNamespace
+            ? string.Empty
             : $"namespace {symbol.ContainingNamespace.ToDisplayString()}\n{{\n";
 
-        if (namespaceName != null)
+        if (!string.IsNullOrEmpty(namespaceName))
             sb.Append(namespaceName);
 
         string accessibility = symbol.DeclaredAccessibility.ToString().ToLowerInvariant();
@@ -63,7 +67,7 @@ public sealed class LazyValueConstructor : IIncrementalGenerator
             if (method.AttributeProperties == null)
                 continue;
 
-            foreach (var property in method.AttributeProperties)
+            foreach (Member property in method.AttributeProperties)
                 sb.Append(GenerateConstructor(symbol, method, property));
         }
 
@@ -80,9 +84,9 @@ public sealed class LazyValueConstructor : IIncrementalGenerator
         if (method.Arguments?.FirstOrDefault() is not string lazyArg)
             return "";
 
-        var sb = new StringBuilder();
+        StringBuilder sb = new();
 
-        var lazyType = lazyArg.StartsWith("new")
+        string lazyType = lazyArg.StartsWith("new")
             ? lazyArg.Substring(0, lazyArg.IndexOf('('))
             : "new " + lazyArg;
 
