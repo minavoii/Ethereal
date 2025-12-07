@@ -221,8 +221,6 @@ public static partial class Localisation
 
         foreach (Language language in languageList.OrderBy(x => x.Addon))
         {
-            Log.API.LogInfo($"Loaded locale: {language.Name}{(language.Addon ? " (Addon)" : "")}");
-
             if (AllLanguageNames.Contains(language.Name))
                 UpdateLanguage(language);
             else

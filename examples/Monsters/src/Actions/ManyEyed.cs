@@ -9,6 +9,10 @@ namespace ExampleMonsters.CustomActions;
 
 internal static class ManyEyed
 {
+    private const int ID = 1904;
+
+    private const string Name = "Many Eyed";
+
     private static readonly AnimationClip Animation = Animations.LoadFromAsset(
         Path.Join(Plugin.CustomMonstersPath, "ManyEyed"),
         "assets/animations/actions/manyeyed.prefab"
@@ -21,8 +25,8 @@ internal static class ManyEyed
     };
 
     internal static readonly BaseActionBuilder Action = new(
-        ID: 1904,
-        Name: "Many Eyed",
+        ID: ID,
+        Name: Name,
         Cost: new(EElement.Fire, 1),
         ActionType: EActionType.SingleTarget,
         TargetType: ETargetType.SingleEnemy,

@@ -126,8 +126,6 @@ public static partial class Artifacts
         Localisation.AddLocalisedText(localisationData);
 
         Update_Impl(descriptor.Id, descriptor);
-
-        Log.API.LogInfo($"Loaded artifact: {descriptor.Name}");
     }
 
     /// <summary>

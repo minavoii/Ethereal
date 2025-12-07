@@ -6,9 +6,9 @@ namespace ExampleArtifacts.Artifact;
 
 internal static class TrucePact
 {
-    internal const int Id = 7001;
+    private const int Id = 7001;
 
-    internal const string Name = "Truce Pact";
+    private const string Name = "Truce Pact";
 
     internal static readonly Artifacts.ArtifactDescriptor Descriptor = new()
     {

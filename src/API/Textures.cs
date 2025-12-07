@@ -15,7 +15,7 @@ public static partial class Textures
     {
         if (!File.Exists(path))
         {
-            Log.API.LogWarning("File not found: " + path);
+            Log.API.LogError("File not found: " + path);
             return null;
         }
 

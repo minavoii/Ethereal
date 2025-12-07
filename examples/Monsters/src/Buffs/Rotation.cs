@@ -7,6 +7,13 @@ namespace ExampleMonsters.CustomBuffs;
 
 internal static class Rotation
 {
+    private const int ID = 1900;
+
+    private const string Name = "Rotation";
+
+    private const string Description =
+        "No innate effect. {Rotation} traits increase in strength every turn.";
+
     internal static readonly AnimationClip Animation = Animations.LoadFromAsset(
         Path.Join(Plugin.CustomMonstersPath, "Rotation"),
         "assets/animations/waterwheel/rotation.prefab"
@@ -19,9 +26,9 @@ internal static class Rotation
 
     internal static readonly Buff Buff = new()
     {
-        ID = 1900,
-        Name = "Rotation",
-        Description = "No innate effect. {Rotation} traits increase in strength every turn.",
+        ID = ID,
+        Name = Name,
+        Description = Description,
         BuffType = EBuffType.Buff,
         Icon = Icon,
         MonsterHUDIcon = Icon,
@@ -34,9 +41,9 @@ internal static class Rotation
     };
 
     internal static readonly KeywordBuilder Keyword = new(
-        Name: Buff.Name,
-        Description: Buff.Description,
-        Identifier: [Buff.Name],
+        Name: Name,
+        Description: Description,
+        Identifier: [Name],
         Color: new(0.6745098f, 0.8784314f, 0.6941177f, 1f)
     );
 }

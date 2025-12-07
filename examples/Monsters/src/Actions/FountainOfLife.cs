@@ -8,9 +8,13 @@ namespace ExampleMonsters.CustomActions;
 
 internal static class FountainOfLife
 {
+    private const int ID = 1903;
+
+    private const string Name = "Fountain of Life";
+
     internal static readonly BaseActionBuilder Action = new(
-        ID: 1903,
-        Name: "Fountain of Life",
+        ID: ID,
+        Name: Name,
         Cost: new(EElement.Water, 3),
         ActionType: EActionType.Spell,
         TargetType: ETargetType.AllAllies,
