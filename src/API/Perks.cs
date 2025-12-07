@@ -29,9 +29,8 @@ public static partial class Perks
     /// <returns></returns>
     private static Perk? Get(Func<Perk?, bool> predicate) =>
         GameController
-            .Instance.CompleteMonsterList.SelectMany(x =>
-                x?.GetComponent<MonsterStats>()?.PerkInfosList
-            )
+            .Instance.CompleteMonsterList.Where(x => x is not null)
+            .SelectMany(x => x?.GetComponent<MonsterStats>()?.PerkInfosList)
             .Select(x => x?.Perk.GetComponent<Perk>())
             .FirstOrDefault(predicate);
 

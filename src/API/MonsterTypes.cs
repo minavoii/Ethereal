@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Ethereal.Attributes;
@@ -9,21 +8,6 @@ namespace Ethereal.API;
 [Deferrable]
 public static partial class MonsterTypes
 {
-    public static Dictionary<EMonsterType, GameObject> NativeTypes = [];
-
-    /// <summary>
-    /// Mark the API as ready and run all deferred methods.
-    /// </summary>
-    internal static void SetReady()
-    {
-        NativeTypes = ((EMonsterType[])Enum.GetValues(typeof(EMonsterType)))
-            .Select(x => (id: x, value: GetObject(x)))
-            .Where(x => x.value != null)
-            .ToDictionary(x => x.id, x => x.value)!;
-
-        API.SetReady();
-    }
-
     /// <summary>
     /// Get a monster type.
     /// </summary>
@@ -39,10 +23,17 @@ public static partial class MonsterTypes
     [TryGet]
     private static GameObject? GetObject(EMonsterType monsterType) =>
         GameController
-            .Instance.CompleteMonsterList.SelectMany(x =>
-                x?.GetComponent<SkillManager>()?.MonsterTypes
-            )
+            .Instance.CompleteMonsterList.Where(x => x is not null)
+            .SelectMany(x => x?.GetComponent<SkillManager>()?.MonsterTypes)
             .FirstOrDefault(x => x?.GetComponent<MonsterType>()?.Type == monsterType);
+
+    [TryGet]
+    private static List<MonsterType> GetAll() =>
+        [
+            .. GameController.Instance.MonsterTypes.Where(x =>
+                x.Type != EMonsterType.EnemySkills && x.Type != EMonsterType.UiSkills
+            ),
+        ];
 
     /// <summary>
     /// Set a monster type's icon.
