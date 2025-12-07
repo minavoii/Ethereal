@@ -15,7 +15,7 @@ public sealed class BasicAPIGenerator : IIncrementalGenerator
 
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        var provider = context
+        IncrementalValuesProvider<INamedTypeSymbol?> provider = context
             .SyntaxProvider.CreateSyntaxProvider(
                 static (node, _) => node is ClassDeclarationSyntax m && m.AttributeLists.Count > 0,
                 static (ctx, _) => ClassHelper.GetWithAttribute(ctx, Attribute)
@@ -31,15 +31,15 @@ public sealed class BasicAPIGenerator : IIncrementalGenerator
 
     private static string GeneratePartialClass(INamedTypeSymbol symbol)
     {
-        var sb = new StringBuilder();
+        StringBuilder sb = new();
 
         sb.AppendLine("#nullable enable");
 
-        var namespaceName = symbol.ContainingNamespace.IsGlobalNamespace
-            ? null
+        string namespaceName = symbol.ContainingNamespace.IsGlobalNamespace
+            ? string.Empty
             : $"namespace {symbol.ContainingNamespace.ToDisplayString()}\n{{\n";
 
-        if (namespaceName != null)
+        if (!string.IsNullOrEmpty(namespaceName))
             sb.Append(namespaceName);
 
         string accessibility = symbol.DeclaredAccessibility.ToString().ToLowerInvariant();

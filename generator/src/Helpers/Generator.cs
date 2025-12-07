@@ -77,9 +77,12 @@ internal static class GeneratorHelper
             return;
 
         // Emit a single partial class
-        var classes = symbols.GroupBy(m => m.ContainingType, SymbolEqualityComparer.Default);
+        IEnumerable<IGrouping<ISymbol?, TSymbol>> classes = symbols.GroupBy(
+            m => m.ContainingType,
+            SymbolEqualityComparer.Default
+        );
 
-        foreach (var partialClass in classes)
+        foreach (IGrouping<ISymbol?, TSymbol> partialClass in classes)
         {
             ISymbol type = partialClass.Key!;
 
@@ -112,12 +115,12 @@ internal static class GeneratorHelper
             return;
 
         // Emit a single partial class
-        var classes = metadataList.GroupBy(
+        IEnumerable<IGrouping<ISymbol?, TMetadata>> classes = metadataList.GroupBy(
             m => m.Symbol.ContainingType,
             SymbolEqualityComparer.Default
         );
 
-        foreach (var partialClass in classes)
+        foreach (IGrouping<ISymbol?, TMetadata> partialClass in classes)
         {
             ISymbol type = partialClass.Key!;
 

@@ -82,8 +82,10 @@ internal static class Localisation
             ELanguage.Japanese => __instance.StringContentJapanese,
             ELanguage.Korean => __instance.StringContentKorean,
             ELanguage customLang => (
-                CustomLocalisations.TryGetValue(__instance.StringContent ?? "", out var localeData)
-                && localeData.Data.TryGetValue(customLang, out string content)
+                CustomLocalisations.TryGetValue(
+                    __instance.StringContent ?? "",
+                    out CustomLocaleData localeData
+                ) && localeData.Data.TryGetValue(customLang, out string content)
                     ? content
                     : __instance.StringContentEnglish
             ),
@@ -96,7 +98,7 @@ internal static class Localisation
     [HarmonyPrefix]
     private static bool GetCultureInfo(ref IFormatProvider __result)
     {
-        var CultureInfos =
+        Dictionary<ELanguage, CultureInfo> CultureInfos =
             (Dictionary<ELanguage, CultureInfo>)
                 AccessTools.Field(typeof(global::Utils), "CultureInfos").GetValue(null);
 

@@ -16,8 +16,8 @@ public sealed record LazyBuff : LazyReferenceable<Buff>
     public override Buff? Get() =>
         base.Get()
         ?? (
-            Id.HasValue && Buffs.TryGet(Id.Value, out var byId) ? byId
-            : Name != null && Buffs.TryGet(Name, out var byName) ? byName
+            Id.HasValue && Buffs.TryGet(Id.Value, out Buff byId) ? byId
+            : Name != null && Buffs.TryGet(Name, out Buff byName) ? byName
             : null
         );
 }

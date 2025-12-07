@@ -12,7 +12,8 @@ internal static class AttributeHelper
         if (property.DeclaringSyntaxReferences.FirstOrDefault() is not SyntaxReference syntaxRef)
             return [];
 
-        var declarationProp = (PropertyDeclarationSyntax)syntaxRef.GetSyntax();
+        PropertyDeclarationSyntax declarationProp = (PropertyDeclarationSyntax)
+            syntaxRef.GetSyntax();
 
         if (declarationProp.ExpressionBody?.Expression is not CollectionExpressionSyntax expression)
             return [];

@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
+using Ethereal.API;
 using Ethereal.Classes.LazyValues;
+using UnityEngine;
 
 namespace Ethereal.Classes.Builders;
 
@@ -9,7 +11,7 @@ namespace Ethereal.Classes.Builders;
 /// </summary>
 /// <param name="Health"></param>
 /// <param name="MainType"></param>
-/// <param name="MonsterTypes"></param>
+/// <param name="Types"></param>
 /// <param name="Elements"></param>
 /// <param name="SignatureTrait"></param>
 /// <param name="StartActions"></param>
@@ -18,7 +20,7 @@ namespace Ethereal.Classes.Builders;
 public sealed record MonsterShiftBuilder(
     int? Health,
     EMonsterMainType? MainType,
-    List<EMonsterType>? MonsterTypes,
+    List<EMonsterType>? Types,
     List<EElement>? Elements,
     LazyTrait? SignatureTrait,
     List<LazyAction>? StartActions,
@@ -33,11 +35,11 @@ public sealed record MonsterShiftBuilder(
         new()
         {
             MonsterTypesOverride =
-                MonsterTypes != null
+                Types != null
                     ?
                     [
-                        .. MonsterTypes.Select(x =>
-                            Ethereal.API.MonsterTypes.TryGetObject(x, out var type) ? type : null
+                        .. Types.Select(x =>
+                            MonsterTypes.TryGetObject(x, out GameObject type) ? type : null
                         ),
                     ]
                     : null,

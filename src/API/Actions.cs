@@ -109,7 +109,7 @@ public static partial class Actions
         if (action.IsFreeAction())
             go.GetComponent<BaseAction>().SetFreeAction(true);
 
-        foreach (var modifier in modifiers)
+        foreach (ActionModifier modifier in modifiers)
         {
             if (modifier is ActionDamageWrapper damageWrapper)
                 damageWrapper.Unwrap();
@@ -153,7 +153,7 @@ public static partial class Actions
     [Deferrable]
     private static void Update_Impl(int id, ActionDescriptor descriptor)
     {
-        if (TryGet(id, out var action))
+        if (TryGet(id, out BaseAction action))
             Update(action, descriptor);
     }
 
@@ -165,7 +165,7 @@ public static partial class Actions
     [Deferrable]
     private static void Update_Impl(string name, ActionDescriptor descriptor)
     {
-        if (TryGet(name, out var action))
+        if (TryGet(name, out BaseAction action))
             Update(action, descriptor);
     }
 

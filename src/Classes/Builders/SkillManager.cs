@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
+using Ethereal.API;
 using Ethereal.Classes.LazyValues;
+using UnityEngine;
 
 namespace Ethereal.Classes.Builders;
 
@@ -9,7 +11,7 @@ namespace Ethereal.Classes.Builders;
 /// </summary>
 /// <param name="MainType"></param>
 /// <param name="SignatureTrait"></param>
-/// <param name="MonsterTypes"></param>
+/// <param name="Types"></param>
 /// <param name="Elements"></param>
 /// <param name="StaggerDefines"></param>
 /// <param name="StartActions"></param>
@@ -21,7 +23,7 @@ namespace Ethereal.Classes.Builders;
 public sealed record SkillManagerBuilder(
     EMonsterMainType MainType,
     LazyTrait SignatureTrait,
-    List<EMonsterType> MonsterTypes,
+    List<EMonsterType> Types,
     List<EElement> Elements,
     List<StaggerDefine> StaggerDefines,
     List<LazyAction> StartActions,
@@ -39,9 +41,7 @@ public sealed record SkillManagerBuilder(
             SignatureTrait = SignatureTrait.Get()?.gameObject,
             MonsterTypes =
             [
-                .. MonsterTypes.Select(x =>
-                    Ethereal.API.MonsterTypes.TryGetObject(x, out var res) ? res : null
-                ),
+                .. Types.Select(x => MonsterTypes.TryGetObject(x, out GameObject res) ? res : null),
             ],
             Elements = Elements,
             StaggerDefines = StaggerDefines,

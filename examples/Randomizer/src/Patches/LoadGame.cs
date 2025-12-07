@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Ethereal.API;
 using HarmonyLib;
 
@@ -14,7 +15,7 @@ internal static class LoadGame
     {
         API.Data.AllPerks = API.Data.GetAllPerkInfos();
 
-        if (Traits.TryGetAllSignature(out var signatureTraits))
+        if (Traits.TryGetAllSignature(out List<Trait> signatureTraits))
             API.Data.SignatureTraits = signatureTraits;
 
         API.Randomizer.BalanceChanges();

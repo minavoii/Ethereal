@@ -16,8 +16,8 @@ public sealed record LazyMonster : LazyReferenceable<Monster>
     public override Monster? Get() =>
         base.Get()
         ?? (
-            Id.HasValue && Monsters.TryGet(Id.Value, out var byId) ? byId
-            : Name != null && Monsters.TryGet(Name, out var byName) ? byName
+            Id.HasValue && Monsters.TryGet(Id.Value, out Monster byId) ? byId
+            : Name != null && Monsters.TryGet(Name, out Monster byName) ? byName
             : null
         );
 }

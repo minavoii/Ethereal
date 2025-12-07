@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using Generators.Helpers;
@@ -16,14 +17,17 @@ public sealed class DeferrableMethodGenerator : IIncrementalGenerator
 
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        var provider = context
+        IncrementalValuesProvider<MethodMetadata?> provider = context
             .SyntaxProvider.CreateSyntaxProvider(
                 static (node, _) => node is MethodDeclarationSyntax m && m.AttributeLists.Count > 0,
                 static (ctx, _) => MethodHelper.GetWithAttribute(ctx, Attribute)
             )
             .Where(static m => m is not null);
 
-        var compilation = context.CompilationProvider.Combine(provider.Collect());
+        IncrementalValueProvider<(
+            Compilation Left,
+            ImmutableArray<MethodMetadata?> Right
+        )> compilation = context.CompilationProvider.Combine(provider.Collect());
 
         context.RegisterSourceOutput(
             compilation,
@@ -57,10 +61,10 @@ public sealed class DeferrableMethodGenerator : IIncrementalGenerator
 
         foreach (MethodMetadata data in methods)
         {
-            var method = data.Symbol!;
-            var name = method.Name.Replace("_Impl", "");
-            var args = string.Join(", ", data.Parameters?.Select(p => p.Name));
-            var @params = string.Join(", ", data.Parameters?.Select(x => x.AsArgument()));
+            IMethodSymbol method = data.Symbol!;
+            string name = method.Name.Replace("_Impl", "");
+            string args = string.Join(", ", data.Parameters?.Select(p => p.Name));
+            string @params = string.Join(", ", data.Parameters?.Select(x => x.AsArgument()));
 
             sb.AppendLine($"        /// {string.Join("\n", data.Comments)}");
             sb.AppendLine($"        public static void {name}({@params})");

@@ -35,7 +35,7 @@ public static partial class Buffs
     [Deferrable]
     private static void UpdateIcon_Impl(int id, Sprite icon)
     {
-        if (TryGet(id, out var buff))
+        if (TryGet(id, out Buff buff))
             UpdateIcon(buff, icon);
     }
 
@@ -47,7 +47,7 @@ public static partial class Buffs
     [Deferrable]
     private static void UpdateIcon_Impl(string name, Sprite icon)
     {
-        if (TryGet(name, out var buff))
+        if (TryGet(name, out Buff buff))
             UpdateIcon(buff, icon);
     }
 

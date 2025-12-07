@@ -130,11 +130,11 @@ internal class Randomizer
     /// </summary>
     internal static void BalanceChanges()
     {
-        foreach (var name in (string[])["Fire Bolt", "Water Bolt", "Wind Bolt"])
+        foreach (string name in (string[])["Fire Bolt", "Water Bolt", "Wind Bolt"])
         {
             // Bolt skills only consume 1 aether for 9 damage,
             // +4 damage and +1 stagger per additional aether
-            if (Actions.TryGet(name, out var bolt))
+            if (Actions.TryGet(name, out BaseAction bolt))
             {
                 bolt.GetComponent<ActionDamage>().Damage = 7;
                 bolt.GetComponent<ActionDamage>().AdditionalDamage = 2;
@@ -143,7 +143,7 @@ internal class Randomizer
 
         // Lava Bolt consumes 2 aether for 13 damage,
         // +2 burn and +1 stagger per fire aether
-        if (Actions.TryGet("Lava Bolt", out var lavaBolt))
+        if (Actions.TryGet("Lava Bolt", out BaseAction lavaBolt))
             lavaBolt.GetComponent<ActionDamage>().Damage = 10;
     }
 }

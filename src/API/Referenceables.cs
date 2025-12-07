@@ -15,7 +15,7 @@ public static partial class Referenceables
     [Deferrable]
     private static void Add_Impl(Referenceable referenceable)
     {
-        var cache =
+        Dictionary<int, Referenceable> cache =
             (Dictionary<int, Referenceable>)
                 AccessTools
                     .Field(typeof(WorldData), "referenceableCache")

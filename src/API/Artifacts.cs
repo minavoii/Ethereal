@@ -138,7 +138,7 @@ public static partial class Artifacts
     [Deferrable]
     private static void Update_Impl(int id, ArtifactDescriptor descriptor)
     {
-        if (TryGet(id, out var artifact))
+        if (TryGet(id, out Consumable artifact))
             Update(artifact, descriptor);
     }
 
@@ -150,7 +150,7 @@ public static partial class Artifacts
     [Deferrable]
     private static void Update_Impl(string name, ArtifactDescriptor descriptor)
     {
-        if (TryGet(name, out var artifact))
+        if (TryGet(name, out Consumable artifact))
             Update(artifact, descriptor);
     }
 

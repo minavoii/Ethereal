@@ -115,7 +115,7 @@ public static partial class Traits
     [Deferrable]
     private static void Add_Impl(Trait trait, bool learnable = false)
     {
-        var go = GameObjects.IntoGameObject(trait);
+        GameObject go = GameObjects.IntoGameObject(trait);
 
         foreach (PassiveEffect passive in trait.PassiveEffectList)
         {
@@ -144,7 +144,7 @@ public static partial class Traits
     [Deferrable]
     private static void Add_Impl(TraitDescriptor descriptor)
     {
-        var trait = new Trait()
+        Trait trait = new()
         {
             ID = descriptor.Id,
             Name = descriptor.Name,
@@ -157,7 +157,7 @@ public static partial class Traits
             [
                 .. descriptor.Types.Select(x =>
                 {
-                    MonsterTypes.TryGet(x, out var type);
+                    MonsterTypes.TryGet(x, out MonsterType type);
                     return type?.gameObject;
                 }),
             ],
@@ -165,11 +165,11 @@ public static partial class Traits
             SkillType = descriptor.SkillType ?? ESkillType.Shared,
         };
 
-        var go = GameObjects.IntoGameObject(trait);
+        GameObject go = GameObjects.IntoGameObject(trait);
 
         foreach (EMonsterType monsterType in descriptor.Types)
         {
-            if (MonsterTypes.TryGet(monsterType, out var type))
+            if (MonsterTypes.TryGet(monsterType, out MonsterType type))
                 type.Traits.Add(go.GetComponent<Trait>());
         }
 
@@ -184,7 +184,7 @@ public static partial class Traits
     [Deferrable]
     private static void Update_Impl(int id, TraitDescriptor descriptor)
     {
-        if (TryGet(id, out var trait))
+        if (TryGet(id, out Trait trait))
             Update(trait, descriptor);
     }
 
@@ -196,7 +196,7 @@ public static partial class Traits
     [Deferrable]
     private static void Update_Impl(string name, TraitDescriptor descriptor)
     {
-        if (TryGet(name, out var trait))
+        if (TryGet(name, out Trait trait))
             Update(trait, descriptor);
     }
 
@@ -239,9 +239,9 @@ public static partial class Traits
         {
             trait.Types.Clear();
 
-            foreach (var monsterType in descriptor.Types)
+            foreach (EMonsterType monsterType in descriptor.Types)
             {
-                if (MonsterTypes.TryGet(monsterType, out var type))
+                if (MonsterTypes.TryGet(monsterType, out MonsterType type))
                     trait.Types.Add(GameObjects.IntoGameObject(type));
             }
         }

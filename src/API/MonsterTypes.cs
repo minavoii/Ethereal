@@ -52,7 +52,7 @@ public static partial class MonsterTypes
     [Deferrable]
     private static void UpdateIcon_Impl(EMonsterType monsterType, Sprite typeIcon)
     {
-        if (TryGet(monsterType, out var type))
+        if (TryGet(monsterType, out MonsterType type))
             type.TypeIcon = typeIcon;
     }
 }

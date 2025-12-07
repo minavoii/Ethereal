@@ -107,7 +107,7 @@ public static partial class Monsters
     [Deferrable]
     private static void Update_Impl(int id, MonsterDescriptor descriptor)
     {
-        if (TryGet(id, out var monster))
+        if (TryGet(id, out Monster monster))
             Update(monster, descriptor);
     }
 
@@ -119,7 +119,7 @@ public static partial class Monsters
     [Deferrable]
     private static void Update_Impl(string name, MonsterDescriptor descriptor)
     {
-        if (TryGet(name, out var monster))
+        if (TryGet(name, out Monster monster))
             Update(monster, descriptor);
     }
 
@@ -175,7 +175,7 @@ public static partial class Monsters
         {
             monster.GetComponent<SkillManager>().StaggerDefines.Clear();
 
-            foreach (var (element, hits) in descriptor.Staggers)
+            foreach ((EElement element, int hits) in descriptor.Staggers)
             {
                 monster
                     .GetComponent<SkillManager>()
@@ -187,7 +187,7 @@ public static partial class Monsters
         {
             monster.GetComponent<SkillManager>().BossStagger.Clear();
 
-            foreach (var (element, hits) in descriptor.BossStaggers)
+            foreach ((EElement element, int hits) in descriptor.BossStaggers)
             {
                 monster
                     .GetComponent<SkillManager>()
@@ -301,7 +301,7 @@ public static partial class Monsters
 
         if (descriptor.Shift?.Build() is MonsterShift shift)
         {
-            var monsterShift = monster.GetComponent<MonsterShift>();
+            MonsterShift monsterShift = monster.GetComponent<MonsterShift>();
 
             monsterShift.MonsterTypesOverride = shift.MonsterTypesOverride;
             monsterShift.ElementsOverride = shift.ElementsOverride;

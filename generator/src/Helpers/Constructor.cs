@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
@@ -14,12 +15,14 @@ internal static class ConstructorHelper
         string propertyName
     )
     {
-        var declaration = (ConstructorDeclarationSyntax)context.Node;
+        ConstructorDeclarationSyntax declaration = (ConstructorDeclarationSyntax)context.Node;
 
         if (context.SemanticModel.GetDeclaredSymbol(declaration) is not IMethodSymbol symbol)
             return null;
 
-        var attribute = context.SemanticModel.Compilation.GetTypeByMetadataName(attributeName);
+        INamedTypeSymbol? attribute = context.SemanticModel.Compilation.GetTypeByMetadataName(
+            attributeName
+        );
 
         if (attribute == null)
             return null;
@@ -50,20 +53,21 @@ internal static class ConstructorHelper
         GeneratorSyntaxContext context
     )
     {
-        var syntaxReference = symbol.DeclaringSyntaxReferences.FirstOrDefault(x =>
+        SyntaxReference? syntaxReference = symbol.DeclaringSyntaxReferences.FirstOrDefault(x =>
             x.GetSyntax() is ConstructorDeclarationSyntax
         );
 
         if (syntaxReference == null)
             return [];
 
-        var declaration = (ConstructorDeclarationSyntax)syntaxReference.GetSyntax();
-        var initializer = declaration.Initializer;
+        ConstructorDeclarationSyntax declaration = (ConstructorDeclarationSyntax)
+            syntaxReference.GetSyntax();
+        ConstructorInitializerSyntax? initializer = declaration.Initializer;
 
         if (initializer?.Kind() != SyntaxKind.ThisConstructorInitializer)
             return [];
 
-        var args = initializer.ArgumentList.Arguments.Select(x =>
+        IEnumerable<string> args = initializer.ArgumentList.Arguments.Select(x =>
             x.Expression is ObjectCreationExpressionSyntax objectCreation
             && context.SemanticModel.GetTypeInfo(objectCreation).Type is ITypeSymbol objectType
                 ? objectType.ToDisplayString()

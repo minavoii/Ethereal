@@ -38,7 +38,7 @@ public class Plugin : BaseUnityPlugin
     {
         try
         {
-            var currentLanguage = GameSettingsController.Instance.CurrentLanguage;
+            ELanguage currentLanguage = GameSettingsController.Instance.CurrentLanguage;
             GameSettingsController.Instance.CurrentLanguage = ELanguage.French;
 
             Logger.LogInfo(

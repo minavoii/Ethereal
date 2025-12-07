@@ -11,12 +11,14 @@ internal static class ClassHelper
         string attributeName
     )
     {
-        var declaration = (ClassDeclarationSyntax)context.Node;
+        ClassDeclarationSyntax declaration = (ClassDeclarationSyntax)context.Node;
 
         if (context.SemanticModel.GetDeclaredSymbol(declaration) is not INamedTypeSymbol symbol)
             return null;
 
-        var attribute = context.SemanticModel.Compilation.GetTypeByMetadataName(attributeName);
+        INamedTypeSymbol? attribute = context.SemanticModel.Compilation.GetTypeByMetadataName(
+            attributeName
+        );
 
         if (attribute == null)
             return null;
