@@ -42,16 +42,14 @@ internal class Forward(
 
 /// <summary>
 /// Generate a getter and setter that forward their value to the field or property of the same name
-/// in the given class instance.
+/// in the given member.
 /// </summary>
-/// <param name="classInstance"></param>
+/// <param name="member"></param>
 [AttributeUsage(AttributeTargets.Property, Inherited = false, AllowMultiple = false)]
-internal class ForwardTo(
-    string classInstance,
-    ForwardConversion conversion = ForwardConversion.None
-) : Attribute
+internal class ForwardTo(string member, ForwardConversion conversion = ForwardConversion.None)
+    : Attribute
 {
-    public string Link = classInstance;
+    public string Link = member;
 
     public ForwardConversion Conversion = conversion;
 }

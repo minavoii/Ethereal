@@ -76,8 +76,8 @@ public sealed class ForwardToGenerator : IIncrementalGenerator
                 && data.AttributeProperties.Value is ImmutableArray<Member> attributeProperties
             )
             {
-                Member classInstance = attributeProperties[0];
-                string forwardTarget = $"{classInstance.Name}.{property.Name}";
+                Member member = attributeProperties[0];
+                string forwardTarget = $"{member.Name}.{property.Name}";
 
                 if (Enum.TryParse(attributeProperties[1]?.Name, out ForwardConversion conversion))
                 {
