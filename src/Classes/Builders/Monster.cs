@@ -37,7 +37,6 @@ public sealed record MonsterBuilder(
     public GameObject Build()
     {
         GameObject go = new();
-        Monster goMonster = go.GetComponent<Monster>();
 
         Monster.Animator = Animator;
 
@@ -50,6 +49,8 @@ public sealed record MonsterBuilder(
         GameObjects.CopyToGameObject(ref go, Monster);
         GameObjects.CopyToGameObject(ref go, Shift.Build());
         GameObject.Destroy(go.GetComponent<SpriteAnim>());
+
+        Monster goMonster = go.GetComponent<Monster>();
 
         if (Bounds.Bounds != null)
         {
