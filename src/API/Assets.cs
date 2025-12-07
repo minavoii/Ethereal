@@ -1,8 +1,8 @@
 using UnityEngine;
 
-namespace Ethereal.Utils;
+namespace Ethereal.API;
 
-internal static class Assets
+public static class Assets
 {
     /// <summary>
     /// Load a GameObject from an asset bundle.
@@ -10,7 +10,7 @@ internal static class Assets
     /// <param name="path"></param>
     /// <param name="asset"></param>
     /// <returns></returns>
-    internal static GameObject? LoadAsset(string path, string asset)
+    public static GameObject? LoadAsset(string path, string asset)
     {
         AssetBundle bundle = AssetBundle.LoadFromFile(path);
         GameObject go = bundle.LoadAsset<GameObject>(asset);
