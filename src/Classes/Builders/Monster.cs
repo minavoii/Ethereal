@@ -1,3 +1,4 @@
+using System.Linq;
 using Ethereal.API;
 using HarmonyLib;
 using UnityEngine;
@@ -23,6 +24,7 @@ public sealed record MonsterBounds(Vector2? Bounds, Vector2? BoundsOffset, Vecto
 /// <param name="AI"></param>
 /// <param name="OverworldBehaviour"></param>
 /// <param name="Shift"></param>
+/// /// <param name="ShiftedSprites"></param>
 public sealed record MonsterBuilder(
     Monster Monster,
     MonsterAnimator Animator,
@@ -31,7 +33,8 @@ public sealed record MonsterBuilder(
     MonsterStatsBuilder Stats,
     MonsterAIBuilder AI,
     OverworldMonsterBehaviour OverworldBehaviour,
-    MonsterShiftBuilder Shift
+    MonsterShiftBuilder Shift,
+    Sprite[] ShiftedSprites
 )
 {
     public GameObject Build()
@@ -51,6 +54,17 @@ public sealed record MonsterBuilder(
         GameObject.Destroy(go.GetComponent<SpriteAnim>());
 
         Monster goMonster = go.GetComponent<Monster>();
+
+        Sprites.ShiftedSprites.Add(
+            Monster.ID,
+            [
+                .. ShiftedSprites.Select(x =>
+                {
+                    x.name = x.name.Replace("_Shifted", "");
+                    return x;
+                }),
+            ]
+        );
 
         if (Bounds.Bounds != null)
         {

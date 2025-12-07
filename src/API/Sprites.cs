@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using Ethereal.Attributes;
@@ -25,6 +26,8 @@ public static partial class Sprites
     }
 
     private static readonly string SpritesPath = Path.Join(Plugin.EtherealPath, "Sprites");
+
+    internal static Dictionary<int, Sprite[]> ShiftedSprites { get; } = [];
 
     /// <summary>
     /// Mark the API as ready and run all deferred methods.

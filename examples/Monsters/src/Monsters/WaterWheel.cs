@@ -21,27 +21,45 @@ internal static class WaterWheel
 
     private const string Name = "Water Wheel";
 
-    private static readonly AnimationClip CombatIdle = Animations.LoadFromAsset(
-        Path.Join(Plugin.CustomMonstersPath, "WaterWheel_CombatIdle"),
-        "assets/animations/waterwheel/waterwheel_b_0.prefab"
+    private static readonly AssetBundle Bundle = Assets.LoadBundle(
+        Path.Join(Plugin.CustomMonstersPath, "WaterWheel")
     );
 
-    private static readonly AnimationClip CombatCast = Animations.LoadFromAsset(
-        Path.Join(Plugin.CustomMonstersPath, "WaterWheel_Cast"),
+    private static readonly AnimationClip CombatIdle = Animations.LoadFromBundle(
+        Bundle,
+        "assets/animations/waterwheel/waterwheel_combatidle.prefab"
+    );
+
+    private static readonly AnimationClip CombatCast = Animations.LoadFromBundle(
+        Bundle,
         "assets/animations/waterwheel/waterwheel_cast.prefab"
     );
 
-    private static readonly AnimationClip CombatCastEnd = Animations.LoadFromAsset(
-        Path.Join(Plugin.CustomMonstersPath, "WaterWheel_CastEnd"),
-        "assets/animations/waterwheel/waterwheel_castend2.prefab"
+    private static readonly AnimationClip CombatCastEnd = Animations.LoadFromBundle(
+        Bundle,
+        "assets/animations/waterwheel/waterwheel_castend.prefab"
     );
 
-    private static readonly Texture2D Texture = new(0, 0);
+    private static readonly Texture2D Texture = Sprites
+        .LoadFromBundle(Bundle, "assets/animations/waterwheel/waterwheel_combatidle.prefab")
+        .texture;
+
+    private static readonly Sprite[] ShiftedSprites = Sprites.LoadAllFromBundle(Bundle);
 
     private static readonly Texture2D ExplorationSpritesheet = new(0, 0);
 
     internal static MonsterBuilder Builder =>
-        new(Monster, Animator, Bounds, SkillManager, Stats, AI, OverworldBehaviour, Shift);
+        new(
+            Monster,
+            Animator,
+            Bounds,
+            SkillManager,
+            Stats,
+            AI,
+            OverworldBehaviour,
+            Shift,
+            ShiftedSprites
+        );
 
     private static readonly Monster Monster = new()
     {
