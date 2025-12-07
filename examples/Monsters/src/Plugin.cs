@@ -60,6 +60,7 @@ public class Plugin : BaseUnityPlugin
                     );
                 }
 
+                Keywords.Add(Rotation.Keyword);
                 Buffs.Add(Rotation.Buff);
 
                 Actions.Add(ManyEyed.Action, ManyEyed.Modifiers, true);
