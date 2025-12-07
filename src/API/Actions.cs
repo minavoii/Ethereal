@@ -57,10 +57,7 @@ public static partial class Actions
     private static BaseAction? Get(string name) => Get(x => x?.Name == name);
 
     private static BaseAction? Get(Func<BaseAction?, bool> predicate) =>
-        GameController
-            .Instance.MonsterTypes.SelectMany(x => x.Actions)
-            .Where(predicate)
-            .FirstOrDefault()
+        GameController.Instance.MonsterTypes.SelectMany(x => x.Actions).FirstOrDefault(predicate)
         ?? WorldData.Instance.Referenceables.OfType<BaseAction>().FirstOrDefault(predicate);
 
     /// <summary>
@@ -104,10 +101,11 @@ public static partial class Actions
     )
     {
         GameObject go = GameObjects.IntoGameObject(action);
-        go.GetComponent<BaseAction>().enabled = false;
+        BaseAction goAction = go.GetComponent<BaseAction>();
+        goAction.enabled = false;
 
         if (action.IsFreeAction())
-            go.GetComponent<BaseAction>().SetFreeAction(true);
+            goAction.SetFreeAction(true);
 
         foreach (ActionModifier modifier in modifiers)
         {
@@ -135,13 +133,13 @@ public static partial class Actions
             vfx.Children = vfxChildren;
         }
 
-        go.GetComponent<BaseAction>().InitializeReferenceable();
-        Referenceables.Add(go.GetComponent<BaseAction>());
+        goAction.InitializeReferenceable();
+        Referenceables.Add(goAction);
 
         if (learnable)
         {
             foreach (GameObject monsterType in action.Types)
-                monsterType.GetComponent<MonsterType>().Actions.Add(go.GetComponent<BaseAction>());
+                monsterType.GetComponent<MonsterType>().Actions.Add(goAction);
         }
     }
 
