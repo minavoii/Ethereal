@@ -13,7 +13,7 @@ internal static class ManyEyed
 
     private const string Name = "Many Eyed";
 
-    private static readonly AnimationClip Animation = Animations.LoadFromAsset(
+    private static readonly AnimationClip Animation = Animations.LoadFromBundle(
         Path.Join(Plugin.CustomMonstersPath, "ManyEyed"),
         "assets/animations/actions/manyeyed.prefab"
     );

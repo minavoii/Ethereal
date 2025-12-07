@@ -55,10 +55,13 @@ public static partial class Fonts
 
         foreach (FileInfo file in new DirectoryInfo(FontsPath).EnumerateFiles())
         {
-            AssetBundle bundle = AssetBundle.LoadFromFile(file.FullName);
+            AssetBundle? bundle = Assets.LoadBundle(file.FullName);
 
-            foreach (string name in bundle.GetAllAssetNames())
-                CustomFonts.Add(bundle.LoadAsset<TMP_FontAsset>(name));
+            if (bundle is not null)
+            {
+                foreach (string name in bundle.GetAllAssetNames())
+                    CustomFonts.Add(bundle.LoadAsset<TMP_FontAsset>(name));
+            }
         }
     }
 }

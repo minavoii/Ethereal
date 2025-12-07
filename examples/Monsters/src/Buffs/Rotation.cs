@@ -14,7 +14,7 @@ internal static class Rotation
     private const string Description =
         "No innate effect. {Rotation} traits increase in strength every turn.";
 
-    internal static readonly AnimationClip Animation = Animations.LoadFromAsset(
+    internal static readonly AnimationClip Animation = Animations.LoadFromBundle(
         Path.Join(Plugin.CustomMonstersPath, "Rotation"),
         "assets/animations/waterwheel/rotation.prefab"
     );
