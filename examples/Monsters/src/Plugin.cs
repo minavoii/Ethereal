@@ -31,7 +31,7 @@ public class Plugin : BaseUnityPlugin
         Logger = base.Logger;
 
         APIManager.RunWhenReady(
-            EtherealAPI.Buffs | EtherealAPI.Actions | EtherealAPI.Monsters,
+            EtherealAPI.Buffs | EtherealAPI.Actions | EtherealAPI.Monsters | EtherealAPI.Keywords,
             () =>
             {
                 if (Buffs.TryGet("Age", out Buff age))
@@ -76,6 +76,7 @@ public class Plugin : BaseUnityPlugin
                     WaterWheel.MetaUpgrade,
                     "Special"
                 );
+                Keywords.Add(Rotation.Keyword, Rotation.LocalisationData, Rotation.CustomLanguageEntries);
             }
         );
     }
