@@ -82,7 +82,7 @@ internal class Random
         List<Trait> traits =
         [
             .. types
-                .SelectMany(x => MonsterTypes.NativeTypes[x].GetComponent<MonsterType>().Traits)
+                .SelectMany(x => MonsterTypes.TryGet(x, out MonsterType type) ? type.Traits : null)
                 .Concat(Data.SignatureTraits)
                 .Distinct()
                 .Where(x => allowMaverick || x.MaverickSkill == false)
@@ -231,7 +231,9 @@ internal class Random
             [
                 .. types
                     .SelectMany(x =>
-                        MonsterTypes.NativeTypes[x]?.GetComponent<MonsterType>().Actions
+                        MonsterTypes.TryGet(x, out MonsterType type)
+                            ? type.GetComponent<MonsterType>().Actions
+                            : null
                     )
                     .Distinct(),
             ];

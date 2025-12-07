@@ -166,8 +166,8 @@ public static partial class Monsters
         {
             for (int i = 0; i < 3; i++)
             {
-                GameObject go = MonsterTypes.NativeTypes[descriptor.Types[i]];
-                monster.GetComponent<SkillManager>().MonsterTypes[i] = go;
+                if (MonsterTypes.TryGetObject(descriptor.Types[i], out GameObject go))
+                    monster.GetComponent<SkillManager>().MonsterTypes[i] = go;
             }
         }
 
