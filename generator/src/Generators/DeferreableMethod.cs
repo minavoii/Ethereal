@@ -17,16 +17,16 @@ public sealed class DeferrableMethodGenerator : IIncrementalGenerator
 
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        IncrementalValuesProvider<MethodMetadata?> provider = context
+        IncrementalValuesProvider<MethodMetadata> provider = context
             .SyntaxProvider.CreateSyntaxProvider(
                 static (node, _) => node is MethodDeclarationSyntax m && m.AttributeLists.Count > 0,
-                static (ctx, _) => MethodHelper.GetWithAttribute(ctx, Attribute)
+                static (ctx, _) => MethodHelper.GetWithAttribute(ctx, Attribute)!
             )
             .Where(static m => m is not null);
 
         IncrementalValueProvider<(
             Compilation Left,
-            ImmutableArray<MethodMetadata?> Right
+            ImmutableArray<MethodMetadata> Right
         )> compilation = context.CompilationProvider.Combine(provider.Collect());
 
         context.RegisterSourceOutput(
