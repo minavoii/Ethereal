@@ -13,7 +13,7 @@ public static class Animations
     /// <returns></returns>
     public static AnimationClip? LoadFromAsset(string path, string asset)
     {
-        GameObject? go = Utils.Assets.LoadAsset(path, asset);
+        GameObject? go = Assets.LoadAsset(path, asset);
         AnimationClip? clip = go
             ?.GetComponent<Animator>()
             .runtimeAnimatorController.animationClips.FirstOrDefault();

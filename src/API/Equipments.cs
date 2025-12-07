@@ -148,12 +148,12 @@ public static partial class Equipments
             PassiveEffectList = [],
         };
 
-        Utils.GameObjects.CopyToGameObject(ref go, equipment);
+        GameObjects.CopyToGameObject(ref go, equipment);
         go.GetComponent<Equipment>().name = go.name;
 
         foreach (PassiveEffect passive in descriptor.PassiveEffects)
         {
-            Utils.GameObjects.CopyToGameObject(ref go, passive);
+            GameObjects.CopyToGameObject(ref go, passive);
         }
 
         // Copy PassiveEffect components into PassiveEffectList
@@ -247,7 +247,7 @@ public static partial class Equipments
 
             foreach (PassiveEffect passive in descriptor.PassiveEffects)
             {
-                Utils.GameObjects.CopyToGameObject(ref go, passive);
+                GameObjects.CopyToGameObject(ref go, passive);
             }
 
             equipment.InitializeReferenceable();

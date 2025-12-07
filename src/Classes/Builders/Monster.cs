@@ -1,3 +1,4 @@
+using Ethereal.API;
 using HarmonyLib;
 using UnityEngine;
 
@@ -39,14 +40,14 @@ public sealed record MonsterBuilder(
 
         Monster.Animator = Animator;
 
-        Utils.GameObjects.CopyToGameObject(ref monster_go, Animator);
+        GameObjects.CopyToGameObject(ref monster_go, Animator);
         monster_go.AddComponent<SpriteRenderer>();
-        Utils.GameObjects.CopyToGameObject(ref monster_go, OverworldBehaviour);
-        Utils.GameObjects.CopyToGameObject(ref monster_go, SkillManager.Build());
-        Utils.GameObjects.CopyToGameObject(ref monster_go, Stats.Build());
-        Utils.GameObjects.CopyToGameObject(ref monster_go, AI.Build());
-        Utils.GameObjects.CopyToGameObject(ref monster_go, Monster);
-        Utils.GameObjects.CopyToGameObject(ref monster_go, Shift.Build());
+        GameObjects.CopyToGameObject(ref monster_go, OverworldBehaviour);
+        GameObjects.CopyToGameObject(ref monster_go, SkillManager.Build());
+        GameObjects.CopyToGameObject(ref monster_go, Stats.Build());
+        GameObjects.CopyToGameObject(ref monster_go, AI.Build());
+        GameObjects.CopyToGameObject(ref monster_go, Monster);
+        GameObjects.CopyToGameObject(ref monster_go, Shift.Build());
         GameObject.Destroy(monster_go.GetComponent<SpriteAnim>());
 
         if (Bounds.Bounds != null)

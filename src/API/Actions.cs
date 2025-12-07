@@ -103,7 +103,7 @@ public static partial class Actions
         bool learnable = false
     )
     {
-        GameObject go = Utils.GameObjects.IntoGameObject(action);
+        GameObject go = GameObjects.IntoGameObject(action);
         go.GetComponent<BaseAction>().enabled = false;
 
         if (action.IsFreeAction())
@@ -114,7 +114,7 @@ public static partial class Actions
             if (modifier is ActionDamageWrapper damageWrapper)
                 damageWrapper.Unwrap();
 
-            Utils.GameObjects.CopyToGameObject(ref go, modifier);
+            GameObjects.CopyToGameObject(ref go, modifier);
 
             // Set the `Buffs` property here because it's private
             if (modifier is ActionApplyBuffWrapper applyBuff)

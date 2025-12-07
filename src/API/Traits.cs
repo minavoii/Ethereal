@@ -115,7 +115,7 @@ public static partial class Traits
     [Deferrable]
     private static void Add_Impl(Trait trait, bool learnable = false)
     {
-        var go = Utils.GameObjects.IntoGameObject(trait);
+        var go = GameObjects.IntoGameObject(trait);
 
         foreach (PassiveEffect passive in trait.PassiveEffectList)
         {
@@ -124,7 +124,7 @@ public static partial class Traits
             else if (passive is PassiveGrantActionWrapper grantAction)
                 grantAction.Unwrap();
 
-            Utils.GameObjects.CopyToGameObject(ref go, passive);
+            GameObjects.CopyToGameObject(ref go, passive);
         }
 
         go.GetComponent<Trait>().InitializeReferenceable();
@@ -165,7 +165,7 @@ public static partial class Traits
             SkillType = descriptor.SkillType ?? ESkillType.Shared,
         };
 
-        var go = Utils.GameObjects.IntoGameObject(trait);
+        var go = GameObjects.IntoGameObject(trait);
 
         foreach (EMonsterType monsterType in descriptor.Types)
         {
@@ -230,7 +230,7 @@ public static partial class Traits
             GameObject go = trait.gameObject;
 
             foreach (PassiveEffect passive in descriptor.PassiveEffects)
-                Utils.GameObjects.CopyToGameObject(ref go, passive);
+                GameObjects.CopyToGameObject(ref go, passive);
 
             trait.InitializeReferenceable();
         }
@@ -242,7 +242,7 @@ public static partial class Traits
             foreach (var monsterType in descriptor.Types)
             {
                 if (MonsterTypes.TryGet(monsterType, out var type))
-                    trait.Types.Add(Utils.GameObjects.IntoGameObject(type));
+                    trait.Types.Add(GameObjects.IntoGameObject(type));
             }
         }
 
