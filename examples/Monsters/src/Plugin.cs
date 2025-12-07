@@ -31,7 +31,11 @@ public class Plugin : BaseUnityPlugin
         Logger = base.Logger;
 
         APIManager.RunWhenReady(
-            EtherealAPI.Buffs | EtherealAPI.Actions | EtherealAPI.Monsters,
+            EtherealAPI.Buffs
+                | EtherealAPI.Actions
+                | EtherealAPI.Monsters
+                | EtherealAPI.Encounters
+                | EtherealAPI.Keywords,
             () =>
             {
                 if (Buffs.TryGet("Age", out Buff age))
@@ -77,6 +81,16 @@ public class Plugin : BaseUnityPlugin
                     WaterWheel.MetaUpgrade,
                     "Special"
                 );
+
+                if (Encounters.TryGet(EArea.PilgrimagePath, 3, out MonsterEncounterSet set))
+                {
+                    MonsterEncounter wardenEncounter = set.MonsterEncounters.FirstOrDefault();
+
+                    Encounters.SetEncounterEnemies(
+                        wardenEncounter,
+                        [new(WaterWheel.Builder.Monster.ID)]
+                    );
+                }
             }
         );
     }

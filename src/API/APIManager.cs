@@ -8,19 +8,22 @@ public enum EtherealAPI
 {
     Actions = 1 << 0,
     Artifacts = 1 << 1,
-    Buffs = 1 << 2,
-    Elements = 1 << 3,
-    Equipments = 1 << 4,
-    Fonts = 1 << 5,
-    Localisation = 1 << 6,
-    Mementos = 1 << 7,
-    MetaUpgrades = 1 << 8,
-    Monsters = 1 << 9,
-    MonsterTypes = 1 << 10,
-    Perks = 1 << 11,
-    Referenceables = 1 << 12,
-    Sprites = 1 << 13,
-    Traits = 1 << 14,
+    Biomes = 1 << 2,
+    Buffs = 1 << 3,
+    Encounters = 1 << 4,
+    Elements = 1 << 5,
+    Equipments = 1 << 6,
+    Fonts = 1 << 7,
+    Keywords = 1 << 8,
+    Localisation = 1 << 9,
+    Mementos = 1 << 10,
+    MetaUpgrades = 1 << 11,
+    Monsters = 1 << 12,
+    MonsterTypes = 1 << 13,
+    Perks = 1 << 14,
+    Referenceables = 1 << 15,
+    Sprites = 1 << 16,
+    Traits = 1 << 17,
 }
 
 public static partial class APIManager
@@ -51,8 +54,14 @@ public static partial class APIManager
         if (apis.HasFlag(EtherealAPI.Artifacts))
             await Artifacts.Task;
 
+        if (apis.HasFlag(EtherealAPI.Biomes))
+            await Biomes.Task;
+
         if (apis.HasFlag(EtherealAPI.Buffs))
             await Buffs.Task;
+
+        if (apis.HasFlag(EtherealAPI.Encounters))
+            await Encounters.Task;
 
         if (apis.HasFlag(EtherealAPI.Elements))
             await Elements.Task;
@@ -62,6 +71,9 @@ public static partial class APIManager
 
         if (apis.HasFlag(EtherealAPI.Fonts))
             await Fonts.Task;
+
+        if (apis.HasFlag(EtherealAPI.Keywords))
+            await Keywords.Task;
 
         if (apis.HasFlag(EtherealAPI.Localisation))
             await Localisation.Task;
