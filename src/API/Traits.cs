@@ -116,6 +116,7 @@ public static partial class Traits
     private static void Add_Impl(Trait trait, bool learnable = false)
     {
         GameObject go = GameObjects.IntoGameObject(trait);
+        Trait goTrait = go.GetComponent<Trait>();
 
         foreach (PassiveEffect passive in trait.PassiveEffectList)
         {
@@ -127,13 +128,13 @@ public static partial class Traits
             GameObjects.CopyToGameObject(ref go, passive);
         }
 
-        go.GetComponent<Trait>().InitializeReferenceable();
-        Referenceables.Add(go.GetComponent<Trait>());
+        goTrait.InitializeReferenceable();
+        Referenceables.Add(goTrait);
 
         if (learnable)
         {
             foreach (GameObject monsterType in trait.Types)
-                monsterType.GetComponent<MonsterType>().Traits.Add(go.GetComponent<Trait>());
+                monsterType.GetComponent<MonsterType>().Traits.Add(goTrait);
         }
     }
 

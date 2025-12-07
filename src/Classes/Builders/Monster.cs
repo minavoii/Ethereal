@@ -37,6 +37,7 @@ public sealed record MonsterBuilder(
     public GameObject Build()
     {
         GameObject monster_go = new();
+        Monster goMonster = monster_go.GetComponent<Monster>();
 
         Monster.Animator = Animator;
 
@@ -52,15 +53,13 @@ public sealed record MonsterBuilder(
 
         if (Bounds.Bounds != null)
         {
-            AccessTools
-                .Field(typeof(Monster), "Bounds")
-                .SetValue(monster_go.GetComponent<Monster>(), Bounds.Bounds);
+            AccessTools.Field(typeof(Monster), "Bounds").SetValue(goMonster, Bounds.Bounds);
         }
         if (Bounds.BoundsOffset != null)
         {
             AccessTools
                 .Field(typeof(Monster), "BoundsOffset")
-                .SetValue(monster_go.GetComponent<Monster>(), Bounds.BoundsOffset);
+                .SetValue(goMonster, Bounds.BoundsOffset);
         }
 
         Transform focusPointTransform = new GameObject("FocusPoint").transform;
@@ -68,9 +67,7 @@ public sealed record MonsterBuilder(
         if (Bounds.FocusPoint is Vector3 focusPoint)
             focusPointTransform.position = focusPoint;
 
-        AccessTools
-            .Field(typeof(Monster), "FocusPoint")
-            .SetValue(monster_go.GetComponent<Monster>(), focusPointTransform);
+        AccessTools.Field(typeof(Monster), "FocusPoint").SetValue(goMonster, focusPointTransform);
 
         return monster_go;
     }
