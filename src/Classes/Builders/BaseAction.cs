@@ -59,7 +59,7 @@ public sealed record BaseActionBuilder(
             Types =
             [
                 .. Types.Select(x =>
-                    MonsterTypes.TryGetObject(x, out GameObject typeGo) ? typeGo : null
+                    MonsterTypes.TryGet(x, out MonsterType type) ? type.gameObject : null
                 ),
             ],
             AnimationType = AnimationType,

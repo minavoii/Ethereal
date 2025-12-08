@@ -42,7 +42,7 @@ public sealed record TraitBuilder(
             Types =
             [
                 .. Types.Select(x =>
-                    MonsterTypes.TryGetObject(x, out GameObject typeGo) ? typeGo : null
+                    MonsterTypes.TryGet(x, out MonsterType type) ? type.gameObject : null
                 ),
             ],
             PassiveEffectList = PassiveEffects,

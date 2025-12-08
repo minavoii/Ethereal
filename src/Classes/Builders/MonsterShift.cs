@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Ethereal.Classes.LazyValues;
-using UnityEngine;
 
 namespace Ethereal.Classes.Builders;
 
@@ -34,7 +33,9 @@ public sealed record MonsterShiftBuilder(
                 ?
                 [
                     .. Types.Select(x =>
-                        Ethereal.API.MonsterTypes.TryGetObject(x, out GameObject type) ? type : null
+                        Ethereal.API.MonsterTypes.TryGet(x, out MonsterType type)
+                            ? type.gameObject
+                            : null
                     ),
                 ]
                 : null,

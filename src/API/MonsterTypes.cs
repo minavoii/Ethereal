@@ -16,17 +16,6 @@ public static partial class MonsterTypes
     private static MonsterType? Get(EMonsterType monsterType) =>
         GameController.Instance.MonsterTypes.Find(x => x?.Type == monsterType);
 
-    /// <summary>
-    /// Get a monster type's GameObject.
-    /// </summary>
-    /// <param name="monsterType"></param>
-    [TryGet]
-    private static GameObject? GetObject(EMonsterType monsterType) =>
-        GameController
-            .Instance.CompleteMonsterList.Where(x => x is not null)
-            .SelectMany(x => x?.GetComponent<SkillManager>()?.MonsterTypes)
-            .FirstOrDefault(x => x?.GetComponent<MonsterType>()?.Type == monsterType);
-
     [TryGet]
     private static List<MonsterType> GetAll() =>
         [
