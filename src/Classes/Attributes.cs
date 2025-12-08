@@ -1,5 +1,5 @@
 using System;
-using Generators;
+using Generators.Enums;
 
 namespace Ethereal.Attributes;
 
