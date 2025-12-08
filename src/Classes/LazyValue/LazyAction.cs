@@ -17,7 +17,7 @@ public sealed record LazyAction : LazyReferenceable<BaseAction>
         base.Get()
         ?? (
             Id.HasValue && Actions.TryGet(Id.Value, out BaseAction byId) ? byId
-            : Name != null && Actions.TryGet(Name, out BaseAction byName) ? byName
+            : Name is not null && Actions.TryGet(Name, out BaseAction byName) ? byName
             : null
         );
 }

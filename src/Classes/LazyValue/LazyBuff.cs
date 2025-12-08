@@ -17,7 +17,7 @@ public sealed record LazyBuff : LazyReferenceable<Buff>
         base.Get()
         ?? (
             Id.HasValue && Buffs.TryGet(Id.Value, out Buff byId) ? byId
-            : Name != null && Buffs.TryGet(Name, out Buff byName) ? byName
+            : Name is not null && Buffs.TryGet(Name, out Buff byName) ? byName
             : null
         );
 }

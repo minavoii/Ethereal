@@ -20,7 +20,7 @@ internal static class RecordHelper
             attributeName
         );
 
-        if (attribute == null)
+        if (attribute is null)
             return null;
 
         return symbol

@@ -28,7 +28,7 @@ internal static class AttributeHelper
                         ? new Member(typeExpr.Type.ToString(), nameExpr.Token.ValueText)
                         : null! // Never included in the final result thanks to `Where` below
                 )
-                .Where(x => x != null),
+                .Where(x => x is not null),
         ];
 
         return tuples;

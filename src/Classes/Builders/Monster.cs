@@ -66,11 +66,11 @@ public sealed record MonsterBuilder(
             ]
         );
 
-        if (Bounds.Bounds != null)
+        if (Bounds.Bounds is not null)
         {
             AccessTools.Field(typeof(Monster), "Bounds").SetValue(goMonster, Bounds.Bounds);
         }
-        if (Bounds.BoundsOffset != null)
+        if (Bounds.BoundsOffset is not null)
         {
             AccessTools
                 .Field(typeof(Monster), "BoundsOffset")

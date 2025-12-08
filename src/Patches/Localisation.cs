@@ -19,7 +19,7 @@ internal static class Localisation
             out LocalisationData.LocalisationDataEntry value
         );
 
-        if (value != null)
+        if (value is not null)
         {
             string localizedString =
                 value.GetLocalizedString(GameSettingsController.Instance.CurrentLanguage)
@@ -102,7 +102,7 @@ internal static class Localisation
             (Dictionary<ELanguage, CultureInfo>)
                 AccessTools.Field(typeof(global::Utils), "CultureInfos").GetValue(null);
 
-        if (CultureInfos == null)
+        if (CultureInfos is null)
         {
             CultureInfos = new Dictionary<ELanguage, CultureInfo>
             {

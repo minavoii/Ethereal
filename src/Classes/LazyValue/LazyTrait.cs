@@ -17,7 +17,7 @@ public sealed partial record LazyTrait : LazyReferenceable<Trait>
         base.Get()
         ?? (
             Id.HasValue && Traits.TryGet(Id.Value, out Trait byId) ? byId
-            : Name != null && Traits.TryGet(Name, out Trait byName) ? byName
+            : Name is not null && Traits.TryGet(Name, out Trait byName) ? byName
             : null
         );
 }

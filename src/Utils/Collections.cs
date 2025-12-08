@@ -24,6 +24,6 @@ public static class DictionaryExtensions
         KeyValuePair<Key, Value> pair = dictionary.FirstOrDefault(predicate);
         key = pair.Key;
 
-        return pair.Value != null;
+        return pair.Value is not null;
     }
 }

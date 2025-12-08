@@ -264,7 +264,7 @@ internal class Random
                         )
                     )
                 )
-                && (excludeAction == null || x.ID != excludeAction.ID)
+                && (x.ID != excludeAction?.ID)
                 && (
                     (maverick == BoolType.False && x.MaverickSkill == false)
                     || (maverick == BoolType.True && x.MaverickSkill == true)

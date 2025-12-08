@@ -82,7 +82,7 @@ public sealed class TryGetMethodGenerator : IIncrementalGenerator
             );
             sb.AppendLine("        {");
             sb.AppendLine($"            result = API.IsReady ? {method.Name}({args}) : null;");
-            sb.AppendLine("            return result != null;");
+            sb.AppendLine("            return result is not null;");
             sb.AppendLine("        }");
         }
 

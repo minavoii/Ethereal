@@ -66,7 +66,7 @@ public sealed class DeferrableAPIGenerator : IIncrementalGenerator
 
         sb.AppendLine("    }");
 
-        if (namespaceName != null)
+        if (namespaceName is not null)
             sb.AppendLine("}");
 
         return sb.ToString();

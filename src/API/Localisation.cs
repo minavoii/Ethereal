@@ -99,7 +99,7 @@ public static partial class Localisation
             LocalisationData.Instance.LocaEntries.FirstOrDefault(x => x.Value.ID == entry.ID);
 
         // Update text
-        if (pair.Value != null)
+        if (pair.Value is not null)
         {
             if (!string.IsNullOrEmpty(entry.StringContentEnglish))
                 pair.Value.StringContentEnglish = entry.StringContentEnglish;
@@ -176,7 +176,7 @@ public static partial class Localisation
             );
 
             // Language not found found
-            if (lang.Value == null)
+            if (lang.Value is null)
                 continue;
 
             // Update text
@@ -282,7 +282,7 @@ public static partial class Localisation
             (Dictionary<ELanguage, CultureInfo>)
                 AccessTools.Field(typeof(global::Utils), "CultureInfos").GetValue(null);
 
-        if (CultureInfos == null)
+        if (CultureInfos is null)
         {
             CultureInfos = new Dictionary<ELanguage, CultureInfo>
             {
@@ -321,7 +321,7 @@ public static partial class Localisation
                 LocalisationData.Instance.LocaEntries.FirstOrDefault(x => x.Value.ID == locaId);
 
             // Create native localisation if it doesn't exist
-            if (entry == null)
+            if (entry is null)
             {
                 original = text;
                 entry = new()
