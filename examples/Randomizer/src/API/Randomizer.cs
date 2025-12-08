@@ -13,21 +13,16 @@ internal class Randomizer
 {
     internal const string DataFilePrefix = "data_";
 
-    internal static string CurrentDataPath
-    {
-        get
-        {
-            return Path.Combine(
-                Plugin.RandomizerPath,
-                DataFilePrefix
-                    + (string)
-                        AccessTools
-                            .Field(typeof(SaveFileManager), "selectedProfileID")
-                            .GetValue(SaveFileManager.Instance)
-                    + ".json"
-            );
-        }
-    }
+    internal static string CurrentDataPath =>
+        Path.Combine(
+            Plugin.RandomizerPath,
+            DataFilePrefix
+                + (string)
+                    AccessTools
+                        .Field(typeof(SaveFileManager), "selectedProfileID")
+                        .GetValue(SaveFileManager.Instance)
+                + ".json"
+        );
 
     /// <summary>
     /// Randomize all monster data.

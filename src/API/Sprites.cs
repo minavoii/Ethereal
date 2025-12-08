@@ -412,12 +412,10 @@ public static partial class Sprites
     /// </summary>
     /// <param name="filename"></param>
     /// <returns></returns>
-    private static string ToTitleCase(string filename)
-    {
-        return new CultureInfo("en-US").TextInfo.ToTitleCase(
+    private static string ToTitleCase(string filename) =>
+        new CultureInfo("en-US").TextInfo.ToTitleCase(
             Path.GetFileNameWithoutExtension(filename).Replace("_", " ")
         );
-    }
 
     /// <summary>
     /// Create a sprite with a given size and load a texture inside.

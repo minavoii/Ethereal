@@ -46,11 +46,8 @@ public static partial class Artifacts
     [TryGet]
     private static Consumable? Get(string name) => Get(x => x?.BaseItem.Name == name);
 
-    private static Consumable? Get(Predicate<ItemManager.BaseItemInstance?> predicate)
-    {
-        return GameController.Instance.ItemManager.Consumables.Find(predicate)?.BaseItem
-            as Consumable;
-    }
+    private static Consumable? Get(Predicate<ItemManager.BaseItemInstance?> predicate) =>
+        GameController.Instance.ItemManager.Consumables.Find(predicate)?.BaseItem as Consumable;
 
     /// <summary>
     /// Create a new artifact and add it to the game's data.

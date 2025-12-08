@@ -21,11 +21,8 @@ public static partial class Buffs
     [TryGet]
     private static Buff Get(string name) => Get(x => x?.Name == name);
 
-    private static Buff Get(Predicate<Buff?> predicate)
-    {
-        return Prefabs.Instance.AllBuffs.Find(predicate)
-            ?? Prefabs.Instance.AllDebuffs.Find(predicate);
-    }
+    private static Buff Get(Predicate<Buff?> predicate) =>
+        Prefabs.Instance.AllBuffs.Find(predicate) ?? Prefabs.Instance.AllDebuffs.Find(predicate);
 
     /// <summary>
     /// Set a buff's icon.

@@ -10,13 +10,11 @@ namespace Ethereal.Classes.Builders;
 /// <param name="Perks"></param>
 public sealed record MonsterStatsBuilder(int BaseMaxHealth, List<PerkInfosBuilder> Perks)
 {
-    public MonsterStats Build()
-    {
-        return new()
+    public MonsterStats Build() =>
+        new()
         {
             BaseMaxHealth = BaseMaxHealth,
             PerkInfosList = [.. Perks.Select(x => x.Build())],
             Perks = [],
         };
-    }
 }
