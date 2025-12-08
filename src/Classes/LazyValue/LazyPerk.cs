@@ -17,7 +17,7 @@ public sealed record LazyPerk : LazyReferenceable<Perk>
         base.Get()
         ?? (
             Id.HasValue && Perks.TryGet(Id.Value, out Perk byId) ? byId
-            : Name != null && Perks.TryGet(Name, out Perk byName) ? byName
+            : Name is not null && Perks.TryGet(Name, out Perk byName) ? byName
             : null
         );
 }

@@ -69,7 +69,7 @@ public sealed class PrivatePrimaryConstructor : IIncrementalGenerator
         sb.AppendLine("        }");
         sb.AppendLine("    }");
 
-        if (namespaceName != null)
+        if (namespaceName is not null)
             sb.AppendLine("}");
 
         return sb.ToString();

@@ -137,7 +137,7 @@ public static partial class Mementos
         Referenceables.Add(goMemento);
         Referenceables.Add(goUpgrade);
 
-        if (witchCategory != null)
+        if (witchCategory is not null)
             MetaUpgrades.AddToNPC(EMetaUpgradeNPC.Witch, witchCategory, goUpgrade);
     }
 }

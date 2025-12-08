@@ -64,7 +64,7 @@ public sealed class BasicAPIGenerator : IIncrementalGenerator
 
         sb.AppendLine("    }");
 
-        if (namespaceName != null)
+        if (namespaceName is not null)
             sb.AppendLine("}");
 
         return sb.ToString();

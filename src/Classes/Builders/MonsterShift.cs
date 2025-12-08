@@ -30,21 +30,19 @@ public sealed record MonsterShiftBuilder(
     public MonsterShift Build() =>
         new()
         {
-            MonsterTypesOverride =
-                Types != null
-                    ?
-                    [
-                        .. Types.Select(x =>
-                            Ethereal.API.MonsterTypes.TryGetObject(x, out GameObject type)
-                                ? type
-                                : null
-                        ),
-                    ]
-                    : null,
+            MonsterTypesOverride = Types is not null
+                ?
+                [
+                    .. Types.Select(x =>
+                        Ethereal.API.MonsterTypes.TryGetObject(x, out GameObject type) ? type : null
+                    ),
+                ]
+                : null,
             ElementsOverride = Elements,
             SignatureTraitOverride = SignatureTrait?.Get()?.gameObject,
-            StartActionsOverride =
-                StartActions != null ? [.. StartActions.Select(x => x.Get()?.gameObject)] : null,
+            StartActionsOverride = StartActions is not null
+                ? [.. StartActions.Select(x => x.Get()?.gameObject)]
+                : null,
             ResetPoiseActionOverride = ResetAction?.Get()?.gameObject,
             PerksOverride = [],
             ChangeMainType = MainType.HasValue,

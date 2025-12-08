@@ -64,7 +64,7 @@ public sealed class LazyValueConstructor : IIncrementalGenerator
 
         foreach (ConstructorMetadata method in methods)
         {
-            if (method.AttributeProperties == null)
+            if (method.AttributeProperties is null)
                 continue;
 
             foreach (Member property in method.AttributeProperties)
@@ -73,7 +73,7 @@ public sealed class LazyValueConstructor : IIncrementalGenerator
 
         sb.AppendLine("    }");
 
-        if (namespaceName != null)
+        if (namespaceName is not null)
             sb.AppendLine("}");
 
         return sb.ToString();

@@ -24,7 +24,7 @@ internal static class ConstructorHelper
             attributeName
         );
 
-        if (attribute == null)
+        if (attribute is null)
             return null;
 
         return
@@ -57,7 +57,7 @@ internal static class ConstructorHelper
             x.GetSyntax() is ConstructorDeclarationSyntax
         );
 
-        if (syntaxReference == null)
+        if (syntaxReference is null)
             return [];
 
         ConstructorDeclarationSyntax declaration = (ConstructorDeclarationSyntax)
