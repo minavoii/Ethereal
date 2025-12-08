@@ -28,9 +28,8 @@ public sealed record MonsterAIBuilder(
     bool ExcludedFromTurnOrder
 )
 {
-    public MonsterAI Build()
-    {
-        return new()
+    public MonsterAI Build() =>
+        new()
         {
             ResetAction = ResetAction,
             CannotUseDefaultAttack = CannotUseDefaultAttack,
@@ -42,5 +41,4 @@ public sealed record MonsterAIBuilder(
             VoidPerksTier3 = [.. VoidPerksTier3.Select(x => x.Build())],
             ChampionPerks = [.. ChampionPerks.Select(x => x.Build())],
         };
-    }
 }

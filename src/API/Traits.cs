@@ -55,18 +55,14 @@ public static partial class Traits
     /// Find a trait by monster type or signature trait.
     /// </summary>
     /// <param name="predicate"></param>
-    private static Trait? Get(Func<Trait?, bool> predicate)
-    {
-        return GameController
-                .Instance.MonsterTypes.SelectMany(x => x.Traits)
-                .FirstOrDefault(predicate)
-            ?? GameController
-                .Instance.CompleteMonsterList.Select(x =>
-                    x?.GetComponent<SkillManager>()?.SignatureTrait?.GetComponent<Trait>()
-                )
-                .FirstOrDefault(predicate)
-            ?? WorldData.Instance.Referenceables.OfType<Trait>().FirstOrDefault(predicate);
-    }
+    private static Trait? Get(Func<Trait?, bool> predicate) =>
+        GameController.Instance.MonsterTypes.SelectMany(x => x.Traits).FirstOrDefault(predicate)
+        ?? GameController
+            .Instance.CompleteMonsterList.Select(x =>
+                x?.GetComponent<SkillManager>()?.SignatureTrait?.GetComponent<Trait>()
+            )
+            .FirstOrDefault(predicate)
+        ?? WorldData.Instance.Referenceables.OfType<Trait>().FirstOrDefault(predicate);
 
     /// <summary>
     /// Get all traits that can be learned (i.e. non-signature traits).

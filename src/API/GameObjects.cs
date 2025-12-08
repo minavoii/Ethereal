@@ -13,10 +13,7 @@ public static class GameObjects
     /// <param name="name"></param>
     /// <returns></returns>
     public static T WithinGameObject<T>(T instance, string name = "")
-        where T : Component
-    {
-        return IntoGameObject(instance, name).GetComponent<T>();
-    }
+        where T : Component => IntoGameObject(instance, name).GetComponent<T>();
 
     /// <summary>
     /// Copy a component to the inside of a GameObject, and return the GameObject.

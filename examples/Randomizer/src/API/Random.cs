@@ -48,10 +48,7 @@ internal class Random
     /// Get a list of random and different main monster types.
     /// </summary>
     /// <returns></returns>
-    internal static EMonsterMainType GetRandomMainType()
-    {
-        return (EMonsterMainType)Shuffle(0, 3)[0];
-    }
+    internal static EMonsterMainType GetRandomMainType() => (EMonsterMainType)Shuffle(0, 3)[0];
 
     /// <summary>
     /// Get a list of random and different perks.
@@ -291,9 +288,8 @@ internal class Random
     private static BaseAction GetRandomAction1(
         (EElement first, EElement second) elements,
         List<EMonsterType> types
-    )
-    {
-        return GetRandomAction(
+    ) =>
+        GetRandomAction(
             elements,
             types,
             null,
@@ -306,7 +302,6 @@ internal class Random
             BoolType.False,
             BoolType.Either
         );
-    }
 
     /// <summary>
     /// Get the second random action. <para/>
@@ -325,48 +320,46 @@ internal class Random
         List<EMonsterType> types,
         BoolType maverick,
         BaseAction excludeAction
-    )
-    {
-        return GetRandomAction(
-                elements,
-                types,
-                excludeAction,
-                true,
-                true,
-                1,
-                3,
-                true,
-                true,
-                maverick,
-                BoolType.False
-            )
-            ?? GetRandomAction(
-                elements,
-                types,
-                excludeAction,
-                true,
-                false,
-                1,
-                3,
-                true,
-                true,
-                maverick,
-                BoolType.False
-            )
-            ?? GetRandomAction(
-                elements,
-                types,
-                excludeAction,
-                false,
-                true,
-                2,
-                3,
-                true,
-                false,
-                maverick,
-                BoolType.False
-            );
-    }
+    ) =>
+        GetRandomAction(
+            elements,
+            types,
+            excludeAction,
+            true,
+            true,
+            1,
+            3,
+            true,
+            true,
+            maverick,
+            BoolType.False
+        )
+        ?? GetRandomAction(
+            elements,
+            types,
+            excludeAction,
+            true,
+            false,
+            1,
+            3,
+            true,
+            true,
+            maverick,
+            BoolType.False
+        )
+        ?? GetRandomAction(
+            elements,
+            types,
+            excludeAction,
+            false,
+            true,
+            2,
+            3,
+            true,
+            false,
+            maverick,
+            BoolType.False
+        );
 
     /// <summary>
     /// Get the third random action. <para/>
@@ -379,35 +372,33 @@ internal class Random
     private static BaseAction GetRandomAction3(
         (EElement first, EElement second) elements,
         List<EMonsterType> types
-    )
-    {
-        return GetRandomAction(
-                elements,
-                types,
-                null,
-                true,
-                false,
-                3,
-                6,
-                true,
-                true,
-                BoolType.True,
-                BoolType.False
-            )
-            ?? GetRandomAction(
-                elements,
-                types,
-                null,
-                false,
-                true,
-                3,
-                6,
-                false,
-                true,
-                BoolType.True,
-                BoolType.False
-            );
-    }
+    ) =>
+        GetRandomAction(
+            elements,
+            types,
+            null,
+            true,
+            false,
+            3,
+            6,
+            true,
+            true,
+            BoolType.True,
+            BoolType.False
+        )
+        ?? GetRandomAction(
+            elements,
+            types,
+            null,
+            false,
+            true,
+            3,
+            6,
+            false,
+            true,
+            BoolType.True,
+            BoolType.False
+        );
 
     /// <summary>
     /// Get random and different numbers.
