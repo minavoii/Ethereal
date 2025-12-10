@@ -20,16 +20,15 @@ public class Plugin : BaseUnityPlugin
 
     internal static readonly string EquipmentsPath = Path.Join(ExamplesPath, "Equipments");
 
-    private void Awake()
+    private async void Awake()
     {
         Logger = base.Logger;
 
-        Equipments.Add(
-            Accessory.RedArmor.Descriptor,
-            Accessory.RedArmor.LocalisationData,
-            Accessory.RedArmor.CustomLanguageEntries
-        );
+        await APIManager.WaitUntilReady(EtherealAPI.Equipments);
 
-        Equipments.Update("Blade", ERarity.Common, Weapon.BlueBlade.Descriptor);
+        Equipments.Add(Accessory.RedArmor.Builder);
+
+        if (Equipments.TryGet("Blade", ERarity.Common, out Equipment equipment))
+            Weapon.BlueBlade.View(equipment);
     }
 }

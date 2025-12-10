@@ -1,31 +1,29 @@
 using System.Collections.Generic;
 using System.IO;
 using Ethereal.API;
+using Ethereal.Classes.Builders;
+using static Equipment;
 
 namespace ExampleEquipments.Accessory;
 
 internal static class RedArmor
 {
-    private const int Id = 9801;
+    private const int ID = 9801;
 
     private const string Name = "Red Armor";
 
-    internal static readonly Equipments.EquipmentDescriptor Descriptor = new()
-    {
-        Id = Id,
-        Name = Name,
-        Description =
-            "At the start of your turn: {Shields} self for {0;2} x {0;1} and heals self for {1;2} x {1;1}.",
-        Type = Equipment.EEquipmentType.Accessory,
-        Rarity = ERarity.Common,
-        Aura = false,
-        Price = 100,
-        AutomaticPricing = false,
-        Icon = Sprites.LoadFromBundle(
+    internal static readonly EquipmentBuilder Builder = new(
+        ID: ID,
+        Name: Name,
+        DescriptionOverride: "At the start of your turn: {Shields} self for {0;2} x {0;1} and heals self for {1;2} x {1;1}.",
+        Type: EEquipmentType.Accessory,
+        Rarity: ERarity.Common,
+        Price: 100,
+        Icon: Sprites.LoadFromBundle(
             Path.Join(Plugin.EquipmentsPath, "RedArmor"),
             "Assets/Textures/Item/Item.prefab"
         ),
-        PassiveEffects =
+        PassiveEffects:
         [
             new PassiveGrantShield()
             {
@@ -53,12 +51,12 @@ internal static class RedArmor
                 Conditions = [],
                 CheckConditionsWhenQueued = false,
             },
-        ],
-    };
+        ]
+    );
 
     internal static readonly LocalisationData.LocalisationDataEntry LocalisationData = new()
     {
-        ID = Id,
+        ID = ID,
         StringContent = Name,
         StringContentEnglish = Name,
         StringContentFrench = "Armure Rouge",

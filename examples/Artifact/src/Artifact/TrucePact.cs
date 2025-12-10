@@ -1,33 +1,33 @@
 using System.Collections.Generic;
 using System.IO;
 using Ethereal.API;
+using Ethereal.Classes.Builders;
 
 namespace ExampleArtifacts.Artifact;
 
 internal static class TrucePact
 {
-    private const int Id = 7001;
+    private const int ID = 7001;
 
     private const string Name = "Truce Pact";
 
-    internal static readonly Artifacts.ArtifactDescriptor Descriptor = new()
-    {
-        Id = Id,
-        Name = Name,
-        TargetType = ETargetType.SingleAlly,
-        Icon = Sprites.LoadFromImage(
+    internal static readonly ArtifactBuilder Builder = new(
+        ID: ID,
+        Name: Name,
+        TargetType: ETargetType.SingleAlly,
+        Icon: Sprites.LoadFromImage(
             Sprites.SpriteType.Artifact,
             Path.Join(Plugin.ArtifactsPath, "Artifact_TrucePact.png")
         ),
-        ActionIconBig = Sprites.LoadFromImage(
+        IconBig: Sprites.LoadFromImage(
             Sprites.SpriteType.Action,
             Path.Join(Plugin.ArtifactsPath, "ActionIcon_TrucePact_Big.png")
         ),
-        ActionIconSmall = Sprites.LoadFromImage(
+        IconSmall: Sprites.LoadFromImage(
             Sprites.SpriteType.ActionSmall,
             Path.Join(Plugin.ArtifactsPath, "ActionIcon_TrucePact_Small.png")
         ),
-        Actions =
+        Modifiers:
         [
             new ActionHeal()
             {
@@ -43,12 +43,12 @@ internal static class TrucePact
                 OverrideTarget = true,
                 Target = ETargetType.AllEnemies,
             },
-        ],
-    };
+        ]
+    );
 
     internal static readonly LocalisationData.LocalisationDataEntry LocalisationData = new()
     {
-        ID = Id,
+        ID = ID,
         StringContent = Name,
         StringContentEnglish = Name,
         StringContentFrench = "Pacte de Trêve",
