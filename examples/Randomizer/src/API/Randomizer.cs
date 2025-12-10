@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using Ethereal.API;
 using Ethereal.Classes.Builders;
-using Ethereal.Classes.LazyValues;
+using Ethereal.Classes.View;
 using HarmonyLib;
 using Newtonsoft.Json;
 
@@ -29,50 +29,43 @@ internal class Randomizer
     /// </summary>
     internal static void Randomize()
     {
-        Dictionary<int, Monsters.MonsterDescriptor> randomized = [];
+        Dictionary<int, MonsterView> randomized = [];
         List<int> usedSignatureTraits = [];
 
         if (Monsters.TryGetAll(out List<Monster> monsters))
         {
             foreach (Monster monster in monsters)
             {
-                (EElement, EElement) elements = Random.GetRandomUniqueElements();
+                List<EElement> elements = Random.GetRandomUniqueElements();
                 List<EMonsterType> types = Random.GetRandomTypes();
                 Trait signatureTrait = Random.GetRandomTrait(types, false, usedSignatureTraits);
 
-                Monsters.MonsterDescriptor descriptor = new()
+                MonsterView view = new(monster)
                 {
                     Elements = elements,
                     Types = types,
                     MainType = Random.GetRandomMainType(),
-                    Perks = [.. Random.GetRandomPerks().Select(x => new PerkInfosBuilder(x))],
-                    Scripting =
+                    BasePerks = Random.GetRandomPerks(),
+                    Scripting = Random.GetRandomScripting(
+                        elements,
+                        types,
+                        monster.Name == "Mephisto"
+                    ),
+                    WildTraits =
                     [
-                        .. Random
-                            .GetRandomScripting(elements, types, monster.Name == "Mephisto")
-                            .Select(x => new MonsterAIActionBuilder(
-                                x.Action.GetComponent<BaseAction>(),
-                                x.Conditions,
-                                x.IsTemporary
-                            )),
+                        new MonsterAITraitBuilder(
+                            Random.GetRandomTrait(types, true),
+                            EDifficulty.Heroic
+                        ).Build(),
                     ],
-                    WildTraits = [new(Random.GetRandomTrait(types, true), EDifficulty.Heroic)],
-                    EliteTrait = new(Random.GetRandomTrait(types, true)),
-                    StartingActions =
-                    [
-                        .. Random
-                            .GetRandomStartingActions(elements, types)
-                            .Select(x => new LazyAction(x)),
-                    ],
-                    SignatureTrait = new(signatureTrait),
+                    EliteTrait = Random.GetRandomTrait(types, true),
+                    StartActions = Random.GetRandomStartingActions(elements, types),
+                    SignatureTrait = signatureTrait,
                 };
 
                 usedSignatureTraits.Add(signatureTrait.ID);
-                randomized.Add(monster.ID, descriptor);
+                randomized.Add(monster.ID, view);
             }
-
-            foreach ((int id, Monsters.MonsterDescriptor descriptor) in randomized)
-                Monsters.Update(id, descriptor);
         }
 
         SaveData(randomized);
@@ -82,10 +75,10 @@ internal class Randomizer
     /// Save the randomized monster data to a file.
     /// </summary>
     /// <param name="data"></param>
-    private static void SaveData(Dictionary<int, Monsters.MonsterDescriptor> data)
+    private static void SaveData(Dictionary<int, MonsterView> data)
     {
-        Dictionary<int, SerializableDescriptor> list = data.Select(x =>
-                (id: x.Key, serialized: new SerializableDescriptor(x.Value))
+        Dictionary<int, SerializableView> list = data.Select(x =>
+                (id: x.Key, serialized: new SerializableView(x.Value))
             )
             .ToDictionary(x => x.id, x => x.serialized);
 
@@ -111,12 +104,9 @@ internal class Randomizer
             return;
         }
 
-        Dictionary<int, Monsters.MonsterDescriptor> data = JsonConvert
-            .DeserializeObject<Dictionary<int, SerializableDescriptor>>(json)
+        Dictionary<int, MonsterView> data = JsonConvert
+            .DeserializeObject<Dictionary<int, SerializableView>>(json)
             .ToDictionary(x => x.Key, x => x.Value.Deserialize());
-
-        foreach ((int id, Monsters.MonsterDescriptor descriptor) in data)
-            Monsters.Update(id, descriptor);
     }
 
     /// <summary>

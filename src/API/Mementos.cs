@@ -34,7 +34,6 @@ public static partial class Mementos
                 ?.ShiftedMemento
         ) as MonsterMemento;
 
-
     /// <summary>
     /// Create a new memento and add it to the game's data.
     /// Optionally, adds the given meta upgrade to the witch's unlockable mementos inventory.

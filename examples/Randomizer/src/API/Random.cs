@@ -20,11 +20,8 @@ internal class Random
     /// Get two random and different elements.
     /// </summary>
     /// <returns></returns>
-    internal static (EElement, EElement) GetRandomUniqueElements()
-    {
-        List<int> elements = GetUniqueRandomNumbers(0, 4, 2);
-        return ((EElement)elements[0], (EElement)elements[1]);
-    }
+    internal static List<EElement> GetRandomUniqueElements() =>
+        [.. GetUniqueRandomNumbers(0, 4, 2).Select(x => (EElement)x)];
 
     /// <summary>
     /// Get a list of random and different monster types.
@@ -140,7 +137,7 @@ internal class Random
     /// <param name="skipConditions"></param>
     /// <returns></returns>
     internal static List<MonsterAIAction> GetRandomScripting(
-        (EElement first, EElement second) elements,
+        List<EElement> elements,
         List<EMonsterType> types,
         bool skipConditions
     )
@@ -180,7 +177,7 @@ internal class Random
     /// <param name="types"></param>
     /// <returns></returns>
     internal static List<BaseAction> GetRandomStartingActions(
-        (EElement first, EElement second) elements,
+        List<EElement> elements,
         List<EMonsterType> types
     )
     {
@@ -206,7 +203,7 @@ internal class Random
     /// <param name="freeAction"></param>
     /// <returns></returns>
     private static BaseAction GetRandomAction(
-        (EElement first, EElement second) elements,
+        List<EElement> elements,
         List<EMonsterType> types,
         BaseAction excludeAction,
         bool byType,
@@ -242,7 +239,7 @@ internal class Random
             .. dataset.Where(x =>
                 x.Cost.GetAll() >= costMinInclusive
                 && x.Cost.GetAll() < costMaxExclusive
-                && (!byElements || x.Elements.All(x => x == elements.first || x == elements.second))
+                && (!byElements || x.Elements.All(x => x == elements[0] || x == elements[1]))
                 && (
                     !forceHealOrShield
                     || x.IsActionSubType(
@@ -285,10 +282,7 @@ internal class Random
     /// <param name="elements"></param>
     /// <param name="types"></param>
     /// <returns></returns>
-    private static BaseAction GetRandomAction1(
-        (EElement first, EElement second) elements,
-        List<EMonsterType> types
-    ) =>
+    private static BaseAction GetRandomAction1(List<EElement> elements, List<EMonsterType> types) =>
         GetRandomAction(
             elements,
             types,
@@ -316,7 +310,7 @@ internal class Random
     /// <param name="excludeAction"></param>
     /// <returns></returns>
     private static BaseAction GetRandomAction2(
-        (EElement first, EElement second) elements,
+        List<EElement> elements,
         List<EMonsterType> types,
         BoolType maverick,
         BaseAction excludeAction
@@ -369,10 +363,7 @@ internal class Random
     /// <param name="elements"></param>
     /// <param name="types"></param>
     /// <returns></returns>
-    private static BaseAction GetRandomAction3(
-        (EElement first, EElement second) elements,
-        List<EMonsterType> types
-    ) =>
+    private static BaseAction GetRandomAction3(List<EElement> elements, List<EMonsterType> types) =>
         GetRandomAction(
             elements,
             types,
