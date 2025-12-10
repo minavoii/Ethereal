@@ -86,10 +86,7 @@ public class Plugin : BaseUnityPlugin
                 {
                     MonsterEncounter wardenEncounter = set.MonsterEncounters.FirstOrDefault();
 
-                    Encounters.SetEncounterEnemies(
-                        wardenEncounter,
-                        [new(WaterWheel.Builder.Monster.ID)]
-                    );
+                    Encounters.SetEnemies(wardenEncounter, [new(WaterWheel.Builder.Monster.ID)]);
                 }
             }
         );
