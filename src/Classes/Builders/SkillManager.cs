@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Ethereal.API;
 using Ethereal.Classes.LazyValues;
-using UnityEngine;
 
 namespace Ethereal.Classes.Builders;
 
@@ -41,7 +40,9 @@ public sealed record SkillManagerBuilder(
             SignatureTrait = SignatureTrait.Get()?.gameObject,
             MonsterTypes =
             [
-                .. Types.Select(x => MonsterTypes.TryGetObject(x, out GameObject res) ? res : null),
+                .. Types.Select(x =>
+                    MonsterTypes.TryGet(x, out MonsterType type) ? type.gameObject : null
+                ),
             ],
             Elements = Elements,
             StaggerDefines = StaggerDefines,

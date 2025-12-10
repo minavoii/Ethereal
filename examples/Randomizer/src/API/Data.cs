@@ -25,12 +25,7 @@ internal static class Data
         ];
 
     internal static List<PerkInfos> GetAllPerkInfos() =>
-        [
-            .. GameController
-                .Instance.CompleteMonsterList.SelectMany(x =>
-                    x?.GetComponent<MonsterStats>().PerkInfosList
-                )
-                .Where(x => x?.Perk.GetComponent<Perk>().Name != "?????")
-                .Distinct(),
-        ];
+        Monsters.TryGetAll(out List<Monster> monsters)
+            ? [.. monsters.SelectMany(x => x?.GetComponent<MonsterStats>()?.PerkInfosList)]
+            : [];
 }

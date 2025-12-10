@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using Ethereal.Attributes;
+using Ethereal.Classes.View;
 using UnityEngine;
 
 namespace Ethereal.API;
@@ -271,22 +272,31 @@ public static partial class Sprites
     /// <param name="iconPath"></param>
     private static void ReplaceIconAction(string name, Sprite? icon = null, string iconPath = "")
     {
-        Actions.ActionDescriptor descriptor = new();
-
         if (name.EndsWith("Small"))
         {
-            name = name[..(name.Length - 6)];
-            descriptor.IconSmall = icon ?? LoadFromImage(SpriteType.ActionSmall, iconPath);
+            string actionName = name[..(name.Length - 6)];
+
+            if (Actions.TryGet(actionName, out BaseAction action))
+                action.ActionIconSmall = icon ?? LoadFromImage(SpriteType.ActionSmall, iconPath);
         }
         else if (name.EndsWith("Cut"))
         {
-            name = name[..(name.Length - 4)];
-            descriptor.IconCutSmall = icon ?? LoadFromImage(SpriteType.ActionCutSmall, iconPath);
+            string actionName = name[..(name.Length - 4)];
+
+            if (Actions.TryGet(actionName, out BaseAction action))
+                action.ActionIconCutSmall =
+                    icon ?? LoadFromImage(SpriteType.ActionCutSmall, iconPath);
         }
         else
-            descriptor.Icon = icon ?? LoadFromImage(SpriteType.Action, iconPath);
+        {
+            if (Actions.TryGet(name, out BaseAction action))
+            {
+                Sprite? sprite = icon ?? LoadFromImage(SpriteType.Action, iconPath);
 
-        Actions.Update(name, descriptor);
+                action.ActionIconBig = sprite;
+                action.Icon = sprite;
+            }
+        }
     }
 
     /// <summary>
@@ -297,22 +307,22 @@ public static partial class Sprites
     /// <param name="iconPath"></param>
     private static void ReplaceIconArtifact(string name, Sprite? icon = null, string iconPath = "")
     {
-        Artifacts.ArtifactDescriptor descriptor = new();
-
         if (name.EndsWith("Big"))
         {
-            name = name[..(name.Length - 4)];
-            descriptor.ActionIconBig = icon ?? LoadFromImage(SpriteType.Action, iconPath);
+            string artifactName = name[..(name.Length - 4)];
+
+            if (Artifacts.TryGet(artifactName, out Consumable artifact))
+                artifact.ActionIconBig = icon ?? LoadFromImage(SpriteType.Action, iconPath);
         }
         else if (name.EndsWith("Small"))
         {
-            name = name[..(name.Length - 6)];
-            descriptor.ActionIconSmall = icon ?? LoadFromImage(SpriteType.ActionSmall, iconPath);
-        }
-        else
-            descriptor.Icon = icon ?? LoadFromImage(SpriteType.Artifact, iconPath);
+            string artifactName = name[..(name.Length - 6)];
 
-        Artifacts.Update(name, descriptor);
+            if (Artifacts.TryGet(artifactName, out Consumable artifact))
+                artifact.ActionIconSmall = icon ?? LoadFromImage(SpriteType.Action, iconPath);
+        }
+        else if (Artifacts.TryGet(name, out Consumable artifact))
+            artifact.Icon = icon ?? LoadFromImage(SpriteType.Artifact, iconPath);
     }
 
     /// <summary>
@@ -322,7 +332,8 @@ public static partial class Sprites
     /// <param name="icon"></param>
     private static void ReplaceIconBuff(string name, Sprite icon)
     {
-        Buffs.UpdateIcon(name, icon);
+        if (Buffs.TryGet(name, out Buff buff))
+            buff.MonsterHUDIconSmall = icon;
     }
 
     /// <summary>
@@ -333,22 +344,31 @@ public static partial class Sprites
     /// <param name="iconPath"></param>
     private static void ReplaceIconElement(string name, Sprite? icon = null, string iconPath = "")
     {
-        Elements.ElementDescriptor descriptor = new();
-
         if (name.EndsWith("Empty"))
         {
-            name = name[..(name.Length - 6)];
-            descriptor.IconSmallEmpty = icon ?? LoadFromImage(SpriteType.ElementSmall, iconPath);
+            string elementName = name[..(name.Length - 6)];
+
+            new ElementView(Enum.Parse<EElement>(elementName))
+            {
+                IconSmallEmpty = icon ?? LoadFromImage(SpriteType.ElementSmall, iconPath),
+            };
         }
         else if (name.EndsWith("Filled"))
         {
-            name = name[..(name.Length - 7)];
-            descriptor.IconSmallFilled = icon ?? LoadFromImage(SpriteType.ElementSmall, iconPath);
+            string elementName = name[..(name.Length - 7)];
+
+            new ElementView(Enum.Parse<EElement>(elementName))
+            {
+                IconSmallFilled = icon ?? LoadFromImage(SpriteType.ElementSmall, iconPath),
+            };
         }
         else
-            descriptor.Icon = icon ?? LoadFromImage(SpriteType.Element, iconPath);
-
-        Elements.Update(Enum.Parse<EElement>(name), descriptor);
+        {
+            new ElementView(Enum.Parse<EElement>(name))
+            {
+                Icon = icon ?? LoadFromImage(SpriteType.ElementSmall, iconPath),
+            };
+        }
     }
 
     /// <summary>
@@ -358,20 +378,22 @@ public static partial class Sprites
     /// <param name="icon"></param>
     private static void ReplaceIconEquipment(string name, Sprite icon)
     {
+        string equipmentName = name;
         ERarity rarity = ERarity.Common;
 
         if (name.EndsWith("Epic"))
         {
-            name = name[..(name.Length - 5)];
+            equipmentName = name[..(name.Length - 5)];
             rarity = ERarity.Epic;
         }
         else if (name.EndsWith("Rare"))
         {
-            name = name[..(name.Length - 5)];
+            equipmentName = name[..(name.Length - 5)];
             rarity = ERarity.Rare;
         }
 
-        Equipments.Update(name, rarity, new() { Icon = icon });
+        if (Equipments.TryGet(equipmentName, rarity, out Equipment equipment))
+            equipment.Icon = icon;
     }
 
     /// <summary>
@@ -384,7 +406,8 @@ public static partial class Sprites
         if (!name.EndsWith("Memento"))
             name += " Memento";
 
-        Mementos.UpdateIcon(name, icon);
+        if (Mementos.TryGet(name, out MonsterMemento memento))
+            memento.Icon = icon;
     }
 
     /// <summary>
@@ -394,7 +417,8 @@ public static partial class Sprites
     /// <param name="icon"></param>
     private static void ReplaceIconTrait(string name, Sprite icon)
     {
-        Traits.Update(name, new() { Icon = icon });
+        if (Traits.TryGet(name, out Trait trait))
+            trait.Icon = icon;
     }
 
     /// <summary>
@@ -404,7 +428,8 @@ public static partial class Sprites
     /// <param name="icon"></param>
     private static void ReplaceIconType(string name, Sprite icon)
     {
-        MonsterTypes.UpdateIcon(Enum.Parse<EMonsterType>(name), icon);
+        if (MonsterTypes.TryGet(Enum.Parse<EMonsterType>(name), out MonsterType type))
+            type.TypeIcon = icon;
     }
 
     /// <summary>

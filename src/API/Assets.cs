@@ -26,21 +26,11 @@ public static class Assets
     /// <param name="bundle"></param>
     /// <param name="asset"></param>
     /// <returns></returns>
-    public static GameObject? LoadPrefab(AssetBundle bundle, string asset)
-    {
-        GameObject go = bundle.LoadAsset<GameObject>(asset);
-
-        if (go is null)
-        {
-            Log.API.LogError($"Could not load asset: {asset}");
-            return null;
-        }
-
-        return go;
-    }
+    public static GameObject? LoadPrefab(AssetBundle bundle, string asset) =>
+        LoadAsset<GameObject>(bundle, asset);
 
     /// <summary>
-    /// Load a GameObject from an asset bundle.
+    /// Load an asset from an asset bundle.
     /// </summary>
     /// <param name="path"></param>
     /// <param name="asset"></param>
@@ -50,7 +40,7 @@ public static class Assets
         LoadBundle(path) is AssetBundle bundle ? LoadAsset<T>(bundle, asset) : null;
 
     /// <summary>
-    /// Load a GameObject from an asset bundle.
+    /// Load an asset from an asset bundle.
     /// </summary>
     /// <param name="bundle"></param>
     /// <param name="asset"></param>

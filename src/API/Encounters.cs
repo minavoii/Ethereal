@@ -83,7 +83,7 @@ public static partial class Encounters
     /// <param name="encounterType"></param>
     /// <returns></returns>
     [Deferrable]
-    private static void SetEncounterEnemies_Impl(
+    private static void SetEnemies_Impl(
         MonsterEncounter encounter,
         List<LazyMonster> monsters,
         MonsterEncounter.EEncounterType? encounterType = null
