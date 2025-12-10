@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Ethereal.Attributes;
-using UnityEngine;
 
 namespace Ethereal.API;
 
@@ -23,16 +22,4 @@ public static partial class MonsterTypes
                 x.Type != EMonsterType.EnemySkills && x.Type != EMonsterType.UiSkills
             ),
         ];
-
-    /// <summary>
-    /// Set a monster type's icon.
-    /// </summary>
-    /// <param name="monsterType"></param>
-    /// <param name="typeIcon"></param>
-    [Deferrable]
-    private static void UpdateIcon_Impl(EMonsterType monsterType, Sprite typeIcon)
-    {
-        if (TryGet(monsterType, out MonsterType type))
-            type.TypeIcon = typeIcon;
-    }
 }

@@ -25,40 +25,6 @@ public static partial class Buffs
         Prefabs.Instance.AllBuffs.Find(predicate) ?? Prefabs.Instance.AllDebuffs.Find(predicate);
 
     /// <summary>
-    /// Set a buff's icon.
-    /// </summary>
-    /// <param name="id"></param>
-    /// <param name="icon"></param>
-    [Deferrable]
-    private static void UpdateIcon_Impl(int id, Sprite icon)
-    {
-        if (TryGet(id, out Buff buff))
-            UpdateIcon(buff, icon);
-    }
-
-    /// <summary>
-    /// Set a buff's icon.
-    /// </summary>
-    /// <param name="name"></param>
-    /// <param name="icon"></param>
-    [Deferrable]
-    private static void UpdateIcon_Impl(string name, Sprite icon)
-    {
-        if (TryGet(name, out Buff buff))
-            UpdateIcon(buff, icon);
-    }
-
-    /// <summary>
-    /// Set a buff's icon.
-    /// </summary>
-    /// <param name="buff"></param>
-    /// <param name="icon"></param>
-    private static void UpdateIcon(Buff buff, Sprite icon)
-    {
-        buff.MonsterHUDIconSmall = icon;
-    }
-
-    /// <summary>
     /// Create a new buff and add it to the game's data.
     /// </summary>
     /// <param name="buff"></param>
