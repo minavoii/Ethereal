@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Ethereal.Attributes;
 using Ethereal.Classes.LazyValues;
 
@@ -24,10 +25,10 @@ public sealed partial record MonsterAIActionBuilder
 
     public bool IsTemporary { get; init; }
 
-    public MonsterAIAction Build() =>
+    public async Task<MonsterAIAction> Build() =>
         new()
         {
-            Action = Action.Get()?.gameObject,
+            Action = await Action.GetObject(),
             Conditions = Conditions,
             IsTemporary = IsTemporary,
         };

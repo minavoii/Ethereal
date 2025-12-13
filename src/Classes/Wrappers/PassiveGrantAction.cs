@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Ethereal.Classes.LazyValues;
 
 namespace Ethereal.Classes.Wrappers;
@@ -9,11 +10,11 @@ public sealed class PassiveGrantActionWrapper(LazyAction action, LazyBuff? trigg
 
     public LazyBuff? TriggerBuffWrapper { get; init; } = triggerBuff;
 
-    public void Unwrap()
+    public async Task Unwrap()
     {
-        Action = ActionWrapper.Get();
+        Action = await ActionWrapper.Get();
 
         if (TriggerBuffWrapper is not null)
-            TriggerBuff = TriggerBuffWrapper.Get()?.gameObject;
+            TriggerBuff = (await TriggerBuffWrapper.Get())?.gameObject;
     }
 }

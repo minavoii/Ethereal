@@ -64,7 +64,7 @@ public sealed partial class TraitView(GameObject gameObject)
             Trait.Types =
             [
                 .. value.Select(x =>
-                    MonsterTypes.TryGet(x, out MonsterType type) ? type.gameObject : null
+                    GameController.Instance.MonsterTypes.Find(y => y.Type == x)?.gameObject
                 ),
             ];
         }

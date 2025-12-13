@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Ethereal.API;
 
 namespace Ethereal.Classes.LazyValues;
@@ -13,11 +14,11 @@ public sealed partial record LazyTrait : LazyReferenceable<Trait>
     public LazyTrait(Trait trait)
         : base(trait) { }
 
-    public override Trait? Get() =>
-        base.Get()
+    public override async Task<Trait?> Get() =>
+        Data
         ?? (
-            Id.HasValue && Traits.TryGet(Id.Value, out Trait byId) ? byId
-            : Name is not null && Traits.TryGet(Name, out Trait byName) ? byName
+            Id.HasValue ? await Traits.Get(Id.Value)
+            : Name is not null ? await Traits.Get(Name)
             : null
         );
 }

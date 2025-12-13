@@ -51,11 +51,7 @@ internal static class WheelSupremacy
 
 internal static class WheelSupremacyAction
 {
-    internal static readonly VFX.ChildVFX VFX = new()
-    {
-        VFX = VFXs.CreateCosmetic(Rotation.Animation),
-        SpawnForEveryEnemy = true,
-    };
+    internal static readonly VFX.ChildVFX VFX = new() { VFX = null, SpawnForEveryEnemy = true };
 
     internal static readonly BaseActionBuilder Action = new(
         ID: 1901,

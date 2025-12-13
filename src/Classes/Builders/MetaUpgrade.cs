@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Ethereal.Classes.LazyValues;
 using UnityEngine;
 
@@ -36,7 +37,7 @@ public sealed record MetaUpgradeBuilder(
     List<GameObject>? PrerequirementUpgrades = null
 )
 {
-    public MetaUpgrade Build() =>
+    public async Task<MetaUpgrade> Build() =>
         new()
         {
             ID = ID,
@@ -46,7 +47,9 @@ public sealed record MetaUpgradeBuilder(
             Cost = Cost,
             CostCurrency = CostCurrency,
             UpgradeType = UpgradeType,
-            UnlockedMonster = UnlockedMonster?.Get()?.gameObject,
+            UnlockedMonster = UnlockedMonster is not null
+                ? await UnlockedMonster.GetObject()
+                : null,
             UnlockedExplorationAbility = UnlockedExplorationAbility ?? EExplorationAbility.None,
             RequiredMementos = RequiredMementos,
             RequiresMementosFromArea = RequiredArea.HasValue,

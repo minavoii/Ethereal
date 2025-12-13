@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Ethereal.Classes.LazyValues;
 
 namespace Ethereal.Classes.Wrappers;
@@ -13,14 +14,21 @@ public sealed class ActionDamageWrapper(
 
     public List<LazyBuff>? SecondaryBuffsToCheckWrapper { get; init; } = secondaryBuffsToCheck;
 
-    public void Unwrap()
+    public async Task Unwrap()
     {
-        BuffsToCheck = [.. BuffsToCheckWrapper.Select(x => x.Get()!).Where(x => x is not null)];
+        BuffsToCheck =
+        [
+            .. await Task.WhenAll(
+                BuffsToCheckWrapper.Select(x => x.Get()!).Where(x => x is not null)
+            ),
+        ];
 
         if (SecondaryBuffsToCheckWrapper is not null)
             SecondaryBuffsToCheck =
             [
-                .. SecondaryBuffsToCheckWrapper.Select(x => x.Get()!).Where(x => x is not null),
+                .. await Task.WhenAll(
+                    SecondaryBuffsToCheckWrapper.Select(x => x.Get()!).Where(x => x is not null)
+                ),
             ];
     }
 }

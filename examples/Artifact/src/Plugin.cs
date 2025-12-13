@@ -20,10 +20,10 @@ public class Plugin : BaseUnityPlugin
 
     internal static readonly string ArtifactsPath = Path.Join(ExamplesPath, "Artifacts");
 
-    private void Awake()
+    private async void Awake()
     {
         Logger = base.Logger;
 
-        Artifacts.Add(Artifact.TrucePact.Builder);
+        await Artifacts.Add(Artifact.TrucePact.Builder);
     }
 }

@@ -12,16 +12,16 @@ internal class BaseAPI
     /// </summary>
     internal bool IsReady { get; private set; } = false;
 
+    internal TaskCompletionSource<bool> TaskSource { get; private set; } = new();
+
     /// <summary>
     /// Mark the API as ready.
     /// </summary>
-    // internal virtual void SetReady() => IsReady = true;
-
     internal virtual void SetReady()
     {
         IsReady = true;
         TaskSource.TrySetResult(true);
     }
 
-    internal TaskCompletionSource<bool> TaskSource { get; } = new();
+    internal async Task<bool> WhenReady() => await TaskSource.Task;
 }

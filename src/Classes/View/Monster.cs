@@ -52,7 +52,7 @@ public sealed partial class MonsterView(GameObject gameObject)
         set =>
             SkillManager.MonsterTypes = [
                 .. value.Select(x =>
-                    MonsterTypes.TryGet(x, out MonsterType type) ? type.gameObject : null
+                    GameController.Instance.MonsterTypes.Find(y => y?.Type == x)?.gameObject
                 ),
             ];
     }

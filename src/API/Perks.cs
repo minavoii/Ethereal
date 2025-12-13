@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Ethereal.Attributes;
 
 namespace Ethereal.API;
@@ -12,34 +13,37 @@ public static partial class Perks
     /// Get a perk by id.
     /// </summary>
     /// <param name="id"></param>
-    [TryGet]
-    private static Perk? Get(int id) => Get(x => x?.ID == id);
+    public static async Task<Perk?> Get(int id) => await Get(x => x?.ID == id);
 
     /// <summary>
     /// Get a perk by name.
     /// </summary>
     /// <param name="name"></param>
-    [TryGet]
-    private static Perk? Get(string name) => Get(x => x?.Name == name);
+    public static async Task<Perk?> Get(string name) => await Get(x => x?.Name == name);
 
     /// <summary>
-    /// Find a perk by monster.
+    /// Find a perk using a predicate.
     /// </summary>
     /// <param name="name"></param>
     /// <returns></returns>
-    private static Perk? Get(Func<Perk?, bool> predicate) =>
-        GameController
+    public static async Task<Perk?> Get(Func<Perk?, bool> predicate)
+    {
+        await API.WhenReady();
+        return GameController
             .Instance.CompleteMonsterList.Where(x => x is not null)
             .SelectMany(x => x?.GetComponent<MonsterStats>()?.PerkInfosList)
             .Select(x => x?.Perk.GetComponent<Perk>())
             .FirstOrDefault(predicate);
+    }
 
     /// <summary>
     /// Get all perks.
     /// </summary>
-    /// <returns>a list of all perks.</returns>
-    [TryGet]
-    private static List<Perk> GetAll() =>
+    /// <returns></returns>
+    public static async Task<List<Perk>> GetAll()
+    {
+        await API.WhenReady();
+        return
         [
             .. GameController
                 .Instance.CompleteMonsterList.SelectMany(x =>
@@ -49,4 +53,5 @@ public static partial class Perks
                 .Where(x => x is not null)
                 .Distinct(),
         ];
+    }
 }

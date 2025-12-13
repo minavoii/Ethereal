@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Ethereal.API;
 
 namespace Ethereal.Classes.LazyValues;
@@ -13,11 +14,11 @@ public sealed record LazyBuff : LazyReferenceable<Buff>
     public LazyBuff(Buff buff)
         : base(buff) { }
 
-    public override Buff? Get() =>
-        base.Get()
+    public override async Task<Buff?> Get() =>
+        Data
         ?? (
-            Id.HasValue && Buffs.TryGet(Id.Value, out Buff byId) ? byId
-            : Name is not null && Buffs.TryGet(Name, out Buff byName) ? byName
+            Id.HasValue ? await Buffs.Get(Id.Value)
+            : Name is not null ? await Buffs.Get(Name)
             : null
         );
 }

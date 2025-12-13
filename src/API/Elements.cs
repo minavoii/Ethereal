@@ -2,5 +2,5 @@ using Ethereal.Attributes;
 
 namespace Ethereal.API;
 
-[Deferrable]
+[BasicAPI]
 public static partial class Elements { }

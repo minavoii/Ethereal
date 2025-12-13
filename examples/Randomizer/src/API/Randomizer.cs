@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Ethereal.API;
 using Ethereal.Classes.Builders;
 using Ethereal.Classes.View;
@@ -27,45 +28,42 @@ internal class Randomizer
     /// <summary>
     /// Randomize all monster data.
     /// </summary>
-    internal static void Randomize()
+    internal static async Task Randomize()
     {
         Dictionary<int, MonsterView> randomized = [];
         List<int> usedSignatureTraits = [];
 
-        if (Monsters.TryGetAll(out List<Monster> monsters))
+        foreach (Monster monster in await Monsters.GetAll())
         {
-            foreach (Monster monster in monsters)
+            List<EElement> elements = Random.GetRandomUniqueElements();
+            List<EMonsterType> types = Random.GetRandomTypes();
+            Trait signatureTrait = await Random.GetRandomTrait(types, false, usedSignatureTraits);
+
+            MonsterView view = new(monster)
             {
-                List<EElement> elements = Random.GetRandomUniqueElements();
-                List<EMonsterType> types = Random.GetRandomTypes();
-                Trait signatureTrait = Random.GetRandomTrait(types, false, usedSignatureTraits);
+                Elements = elements,
+                Types = types,
+                MainType = Random.GetRandomMainType(),
+                BasePerks = Random.GetRandomPerks(),
+                Scripting = await Random.GetRandomScripting(
+                    elements,
+                    types,
+                    monster.Name == "Mephisto"
+                ),
+                WildTraits =
+                [
+                    await new MonsterAITraitBuilder(
+                        await Random.GetRandomTrait(types, true),
+                        EDifficulty.Heroic
+                    ).Build(),
+                ],
+                EliteTrait = await Random.GetRandomTrait(types, true),
+                StartActions = await Random.GetRandomStartingActions(elements, types),
+                SignatureTrait = signatureTrait,
+            };
 
-                MonsterView view = new(monster)
-                {
-                    Elements = elements,
-                    Types = types,
-                    MainType = Random.GetRandomMainType(),
-                    BasePerks = Random.GetRandomPerks(),
-                    Scripting = Random.GetRandomScripting(
-                        elements,
-                        types,
-                        monster.Name == "Mephisto"
-                    ),
-                    WildTraits =
-                    [
-                        new MonsterAITraitBuilder(
-                            Random.GetRandomTrait(types, true),
-                            EDifficulty.Heroic
-                        ).Build(),
-                    ],
-                    EliteTrait = Random.GetRandomTrait(types, true),
-                    StartActions = Random.GetRandomStartingActions(elements, types),
-                    SignatureTrait = signatureTrait,
-                };
-
-                usedSignatureTraits.Add(signatureTrait.ID);
-                randomized.Add(monster.ID, view);
-            }
+            usedSignatureTraits.Add(signatureTrait.ID);
+            randomized.Add(monster.ID, view);
         }
 
         SaveData(randomized);
@@ -77,10 +75,10 @@ internal class Randomizer
     /// <param name="data"></param>
     private static void SaveData(Dictionary<int, MonsterView> data)
     {
-        Dictionary<int, SerializableView> list = data.Select(x =>
-                (id: x.Key, serialized: new SerializableView(x.Value))
-            )
-            .ToDictionary(x => x.id, x => x.serialized);
+        Dictionary<int, SerializableView> list = data.ToDictionary(
+            x => x.Key,
+            x => new SerializableView(x.Value)
+        );
 
         string json = JsonConvert.SerializeObject(list);
 
@@ -91,7 +89,7 @@ internal class Randomizer
     /// <summary>
     /// Load the randomized monster data from a file.
     /// </summary>
-    internal static void LoadData()
+    internal static async Task LoadData()
     {
         string json = "";
 
@@ -104,32 +102,32 @@ internal class Randomizer
             return;
         }
 
-        Dictionary<int, MonsterView> data = JsonConvert
-            .DeserializeObject<Dictionary<int, SerializableView>>(json)
-            .ToDictionary(x => x.Key, x => x.Value.Deserialize());
+        await Task.WhenAll(
+            JsonConvert
+                .DeserializeObject<Dictionary<int, SerializableView>>(json)
+                .Select(async x => await x.Value.Deserialize())
+        );
     }
 
     /// <summary>
     /// Balance a few skills that would be too power in randomizer,
     /// as they appear a lot more often and would overly benefit the player.
     /// </summary>
-    internal static void BalanceChanges()
+    internal static async Task BalanceChanges()
     {
         foreach (string name in (string[])["Fire Bolt", "Water Bolt", "Wind Bolt"])
         {
             // Bolt skills only consume 1 aether for 9 damage,
             // +4 damage and +1 stagger per additional aether
-            if (Actions.TryGet(name, out BaseAction bolt))
-            {
-                ActionDamage damage = bolt.GetComponent<ActionDamage>();
-                damage.Damage = 7;
-                damage.AdditionalDamage = 2;
-            }
+            ActionDamage damage = (await Actions.Get(name)).GetComponent<ActionDamage>();
+            damage.Damage = 7;
+            damage.AdditionalDamage = 2;
         }
 
         // Lava Bolt consumes 2 aether for 13 damage,
         // +2 burn and +1 stagger per fire aether
-        if (Actions.TryGet("Lava Bolt", out BaseAction lavaBolt))
-            lavaBolt.GetComponent<ActionDamage>().Damage = 10;
+        (await Actions.Get("Lava Bolt"))
+            .GetComponent<ActionDamage>()
+            .Damage = 10;
     }
 }

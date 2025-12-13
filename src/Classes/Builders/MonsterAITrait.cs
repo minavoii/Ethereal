@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Ethereal.Attributes;
 using Ethereal.Classes.LazyValues;
 
@@ -23,10 +24,10 @@ public sealed partial record MonsterAITraitBuilder
 
     public EMonsterShift? ShiftRestriction { get; init; }
 
-    public MonsterAI.MonsterAITrait Build() =>
+    public async Task<MonsterAI.MonsterAITrait> Build() =>
         new()
         {
-            Trait = Trait.Get()?.gameObject,
+            Trait = (await Trait.Get())?.gameObject,
             MinDifficulty = MinDifficulty,
             HasShiftRestriction = ShiftRestriction.HasValue,
             ShiftRestriction = ShiftRestriction ?? EMonsterShift.Normal,

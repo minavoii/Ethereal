@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Ethereal.API;
+using Ethereal.Utils.Extensions;
 using static EActionSubType;
 using static MonsterAIActionCondition.ECondition;
 
@@ -65,7 +67,7 @@ internal class Random
     /// <param name="allowMaverick"></param>
     /// <param name="excludeIDs">A list of Trait IDs to exclude.</param>
     /// <returns></returns>
-    internal static Trait GetRandomTrait(
+    internal static async Task<Trait> GetRandomTrait(
         List<EMonsterType> types,
         bool allowMaverick,
         List<int> excludeIDs = null
@@ -75,8 +77,7 @@ internal class Random
 
         List<Trait> traits =
         [
-            .. types
-                .SelectMany(x => MonsterTypes.TryGet(x, out MonsterType type) ? type.Traits : null)
+            .. (await types.SelectManyAsync(async x => (await MonsterTypes.Get(x))?.Traits))
                 .Concat(Data.SignatureTraits)
                 .Distinct()
                 .Where(x => allowMaverick || x.MaverickSkill == false)
@@ -136,7 +137,7 @@ internal class Random
     /// <param name="types"></param>
     /// <param name="skipConditions"></param>
     /// <returns></returns>
-    internal static List<MonsterAIAction> GetRandomScripting(
+    internal static async Task<List<MonsterAIAction>> GetRandomScripting(
         List<EElement> elements,
         List<EMonsterType> types,
         bool skipConditions
@@ -144,9 +145,9 @@ internal class Random
     {
         List<MonsterAIAction> script = [];
 
-        BaseAction first = GetRandomAction1(elements, types);
-        BaseAction second = GetRandomAction2(elements, types, BoolType.Either, first);
-        BaseAction third = GetRandomAction3(elements, types);
+        BaseAction first = await GetRandomAction1(elements, types);
+        BaseAction second = await GetRandomAction2(elements, types, BoolType.Either, first);
+        BaseAction third = await GetRandomAction3(elements, types);
 
         if (skipConditions)
         {
@@ -176,13 +177,13 @@ internal class Random
     /// <param name="elements"></param>
     /// <param name="types"></param>
     /// <returns></returns>
-    internal static List<BaseAction> GetRandomStartingActions(
+    internal static async Task<List<BaseAction>> GetRandomStartingActions(
         List<EElement> elements,
         List<EMonsterType> types
     )
     {
-        BaseAction first = GetRandomAction1(elements, types);
-        BaseAction second = GetRandomAction2(elements, types, BoolType.False, first);
+        BaseAction first = await GetRandomAction1(elements, types);
+        BaseAction second = await GetRandomAction2(elements, types, BoolType.False, first);
 
         return [first, second];
     }
@@ -202,7 +203,7 @@ internal class Random
     /// <param name="maverick"></param>
     /// <param name="freeAction"></param>
     /// <returns></returns>
-    private static BaseAction GetRandomAction(
+    private static async Task<BaseAction> GetRandomAction(
         List<EElement> elements,
         List<EMonsterType> types,
         BaseAction excludeAction,
@@ -216,23 +217,19 @@ internal class Random
         BoolType freeAction
     )
     {
-        List<Buff> possibleBuffs = Data.GetTypeBuffs(types);
+        List<Buff> possibleBuffs = await Data.GetTypeBuffs(types);
 
         List<BaseAction> dataset = [];
 
         if (byType)
             dataset =
             [
-                .. types
-                    .SelectMany(x =>
-                        MonsterTypes.TryGet(x, out MonsterType type)
-                            ? type.GetComponent<MonsterType>().Actions
-                            : null
-                    )
-                    .Distinct(),
+                .. (
+                    await types.SelectManyAsync(async x => (await MonsterTypes.Get(x))?.Actions)
+                ).Distinct(),
             ];
         else
-            Actions.TryGetAll(out dataset);
+            dataset = await Actions.GetAll();
 
         List<BaseAction> actions =
         [
@@ -282,8 +279,11 @@ internal class Random
     /// <param name="elements"></param>
     /// <param name="types"></param>
     /// <returns></returns>
-    private static BaseAction GetRandomAction1(List<EElement> elements, List<EMonsterType> types) =>
-        GetRandomAction(
+    private static async Task<BaseAction> GetRandomAction1(
+        List<EElement> elements,
+        List<EMonsterType> types
+    ) =>
+        await GetRandomAction(
             elements,
             types,
             null,
@@ -309,13 +309,13 @@ internal class Random
     /// <param name="maverick"></param>
     /// <param name="excludeAction"></param>
     /// <returns></returns>
-    private static BaseAction GetRandomAction2(
+    private static async Task<BaseAction> GetRandomAction2(
         List<EElement> elements,
         List<EMonsterType> types,
         BoolType maverick,
         BaseAction excludeAction
     ) =>
-        GetRandomAction(
+        await GetRandomAction(
             elements,
             types,
             excludeAction,
@@ -328,7 +328,7 @@ internal class Random
             maverick,
             BoolType.False
         )
-        ?? GetRandomAction(
+        ?? await GetRandomAction(
             elements,
             types,
             excludeAction,
@@ -341,7 +341,7 @@ internal class Random
             maverick,
             BoolType.False
         )
-        ?? GetRandomAction(
+        ?? await GetRandomAction(
             elements,
             types,
             excludeAction,
@@ -363,8 +363,11 @@ internal class Random
     /// <param name="elements"></param>
     /// <param name="types"></param>
     /// <returns></returns>
-    private static BaseAction GetRandomAction3(List<EElement> elements, List<EMonsterType> types) =>
-        GetRandomAction(
+    private static async Task<BaseAction> GetRandomAction3(
+        List<EElement> elements,
+        List<EMonsterType> types
+    ) =>
+        await GetRandomAction(
             elements,
             types,
             null,
@@ -377,7 +380,7 @@ internal class Random
             BoolType.True,
             BoolType.False
         )
-        ?? GetRandomAction(
+        ?? await GetRandomAction(
             elements,
             types,
             null,

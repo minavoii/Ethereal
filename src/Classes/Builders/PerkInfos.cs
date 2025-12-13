@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Ethereal.Attributes;
 using Ethereal.Classes.LazyValues;
 
@@ -22,6 +23,6 @@ public sealed partial record PerkInfosBuilder
 
     public float Multiplier { get; init; }
 
-    public PerkInfos? Build() =>
-        new() { Perk = LazyPerk.Get()?.gameObject, Multiplier = Multiplier };
+    public async Task<PerkInfos?> Build() =>
+        new() { Perk = (await LazyPerk.Get())?.gameObject, Multiplier = Multiplier };
 }

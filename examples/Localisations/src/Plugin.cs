@@ -1,4 +1,5 @@
-﻿using System.Timers;
+﻿using System.Threading.Tasks;
+using System.Timers;
 using BepInEx;
 using BepInEx.Logging;
 using Ethereal.API;
@@ -14,12 +15,12 @@ public class Plugin : BaseUnityPlugin
 
     internal static System.Timers.Timer Timer = new() { Interval = 5000 };
 
-    private void Awake()
+    private async Task Awake()
     {
         Logger = base.Logger;
 
-        Localisation.AddLocalisedText(Text.Apple.Entry);
-        Localisation.AddLocalisedText(TextExtra.Pear.Entry, TextExtra.Pear.Extras);
+        await Localisation.AddLocalisedText(Text.Apple.Entry);
+        await Localisation.AddLocalisedText(TextExtra.Pear.Entry, TextExtra.Pear.Extras);
 
         // We're using a timer here because GameController may not be initialized yet
         // We are only calling `Loca.Localize()` here to check that it worked,

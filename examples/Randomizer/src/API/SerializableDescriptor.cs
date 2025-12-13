@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Ethereal.API;
 using Ethereal.Classes.Builders;
 using Ethereal.Classes.View;
+using Ethereal.Utils.Extensions;
 
 namespace Randomizer.API;
 
@@ -60,53 +62,45 @@ internal class SerializableView()
     /// Deserialize itself into a new `MonsterView`.
     /// </summary>
     /// <returns></returns>
-    public MonsterView Deserialize()
+    public async Task<MonsterView> Deserialize()
     {
-        Monsters.TryGet(ID, out Monster monster);
+        Monster monster = await Monsters.Get(ID);
 
         MonsterView view = new(monster)
         {
             Elements = Elements,
             MainType = MainType,
             Types = Types,
-            EliteTrait = Traits.TryGet(EliteTrait, out Trait eliteTrait) ? eliteTrait : null,
-            SignatureTrait = Traits.TryGet(SignatureTrait, out Trait signatureTrait)
-                ? signatureTrait
-                : null,
+            EliteTrait = await Traits.Get(EliteTrait),
+            SignatureTrait = await Traits.Get(SignatureTrait),
             BasePerks =
             [
                 .. Perks.Select(x => Data.AllPerks.Find(y => y.Perk.GetComponent<Perk>().ID == x)),
             ],
             Scripting =
             [
-                .. Scripting
-                    .Select(x =>
-                        Actions.TryGet(x.id, out BaseAction action)
-                            ? new MonsterAIAction()
-                            {
-                                Action = action.gameObject,
-                                Conditions = x.conditions,
-                                IsTemporary = false,
-                            }
-                            : null
-                    )
-                    .Where(x => x is not null),
+                .. (
+                    await Scripting.SelectAsync(async x => new MonsterAIAction()
+                    {
+                        Action = (await Actions.Get(x.id))?.gameObject,
+                        Conditions = x.conditions,
+                        IsTemporary = false,
+                    })
+                ).Where(x => x.Action is not null),
             ],
             StartActions =
             [
-                .. StartActions
-                    .Select(x => Actions.TryGet(x, out BaseAction action) ? action : null)
-                    .Where(x => x is not null),
+                .. (await StartActions.SelectAsync(Actions.Get)).Where(x => x is not null),
             ],
             WildTraits =
             [
-                .. WildTraits
-                    .Select(x =>
-                        Traits.TryGet(x.id, out Trait trait)
-                            ? new MonsterAITraitBuilder(trait, x.difficulty).Build()
+                .. (
+                    await WildTraits.SelectAsync(async x =>
+                        await Traits.Get(x.id) is Trait trait
+                            ? await new MonsterAITraitBuilder(trait, x.difficulty).Build()
                             : null
                     )
-                    .Where(x => x is not null),
+                ).Where(x => x is not null),
             ],
         };
 

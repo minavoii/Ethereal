@@ -1,39 +1,48 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Ethereal.Attributes;
 using Ethereal.Classes.Builders;
 
 namespace Ethereal.API;
 
-[Deferrable]
+[BasicAPI]
 public static partial class Keywords
 {
     /// <summary>
     /// Get a keyword by name.
     /// </summary>
     /// <param name="name"></param>
-    [TryGet]
-    private static Keyword? Get(string name) =>
-        KeywordManager.Instance.AllKeywords.Find(x => x.Name == name);
+    public static async Task<Keyword?> Get(string name)
+    {
+        await API.WhenReady();
+        return KeywordManager.Instance.AllKeywords.Find(x => x.Name == name);
+    }
 
     /// <summary>
     /// Get all keywords.
     /// </summary>
     /// <returns></returns>
-    [TryGet]
-    private static List<Keyword> GetAll() => KeywordManager.Instance.AllKeywords;
+    public static async Task<List<Keyword>> GetAll()
+    {
+        await API.WhenReady();
+        return KeywordManager.Instance.AllKeywords;
+    }
 
     /// <summary>
     /// Create a new keyword and add it to the game's data.
     /// </summary>
     /// <param name="keyword"></param>
-    [Deferrable]
-    private static void Add_Impl(KeywordBuilder keyword) => Add_Impl(keyword.Build());
+    public static async Task<Keyword> Add(KeywordBuilder keyword) => await Add(keyword.Build());
 
     /// <summary>
     /// Create a new keyword and add it to the game's data.
     /// </summary>
     /// <param name="keyword"></param>
-    [Deferrable]
-    private static void Add_Impl(Keyword keyword) =>
+    public static async Task<Keyword> Add(Keyword keyword)
+    {
+        await API.WhenReady();
+
         KeywordManager.Instance.AllKeywords.Add(keyword);
+        return keyword;
+    }
 }

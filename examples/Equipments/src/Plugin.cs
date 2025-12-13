@@ -24,11 +24,9 @@ public class Plugin : BaseUnityPlugin
     {
         Logger = base.Logger;
 
-        await APIManager.WaitUntilReady(EtherealAPI.Equipments);
+        await Equipments.Add(Accessory.RedArmor.Builder);
 
-        Equipments.Add(Accessory.RedArmor.Builder);
-
-        if (Equipments.TryGet("Blade", ERarity.Common, out Equipment equipment))
+        if (await Equipments.Get("Blade", ERarity.Common) is Equipment equipment)
             Weapon.BlueBlade.View(equipment);
     }
 }

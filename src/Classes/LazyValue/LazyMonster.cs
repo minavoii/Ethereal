@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Ethereal.API;
 
 namespace Ethereal.Classes.LazyValues;
@@ -13,11 +14,11 @@ public sealed record LazyMonster : LazyReferenceable<Monster>
     public LazyMonster(Monster monster)
         : base(monster) { }
 
-    public override Monster? Get() =>
-        base.Get()
+    public override async Task<Monster?> Get() =>
+        Data
         ?? (
-            Id.HasValue && Monsters.TryGet(Id.Value, out Monster byId) ? byId
-            : Name is not null && Monsters.TryGet(Name, out Monster byName) ? byName
+            Id.HasValue ? await Monsters.Get(Id.Value)
+            : Name is not null ? await Monsters.Get(Name)
             : null
         );
 }

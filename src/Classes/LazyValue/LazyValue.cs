@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+
 namespace Ethereal.Classes.LazyValues;
 
 public abstract record LazyValue<T>
@@ -23,5 +25,5 @@ public abstract record LazyValue<T>
 
     protected T? Data { get; init; }
 
-    public virtual T? Get() => Data;
+    public abstract Task<T?> Get();
 }

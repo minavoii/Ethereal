@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Ethereal.Classes.Builders;
@@ -28,17 +29,17 @@ public sealed record MonsterAIBuilder(
     bool ExcludedFromTurnOrder
 )
 {
-    public MonsterAI Build() =>
+    public async Task<MonsterAI> Build() =>
         new()
         {
             ResetAction = ResetAction,
             CannotUseDefaultAttack = CannotUseDefaultAttack,
             ExcludedFromTurnOrder = ExcludedFromTurnOrder,
-            Traits = [.. Traits.Select(x => x.Build())],
-            Scripting = [.. Scripting.Select(x => x.Build())],
-            VoidPerks = [.. VoidPerks.Select(x => x.Build())],
-            VoidPerksTier2 = [.. VoidPerksTier2.Select(x => x.Build())],
-            VoidPerksTier3 = [.. VoidPerksTier3.Select(x => x.Build())],
-            ChampionPerks = [.. ChampionPerks.Select(x => x.Build())],
+            Traits = [.. await Task.WhenAll(Traits.Select(x => x.Build()))],
+            Scripting = [.. await Task.WhenAll(Scripting.Select(x => x.Build()))],
+            VoidPerks = [.. await Task.WhenAll(VoidPerks.Select(x => x.Build()))],
+            VoidPerksTier2 = [.. await Task.WhenAll(VoidPerksTier2.Select(x => x.Build()))],
+            VoidPerksTier3 = [.. await Task.WhenAll(VoidPerksTier3.Select(x => x.Build()))],
+            ChampionPerks = [.. await Task.WhenAll(ChampionPerks.Select(x => x.Build()))],
         };
 }

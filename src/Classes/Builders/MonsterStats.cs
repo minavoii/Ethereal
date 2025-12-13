@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Ethereal.Classes.Builders;
 
@@ -10,11 +11,11 @@ namespace Ethereal.Classes.Builders;
 /// <param name="Perks"></param>
 public sealed record MonsterStatsBuilder(int BaseMaxHealth, List<PerkInfosBuilder> Perks)
 {
-    public MonsterStats Build() =>
+    public async Task<MonsterStats> Build() =>
         new()
         {
             BaseMaxHealth = BaseMaxHealth,
-            PerkInfosList = [.. Perks.Select(x => x.Build())],
+            PerkInfosList = [.. await Task.WhenAll(Perks.Select(x => x.Build()))],
             Perks = [],
         };
 }

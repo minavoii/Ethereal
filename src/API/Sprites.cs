@@ -2,13 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Threading.Tasks;
 using Ethereal.Attributes;
 using Ethereal.Classes.View;
 using UnityEngine;
 
 namespace Ethereal.API;
 
-[Deferrable]
+[BasicAPI]
 public static partial class Sprites
 {
     public enum SpriteType
@@ -33,9 +34,9 @@ public static partial class Sprites
     /// <summary>
     /// Mark the API as ready and run all deferred methods.
     /// </summary>
-    internal static void SetReady()
+    internal static async Task SetReady()
     {
-        BulkReplaceFromDefaultDirectory();
+        await BulkReplaceFromDefaultDirectory();
 
         API.SetReady();
     }
@@ -112,16 +113,16 @@ public static partial class Sprites
         return sprite;
     }
 
-    private static void BulkReplaceFromDefaultDirectory()
+    private static async Task BulkReplaceFromDefaultDirectory()
     {
         Directory.CreateDirectory(SpritesPath);
 
         // Load from directory
-        BulkReplaceFromDirectory(SpritesPath);
+        await BulkReplaceFromDirectory(SpritesPath);
 
         // Load bundles
         foreach (FileInfo file in new DirectoryInfo(SpritesPath).EnumerateFiles())
-            BulkReplaceFromBundle(file.FullName);
+            await BulkReplaceFromBundle(file.FullName);
     }
 
     /// <summary>
@@ -130,8 +131,7 @@ public static partial class Sprites
     /// artifact sprites within an `Artifacts` folder, etc.
     /// </summary>
     /// <param name="spritesPath"></param>
-    [Deferrable]
-    private static void BulkReplaceFromDirectory_Impl(string spritesPath)
+    public static async Task BulkReplaceFromDirectory(string spritesPath)
     {
         string PathActions = Path.Join(spritesPath, "Actions");
         string PathArtifacts = Path.Join(spritesPath, "Artifacts");
@@ -146,7 +146,7 @@ public static partial class Sprites
         try
         {
             foreach (FileInfo file in new DirectoryInfo(PathActions).EnumerateFiles())
-                ReplaceIconAction(ToTitleCase(file.Name), null, file.FullName);
+                await ReplaceIconAction(ToTitleCase(file.Name), null, file.FullName);
         }
         catch (Exception e)
             when (e is DirectoryNotFoundException || e is System.Security.SecurityException) { }
@@ -155,7 +155,7 @@ public static partial class Sprites
         try
         {
             foreach (FileInfo file in new DirectoryInfo(PathArtifacts).EnumerateFiles())
-                ReplaceIconArtifact(ToTitleCase(file.Name), null, file.FullName);
+                await ReplaceIconArtifact(ToTitleCase(file.Name), null, file.FullName);
         }
         catch (Exception e)
             when (e is DirectoryNotFoundException || e is System.Security.SecurityException) { }
@@ -165,7 +165,7 @@ public static partial class Sprites
         {
             foreach (FileInfo file in new DirectoryInfo(PathBuffs).EnumerateFiles())
                 if (LoadFromImage(SpriteType.Buff, file.FullName) is Sprite icon)
-                    ReplaceIconBuff(ToTitleCase(file.Name), icon);
+                    await ReplaceIconBuff(ToTitleCase(file.Name), icon);
         }
         catch (Exception e)
             when (e is DirectoryNotFoundException || e is System.Security.SecurityException) { }
@@ -184,7 +184,7 @@ public static partial class Sprites
         {
             foreach (FileInfo file in new DirectoryInfo(PathEquipments).EnumerateFiles())
                 if (LoadFromImage(SpriteType.Equipment, file.FullName) is Sprite icon)
-                    ReplaceIconEquipment(ToTitleCase(file.Name), icon);
+                    await ReplaceIconEquipment(ToTitleCase(file.Name), icon);
         }
         catch (Exception e)
             when (e is DirectoryNotFoundException || e is System.Security.SecurityException) { }
@@ -194,7 +194,7 @@ public static partial class Sprites
         {
             foreach (FileInfo file in new DirectoryInfo(PathMementos).EnumerateFiles())
                 if (LoadFromImage(SpriteType.Memento, file.FullName) is Sprite icon)
-                    ReplaceIconMemento(ToTitleCase(file.Name), icon);
+                    await ReplaceIconMemento(ToTitleCase(file.Name), icon);
         }
         catch (Exception e)
             when (e is DirectoryNotFoundException || e is System.Security.SecurityException) { }
@@ -204,7 +204,7 @@ public static partial class Sprites
         {
             foreach (FileInfo file in new DirectoryInfo(PathTraits).EnumerateFiles())
                 if (LoadFromImage(SpriteType.Trait, file.FullName) is Sprite icon)
-                    ReplaceIconTrait(ToTitleCase(file.Name), icon);
+                    await ReplaceIconTrait(ToTitleCase(file.Name), icon);
         }
         catch (Exception e)
             when (e is DirectoryNotFoundException || e is System.Security.SecurityException) { }
@@ -214,7 +214,7 @@ public static partial class Sprites
         {
             foreach (FileInfo file in new DirectoryInfo(PathTypes).EnumerateFiles())
                 if (LoadFromImage(SpriteType.MonsterType, file.FullName) is Sprite icon)
-                    ReplaceIconType(ToTitleCase(file.Name), icon);
+                    await ReplaceIconType(ToTitleCase(file.Name), icon);
         }
         catch (Exception e)
             when (e is DirectoryNotFoundException || e is System.Security.SecurityException) { }
@@ -226,8 +226,7 @@ public static partial class Sprites
     /// artifact sprites within an `Artifacts` folder, etc.
     /// </summary>
     /// <param name="path"></param>
-    [Deferrable]
-    private static void BulkReplaceFromBundle_Impl(string path)
+    public static async Task BulkReplaceFromBundle(string path)
     {
         AssetBundle? bundle = AssetBundle.LoadFromFile(path);
 
@@ -245,21 +244,21 @@ public static partial class Sprites
                 Sprite icon = CreateBySize((asset.width, asset.height), asset);
 
                 if (dir == "actions")
-                    ReplaceIconAction(name, icon);
+                    await ReplaceIconAction(name, icon);
                 else if (dir == "artifacts")
-                    ReplaceIconArtifact(name, icon);
+                    await ReplaceIconArtifact(name, icon);
                 else if (dir == "buffs")
-                    ReplaceIconBuff(name, icon);
+                    await ReplaceIconBuff(name, icon);
                 else if (dir == "elements")
                     ReplaceIconElement(name, icon);
                 else if (dir == "equipments")
-                    ReplaceIconEquipment(name, icon);
+                    await ReplaceIconEquipment(name, icon);
                 else if (dir == "mementos")
-                    ReplaceIconMemento(name, icon);
+                    await ReplaceIconMemento(name, icon);
                 else if (dir == "traits")
-                    ReplaceIconTrait(name, icon);
+                    await ReplaceIconTrait(name, icon);
                 else if (dir == "types")
-                    ReplaceIconType(name, icon);
+                    await ReplaceIconType(name, icon);
             }
         }
     }
@@ -270,26 +269,30 @@ public static partial class Sprites
     /// <param name="name"></param>
     /// <param name="icon"></param>
     /// <param name="iconPath"></param>
-    private static void ReplaceIconAction(string name, Sprite? icon = null, string iconPath = "")
+    private static async Task ReplaceIconAction(
+        string name,
+        Sprite? icon = null,
+        string iconPath = ""
+    )
     {
         if (name.EndsWith("Small"))
         {
             string actionName = name[..(name.Length - 6)];
 
-            if (Actions.TryGet(actionName, out BaseAction action))
+            if (await Actions.Get(actionName) is BaseAction action)
                 action.ActionIconSmall = icon ?? LoadFromImage(SpriteType.ActionSmall, iconPath);
         }
         else if (name.EndsWith("Cut"))
         {
             string actionName = name[..(name.Length - 4)];
 
-            if (Actions.TryGet(actionName, out BaseAction action))
+            if (await Actions.Get(actionName) is BaseAction action)
                 action.ActionIconCutSmall =
                     icon ?? LoadFromImage(SpriteType.ActionCutSmall, iconPath);
         }
         else
         {
-            if (Actions.TryGet(name, out BaseAction action))
+            if (await Actions.Get(name) is BaseAction action)
             {
                 Sprite? sprite = icon ?? LoadFromImage(SpriteType.Action, iconPath);
 
@@ -305,23 +308,27 @@ public static partial class Sprites
     /// <param name="name"></param>
     /// <param name="icon"></param>
     /// <param name="iconPath"></param>
-    private static void ReplaceIconArtifact(string name, Sprite? icon = null, string iconPath = "")
+    private static async Task ReplaceIconArtifact(
+        string name,
+        Sprite? icon = null,
+        string iconPath = ""
+    )
     {
         if (name.EndsWith("Big"))
         {
             string artifactName = name[..(name.Length - 4)];
 
-            if (Artifacts.TryGet(artifactName, out Consumable artifact))
+            if (await Artifacts.Get(artifactName) is Consumable artifact)
                 artifact.ActionIconBig = icon ?? LoadFromImage(SpriteType.Action, iconPath);
         }
         else if (name.EndsWith("Small"))
         {
             string artifactName = name[..(name.Length - 6)];
 
-            if (Artifacts.TryGet(artifactName, out Consumable artifact))
+            if (await Artifacts.Get(artifactName) is Consumable artifact)
                 artifact.ActionIconSmall = icon ?? LoadFromImage(SpriteType.Action, iconPath);
         }
-        else if (Artifacts.TryGet(name, out Consumable artifact))
+        else if (await Artifacts.Get(name) is Consumable artifact)
             artifact.Icon = icon ?? LoadFromImage(SpriteType.Artifact, iconPath);
     }
 
@@ -330,9 +337,9 @@ public static partial class Sprites
     /// </summary>
     /// <param name="name"></param>
     /// <param name="icon"></param>
-    private static void ReplaceIconBuff(string name, Sprite icon)
+    private static async Task ReplaceIconBuff(string name, Sprite icon)
     {
-        if (Buffs.TryGet(name, out Buff buff))
+        if (await Buffs.Get(name) is Buff buff)
             buff.MonsterHUDIconSmall = icon;
     }
 
@@ -376,7 +383,7 @@ public static partial class Sprites
     /// </summary>
     /// <param name="name"></param>
     /// <param name="icon"></param>
-    private static void ReplaceIconEquipment(string name, Sprite icon)
+    private static async Task ReplaceIconEquipment(string name, Sprite icon)
     {
         string equipmentName = name;
         ERarity rarity = ERarity.Common;
@@ -392,7 +399,7 @@ public static partial class Sprites
             rarity = ERarity.Rare;
         }
 
-        if (Equipments.TryGet(equipmentName, rarity, out Equipment equipment))
+        if (await Equipments.Get(equipmentName, rarity) is Equipment equipment)
             equipment.Icon = icon;
     }
 
@@ -401,12 +408,12 @@ public static partial class Sprites
     /// </summary>
     /// <param name="name"></param>
     /// <param name="icon"></param>
-    private static void ReplaceIconMemento(string name, Sprite icon)
+    private static async Task ReplaceIconMemento(string name, Sprite icon)
     {
         if (!name.EndsWith("Memento"))
             name += " Memento";
 
-        if (Mementos.TryGet(name, out MonsterMemento memento))
+        if (await Mementos.Get(name) is MonsterMemento memento)
             memento.Icon = icon;
     }
 
@@ -415,9 +422,9 @@ public static partial class Sprites
     /// </summary>
     /// <param name="name"></param>
     /// <param name="icon"></param>
-    private static void ReplaceIconTrait(string name, Sprite icon)
+    private static async Task ReplaceIconTrait(string name, Sprite icon)
     {
-        if (Traits.TryGet(name, out Trait trait))
+        if (await Traits.Get(name) is Trait trait)
             trait.Icon = icon;
     }
 
@@ -426,9 +433,9 @@ public static partial class Sprites
     /// </summary>
     /// <param name="name"></param>
     /// <param name="icon"></param>
-    private static void ReplaceIconType(string name, Sprite icon)
+    private static async Task ReplaceIconType(string name, Sprite icon)
     {
-        if (MonsterTypes.TryGet(Enum.Parse<EMonsterType>(name), out MonsterType type))
+        if (await MonsterTypes.Get(Enum.Parse<EMonsterType>(name)) is MonsterType type)
             type.TypeIcon = icon;
     }
 

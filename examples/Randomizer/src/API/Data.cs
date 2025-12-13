@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Ethereal.API;
+using Ethereal.Utils.Extensions;
 
 namespace Randomizer.API;
 
@@ -16,16 +18,17 @@ internal static class Data
     /// </summary>
     /// <param name="types"></param>
     /// <returns></returns>
-    internal static List<Buff> GetTypeBuffs(List<EMonsterType> types) =>
+    internal static async Task<List<Buff>> GetTypeBuffs(List<EMonsterType> types) =>
         [
-            .. types
-                .Select(x => Buffs.TryGet(x.ToString(), out Buff buff) ? buff : null)
+            .. (await types.SelectAsync(x => Buffs.Get(x.ToString())))
                 .Where(x => x is not null)
                 .Distinct(),
         ];
 
-    internal static List<PerkInfos> GetAllPerkInfos() =>
-        Monsters.TryGetAll(out List<Monster> monsters)
-            ? [.. monsters.SelectMany(x => x?.GetComponent<MonsterStats>()?.PerkInfosList)]
-            : [];
+    internal static async Task<List<PerkInfos>> GetAllPerkInfos() =>
+        [
+            .. (await Monsters.GetAll()).SelectMany(x =>
+                x?.GetComponent<MonsterStats>()?.PerkInfosList
+            ),
+        ];
 }
