@@ -14,7 +14,7 @@ public static partial class Keywords
     /// <param name="name"></param>
     public static async Task<Keyword?> Get(string name)
     {
-        await API.WhenReady();
+        await WhenReady();
         return KeywordManager.Instance.AllKeywords.Find(x => x.Name == name);
     }
 
@@ -24,7 +24,7 @@ public static partial class Keywords
     /// <returns></returns>
     public static async Task<List<Keyword>> GetAll()
     {
-        await API.WhenReady();
+        await WhenReady();
         return KeywordManager.Instance.AllKeywords;
     }
 
@@ -40,7 +40,7 @@ public static partial class Keywords
     /// <param name="keyword"></param>
     public static async Task<Keyword> Add(Keyword keyword)
     {
-        await API.WhenReady();
+        await WhenReady();
 
         KeywordManager.Instance.AllKeywords.Add(keyword);
         return keyword;

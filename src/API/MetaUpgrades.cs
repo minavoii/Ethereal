@@ -33,7 +33,7 @@ public static partial class MetaUpgrades
     /// <param name="upgrade"></param>
     public static async Task AddToNPC(EMetaUpgradeNPC npc, string page, MetaUpgrade upgrade)
     {
-        await API.WhenReady();
+        await WhenReady();
 
         string dialogueName = $"NPC_{npc}_MetaUpgrades";
 

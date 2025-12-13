@@ -50,7 +50,7 @@ public static partial class Biomes
     /// <param name="area"></param>
     public static async Task<TilemapLevelBiome?> Get(EArea area)
     {
-        await API.WhenReady();
+        await WhenReady();
         return LevelBiomes.Find(x => x?.Name == GetAreaName(area));
     }
 
@@ -60,7 +60,7 @@ public static partial class Biomes
     /// <returns></returns>
     public static async Task<List<TilemapLevelBiome>> GetAll()
     {
-        await API.WhenReady();
+        await WhenReady();
         return LevelBiomes;
     }
 }

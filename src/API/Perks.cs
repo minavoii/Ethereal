@@ -28,7 +28,7 @@ public static partial class Perks
     /// <returns></returns>
     public static async Task<Perk?> Get(Func<Perk?, bool> predicate)
     {
-        await API.WhenReady();
+        await WhenReady();
         return GameController
             .Instance.CompleteMonsterList.Where(x => x is not null)
             .SelectMany(x => x?.GetComponent<MonsterStats>()?.PerkInfosList)
@@ -42,7 +42,7 @@ public static partial class Perks
     /// <returns></returns>
     public static async Task<List<Perk>> GetAll()
     {
-        await API.WhenReady();
+        await WhenReady();
         return
         [
             .. GameController

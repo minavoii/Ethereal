@@ -49,7 +49,7 @@ public static partial class Equipments
         ERarity rarity
     )
     {
-        await API.WhenReady();
+        await WhenReady();
 
         return rarity switch
         {
@@ -80,7 +80,7 @@ public static partial class Equipments
     /// <param name="equipment"></param>
     public static async Task<Equipment> Add(Equipment equipment)
     {
-        await API.WhenReady();
+        await WhenReady();
 
         ItemManager.EquipmentItemInstance instance = new()
         {

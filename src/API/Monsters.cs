@@ -35,7 +35,7 @@ public static partial class Monsters
     /// <returns></returns>
     public static async Task<Monster?> Get(Predicate<GameObject?> predicate)
     {
-        await API.WhenReady();
+        await WhenReady();
         return GameController.Instance.CompleteMonsterList.Find(predicate)?.GetComponent<Monster>();
     }
 
@@ -45,7 +45,7 @@ public static partial class Monsters
     /// <returns></returns>
     public static async Task<List<Monster>> GetAll()
     {
-        await API.WhenReady();
+        await WhenReady();
         return
         [
             .. GameController
@@ -66,7 +66,7 @@ public static partial class Monsters
     /// </summary>
     public static async Task<Monster> Add(GameObject monster)
     {
-        await API.TaskSource.Task;
+        await WhenReady();
 
         GameController.Instance.CompleteMonsterList.Add(monster);
 

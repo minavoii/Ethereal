@@ -33,7 +33,7 @@ public static partial class Mementos
         Predicate<ItemManager.MonsterMementoInstance?> predicateShifted
     )
     {
-        await API.WhenReady();
+        await WhenReady();
         return (
                 GameController.Instance.ItemManager.MonsterMementos.Find(predicate)?.BaseItem
                 ?? GameController
@@ -91,7 +91,7 @@ public static partial class Mementos
         string? witchCategory = null
     )
     {
-        await API.WhenReady();
+        await WhenReady();
 
         MetaUpgrade goUpgrade = GameObjects.WithinGameObject(metaUpgrade);
         MonsterMemento goMemento = GameObjects.WithinGameObject(memento);

@@ -32,7 +32,7 @@ public static partial class Fonts
     /// <param name="fallback"></param>
     public static async Task AddFallback(TMP_FontAsset font, TMP_FontAsset fallback)
     {
-        await API.WhenReady();
+        await WhenReady();
         font.fallbackFontAssetTable.Add(fallback);
     }
 
@@ -42,7 +42,7 @@ public static partial class Fonts
     /// <param name="font"></param>
     public static async Task AddAllFallbacks(TMP_FontAsset font)
     {
-        await API.WhenReady();
+        await WhenReady();
 
         foreach (TMP_FontAsset fontAsset in CustomFonts)
             font.fallbackFontAssetTable.Add(fontAsset);

@@ -59,7 +59,7 @@ public sealed class BasicAPIGenerator : IIncrementalGenerator
 
         sb.AppendLine();
         sb.AppendLine(
-            "        internal static System.Threading.Tasks.Task<bool> Task => API.TaskSource.Task;"
+            "        internal static async System.Threading.Tasks.Task<bool> WhenReady() => await API.WhenReady();"
         );
 
         sb.AppendLine("    }");

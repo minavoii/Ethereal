@@ -30,7 +30,7 @@ public static partial class Traits
     /// <param name="predicate"></param>
     public static async Task<Trait?> Get(Func<Trait?, bool> predicate)
     {
-        await API.WhenReady();
+        await WhenReady();
 
         return GameController
                 .Instance.MonsterTypes.SelectMany(x => x.Traits)
@@ -48,7 +48,7 @@ public static partial class Traits
     /// </summary>
     public static async Task<List<Trait>> GetAllLearnable()
     {
-        await API.WhenReady();
+        await WhenReady();
         return
         [
             .. GameController
@@ -63,7 +63,7 @@ public static partial class Traits
     /// </summary>
     public static async Task<List<Trait>> GetAllSignature()
     {
-        await API.WhenReady();
+        await WhenReady();
         return
         [
             .. GameController

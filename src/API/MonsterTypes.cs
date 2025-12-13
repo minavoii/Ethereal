@@ -14,7 +14,7 @@ public static partial class MonsterTypes
     /// <param name="monsterType"></param>
     public static async Task<MonsterType?> Get(EMonsterType monsterType)
     {
-        await API.WhenReady();
+        await WhenReady();
         return GameController.Instance.MonsterTypes.Find(x => x?.Type == monsterType);
     }
 
@@ -24,7 +24,7 @@ public static partial class MonsterTypes
     /// <returns></returns>
     public static async Task<List<MonsterType>> GetAll()
     {
-        await API.WhenReady();
+        await WhenReady();
         return
         [
             .. GameController.Instance.MonsterTypes.Where(x =>

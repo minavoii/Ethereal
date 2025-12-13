@@ -15,7 +15,7 @@ public static partial class Referenceables
     /// <param name="referenceable"></param>
     public static async Task Add(Referenceable referenceable)
     {
-        await API.WhenReady();
+        await WhenReady();
 
         Dictionary<int, Referenceable> cache =
             (Dictionary<int, Referenceable>)
@@ -37,7 +37,7 @@ public static partial class Referenceables
     /// <returns></returns>
     public static async Task<Referenceable> GetCached(int id)
     {
-        await API.WhenReady();
+        await WhenReady();
         return WorldData.Instance.GetReferenceable(id);
     }
 
@@ -48,7 +48,7 @@ public static partial class Referenceables
     /// <returns></returns>
     public static async Task<Referenceable> GetFromPrefab(int id)
     {
-        await API.WhenReady();
+        await WhenReady();
         return WorldData.Instance.Referenceables.FirstOrDefault(x => x?.ID == id);
     }
 
@@ -60,7 +60,7 @@ public static partial class Referenceables
     public static async Task<IEnumerable<T>> GetManyOfType<T>()
         where T : Referenceable
     {
-        await API.WhenReady();
+        await WhenReady();
         return WorldData.Instance.Referenceables.OfType<T>();
     }
 }

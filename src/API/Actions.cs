@@ -34,7 +34,7 @@ public static partial class Actions
     /// <returns></returns>
     public static async Task<BaseAction?> Get(Func<BaseAction?, bool> predicate)
     {
-        await API.WhenReady();
+        await WhenReady();
 
         return GameController
                 .Instance.MonsterTypes.SelectMany(x => x.Actions)
@@ -48,7 +48,7 @@ public static partial class Actions
     /// <returns></returns>
     public static async Task<List<BaseAction>> GetAll()
     {
-        await API.WhenReady();
+        await WhenReady();
 
         return
         [
@@ -84,7 +84,7 @@ public static partial class Actions
         bool learnable = false
     )
     {
-        await API.WhenReady();
+        await WhenReady();
 
         GameObject go = GameObjects.IntoGameObject(action);
         BaseAction goAction = go.GetComponent<BaseAction>();

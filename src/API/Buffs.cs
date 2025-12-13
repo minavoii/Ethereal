@@ -27,7 +27,7 @@ public static partial class Buffs
     /// <returns></returns>
     public static async Task<Buff> Get(Predicate<Buff?> predicate)
     {
-        await API.WhenReady();
+        await WhenReady();
 
         return Prefabs.Instance.AllBuffs.Find(predicate)
             ?? Prefabs.Instance.AllDebuffs.Find(predicate);
@@ -39,7 +39,7 @@ public static partial class Buffs
     /// <param name="buff"></param>
     public static async Task<Buff> Add(Buff buff)
     {
-        await API.WhenReady();
+        await WhenReady();
 
         GameObject go = GameObjects.IntoGameObject(buff);
         Buff goBuff = go.GetComponent<Buff>();

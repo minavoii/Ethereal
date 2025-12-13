@@ -30,7 +30,7 @@ public static partial class Artifacts
     /// <returns></returns>
     public static async Task<Consumable?> Get(Predicate<ItemManager.BaseItemInstance?> predicate)
     {
-        await API.WhenReady();
+        await WhenReady();
 
         return GameController.Instance.ItemManager.Consumables.Find(predicate)?.BaseItem
             as Consumable;
@@ -38,7 +38,7 @@ public static partial class Artifacts
 
     public static async Task<List<Consumable>> GetAll()
     {
-        await API.WhenReady();
+        await WhenReady();
 
         return
         [
@@ -61,7 +61,7 @@ public static partial class Artifacts
     /// <param name="artifact"></param>
     public static async Task<Consumable> Add(Consumable artifact)
     {
-        await API.WhenReady();
+        await WhenReady();
 
         GameController.Instance.ItemManager.Consumables.Insert(0, new() { BaseItem = artifact });
         await Referenceables.Add(artifact);

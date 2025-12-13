@@ -54,7 +54,7 @@ public static partial class Encounters
     /// <returns></returns>
     public static async Task<MonsterEncounterSet?> Get(EArea area, int zone)
     {
-        await API.WhenReady();
+        await WhenReady();
 
         return (await Biomes.Get(area))
             ?.MapBubbles.Select(x => x?.MonsterEncounterSet)
@@ -67,7 +67,7 @@ public static partial class Encounters
     /// <returns></returns>
     public static async Task<List<MonsterEncounterSet>> GetAll()
     {
-        await API.WhenReady(); //  Not neccessary?
+        await WhenReady();
 
         return
         [
@@ -92,7 +92,7 @@ public static partial class Encounters
         MonsterEncounter.EEncounterType? encounterType = null
     )
     {
-        await API.TaskSource.Task;
+        await WhenReady();
 
         encounter.Enemies.Clear();
         encounter.Shifts.Clear();

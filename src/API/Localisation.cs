@@ -90,7 +90,7 @@ public static partial class Localisation
     /// <param name="entry"></param>
     public static async Task AddLocalisedText(LocalisationData.LocalisationDataEntry entry)
     {
-        await API.WhenReady();
+        await WhenReady();
 
         // Already translated
         // Need to return in case multiple mods add the same `StringContent` to localise
