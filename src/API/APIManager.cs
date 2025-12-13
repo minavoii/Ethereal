@@ -36,7 +36,7 @@ public static partial class APIManager
     /// <param name="action"></param>
     public static async void RunWhenReady(EtherealAPI apis, Action action)
     {
-        await WaitUntilReady(apis);
+        await WhenReady(apis);
         action();
     }
 
@@ -46,7 +46,7 @@ public static partial class APIManager
     /// </summary>
     /// <param name="apis"></param>
     /// <returns></returns>
-    public static async Task WaitUntilReady(EtherealAPI apis)
+    public static async Task WhenReady(EtherealAPI apis)
     {
         if (apis.HasFlag(EtherealAPI.Actions))
             await Actions.WhenReady();

@@ -32,7 +32,7 @@ public class Plugin : BaseUnityPlugin
 
         // Some of Unity's methods don't work properly in async contexts,
         // so we initiliaze VFXs here instead of inside their constructors
-        await APIManager.WaitUntilReady(EtherealAPI.Buffs);
+        await APIManager.WhenReady(EtherealAPI.Buffs);
 
         Rotation.Buff.VFXApply = VFXs.CreateCosmetic(Rotation.Animation);
         WheelSupremacyAction.VFX.VFX = VFXs.CreateCosmetic(Rotation.Animation);
