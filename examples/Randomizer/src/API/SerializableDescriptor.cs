@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Ethereal.API;
 using Ethereal.Classes.Builders;
-using Ethereal.Classes.View;
+using Ethereal.Classes.Views;
 using Ethereal.Utils.Extensions;
 
 namespace Randomizer.API;

@@ -4,7 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
 using Ethereal.Attributes;
-using Ethereal.Classes.View;
+using Ethereal.Classes.Views;
 using UnityEngine;
 
 namespace Ethereal.API;

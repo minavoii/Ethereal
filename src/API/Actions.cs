@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Ethereal.Attributes;
 using Ethereal.Classes.Builders;
-using Ethereal.Classes.View;
+using Ethereal.Classes.Views;
 using Ethereal.Classes.Wrappers;
 using HarmonyLib;
 using UnityEngine;

@@ -1,6 +1,6 @@
 using System.IO;
 using Ethereal.API;
-using Ethereal.Classes.View;
+using Ethereal.Classes.Views;
 
 namespace ExampleEquipments.Weapon;
 

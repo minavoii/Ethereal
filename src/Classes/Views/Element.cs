@@ -1,7 +1,7 @@
 using Ethereal.Attributes;
 using UnityEngine;
 
-namespace Ethereal.Classes.View;
+namespace Ethereal.Classes.Views;
 
 /// <summary>
 /// A helper class that allows easy viewing and editing of an Element.

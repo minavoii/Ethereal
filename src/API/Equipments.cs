@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Ethereal.Attributes;
 using Ethereal.Classes.Builders;
-using Ethereal.Classes.View;
+using Ethereal.Classes.Views;
 
 namespace Ethereal.API;
 
