@@ -3,6 +3,7 @@ using System.Reflection;
 using BepInEx;
 using BepInEx.Logging;
 using Ethereal.API;
+using ExampleEquipments.Accessory;
 
 namespace ExampleEquipments;
 
@@ -24,7 +25,8 @@ public class Plugin : BaseUnityPlugin
     {
         Logger = base.Logger;
 
-        await Equipments.Add(Accessory.RedArmor.Builder);
+        await Equipments.Add(RedArmor.Builder);
+        await Localisation.Add(RedArmor.LocalisationData, RedArmor.CustomLanguageEntries);
 
         if (await Equipments.Get("Blade", ERarity.Common) is Equipment equipment)
             Weapon.BlueBlade.View(equipment);

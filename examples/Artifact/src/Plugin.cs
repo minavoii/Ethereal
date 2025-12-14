@@ -3,6 +3,7 @@ using System.Reflection;
 using BepInEx;
 using BepInEx.Logging;
 using Ethereal.API;
+using ExampleArtifacts.Artifact;
 
 namespace ExampleArtifacts;
 
@@ -24,6 +25,7 @@ public class Plugin : BaseUnityPlugin
     {
         Logger = base.Logger;
 
-        await Artifacts.Add(Artifact.TrucePact.Builder);
+        await Artifacts.Add(TrucePact.Builder);
+        await Localisation.Add(TrucePact.LocalisationData, TrucePact.CustomLanguageEntries);
     }
 }
