@@ -61,7 +61,7 @@ public sealed partial class ActionView(GameObject gameObject)
         set => AccessTools.Field(typeof(BaseAction), "subTypes").SetValue(Action, value);
     }
 
-    public Sprite? IconBig
+    public Sprite IconBig
     {
         get => Action.Icon;
         set

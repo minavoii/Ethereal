@@ -18,7 +18,7 @@ namespace Ethereal.Classes.Builders;
 /// <param name="CannotUseDefaultAttack"></param>
 /// <param name="ExcludedFromTurnOrder"></param>
 public sealed record MonsterAIBuilder(
-    GameObject ResetAction,
+    GameObject? ResetAction,
     List<MonsterAITraitBuilder> Traits,
     List<MonsterAIActionBuilder> Scripting,
     List<PerkInfosBuilder> VoidPerks,

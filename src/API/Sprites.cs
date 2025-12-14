@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
 using Ethereal.Attributes;
+using Ethereal.Classes.Exceptions;
 using Ethereal.Classes.Views;
 using UnityEngine;
 
@@ -47,8 +48,8 @@ public static partial class Sprites
     /// <param name="path"></param>
     /// <param name="asset"></param>
     /// <returns></returns>
-    public static Sprite? LoadFromBundle(string path, string asset) =>
-        Assets.LoadBundle(path) is AssetBundle bundle ? LoadFromBundle(bundle, asset) : null;
+    public static Sprite LoadFromBundle(string path, string asset) =>
+        LoadFromBundle(Assets.LoadBundle(path), asset);
 
     /// <summary>
     /// Load a sprite from an asset bundle.
@@ -56,13 +57,9 @@ public static partial class Sprites
     /// <param name="bundle"></param>
     /// <param name="asset"></param>
     /// <returns></returns>
-    public static Sprite? LoadFromBundle(AssetBundle bundle, string asset)
-    {
-        GameObject? go = Assets.LoadPrefab(bundle, asset);
-        Sprite? sprite = go?.GetComponent<SpriteRenderer>().sprite;
-
-        return sprite;
-    }
+    public static Sprite LoadFromBundle(AssetBundle bundle, string asset) =>
+        Assets.LoadPrefab(bundle, asset)?.GetComponent<SpriteRenderer>().sprite
+        ?? throw new AssetNotFoundException($"Sprite not found in asset: {asset}");
 
     /// <summary>
     /// Load all sprites from an asset bundle.
@@ -70,14 +67,17 @@ public static partial class Sprites
     /// <param name="path"></param>
     /// <returns></returns>
     public static Sprite[] LoadAllFromBundle(string path) =>
-        Assets.LoadBundle(path) is AssetBundle bundle ? LoadAllFromBundle(bundle) : [];
+        LoadAllFromBundle(Assets.LoadBundle(path));
 
     /// <summary>
     /// Load all sprites from an asset bundle.
     /// </summary>
     /// <param name="bundle"></param>
     /// <returns></returns>
-    public static Sprite[] LoadAllFromBundle(AssetBundle bundle) => bundle.LoadAllAssets<Sprite>();
+    public static Sprite[] LoadAllFromBundle(AssetBundle bundle) =>
+        bundle.LoadAllAssets<Sprite>() is Sprite[] sprites && sprites.Length > 0
+            ? sprites
+            : throw new AssetNotFoundException($"No sprite found in bundle: {bundle.name}");
 
     /// <summary>
     /// Create a sprite from an image file.
@@ -85,14 +85,8 @@ public static partial class Sprites
     /// <param name="iconType"></param>
     /// <param name="path"></param>
     /// <returns>a Sprite if the file was found; otherwise null.</returns>
-    public static Sprite? LoadFromImage(SpriteType iconType, string path)
+    public static Sprite LoadFromImage(SpriteType iconType, string path)
     {
-        if (!File.Exists(path))
-        {
-            Log.API.LogError("File not found: " + path);
-            return null;
-        }
-
         Sprite sprite = CreateBySize(
             iconType switch
             {
@@ -228,38 +222,32 @@ public static partial class Sprites
     /// <param name="path"></param>
     public static async Task BulkReplaceFromBundle(string path)
     {
-        AssetBundle? bundle = AssetBundle.LoadFromFile(path);
+        AssetBundle bundle = AssetBundle.LoadFromFile(path);
 
-        if (bundle is not null)
+        foreach (string assetName in bundle.GetAllAssetNames())
         {
-            foreach (string assetName in bundle.GetAllAssetNames())
-            {
-                Texture2D? asset = Assets.LoadAsset<Texture2D>(bundle, assetName);
+            Texture2D asset = Assets.LoadAsset<Texture2D>(bundle, assetName);
 
-                if (asset is null)
-                    continue;
+            string dir = Path.GetDirectoryName(assetName)[7..];
+            string name = ToTitleCase(assetName);
+            Sprite icon = CreateBySize((asset.width, asset.height), asset);
 
-                string dir = Path.GetDirectoryName(assetName)[7..];
-                string name = ToTitleCase(assetName);
-                Sprite icon = CreateBySize((asset.width, asset.height), asset);
-
-                if (dir == "actions")
-                    await ReplaceIconAction(name, icon);
-                else if (dir == "artifacts")
-                    await ReplaceIconArtifact(name, icon);
-                else if (dir == "buffs")
-                    await ReplaceIconBuff(name, icon);
-                else if (dir == "elements")
-                    ReplaceIconElement(name, icon);
-                else if (dir == "equipments")
-                    await ReplaceIconEquipment(name, icon);
-                else if (dir == "mementos")
-                    await ReplaceIconMemento(name, icon);
-                else if (dir == "traits")
-                    await ReplaceIconTrait(name, icon);
-                else if (dir == "types")
-                    await ReplaceIconType(name, icon);
-            }
+            if (dir == "actions")
+                await ReplaceIconAction(name, icon);
+            else if (dir == "artifacts")
+                await ReplaceIconArtifact(name, icon);
+            else if (dir == "buffs")
+                await ReplaceIconBuff(name, icon);
+            else if (dir == "elements")
+                ReplaceIconElement(name, icon);
+            else if (dir == "equipments")
+                await ReplaceIconEquipment(name, icon);
+            else if (dir == "mementos")
+                await ReplaceIconMemento(name, icon);
+            else if (dir == "traits")
+                await ReplaceIconTrait(name, icon);
+            else if (dir == "types")
+                await ReplaceIconType(name, icon);
         }
     }
 
@@ -294,7 +282,7 @@ public static partial class Sprites
         {
             if (await Actions.Get(name) is BaseAction action)
             {
-                Sprite? sprite = icon ?? LoadFromImage(SpriteType.Action, iconPath);
+                Sprite sprite = icon ?? LoadFromImage(SpriteType.Action, iconPath);
 
                 action.ActionIconBig = sprite;
                 action.Icon = sprite;
