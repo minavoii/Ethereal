@@ -70,14 +70,14 @@ internal class Random
     internal static async Task<Trait> GetRandomTrait(
         List<EMonsterType> types,
         bool allowMaverick,
-        List<int> excludeIDs = null
+        List<int>? excludeIDs = null
     )
     {
         excludeIDs ??= [];
 
         List<Trait> traits =
         [
-            .. (await types.SelectManyAsync(async x => (await MonsterTypes.Get(x))?.Traits))
+            .. (await types.SelectManyAsync(async x => (await MonsterTypes.Get(x))?.Traits ?? []))
                 .Concat(Data.SignatureTraits)
                 .Distinct()
                 .Where(x => allowMaverick || x.MaverickSkill == false)
@@ -145,15 +145,20 @@ internal class Random
     {
         List<MonsterAIAction> script = [];
 
-        BaseAction first = await GetRandomAction1(elements, types);
-        BaseAction second = await GetRandomAction2(elements, types, BoolType.Either, first);
-        BaseAction third = await GetRandomAction3(elements, types);
+        BaseAction? first = await GetRandomAction1(elements, types);
+        BaseAction? second = await GetRandomAction2(elements, types, BoolType.Either, first);
+        BaseAction? third = await GetRandomAction3(elements, types);
 
         if (skipConditions)
         {
-            script.Add(new() { Action = third.gameObject, Conditions = [] });
-            script.Add(new() { Action = second.gameObject, Conditions = [] });
-            script.Add(new() { Action = first.gameObject, Conditions = [] });
+            if (third is not null)
+                script.Add(new() { Action = third.gameObject, Conditions = [] });
+
+            if (second is not null)
+                script.Add(new() { Action = second.gameObject, Conditions = [] });
+
+            if (first is not null)
+                script.Add(new() { Action = first.gameObject, Conditions = [] });
 
             return script;
         }
@@ -164,9 +169,18 @@ internal class Random
             new() { Condition = UseOnce },
         ];
 
-        script.Add(new() { Action = third.gameObject, Conditions = conditions3 });
-        script.Add(new() { Action = second.gameObject, Conditions = GetActionConditions(second) });
-        script.Add(new() { Action = first.gameObject, Conditions = GetActionConditions(first) });
+        if (third is not null)
+            script.Add(new() { Action = third.gameObject, Conditions = conditions3 });
+
+        if (second is not null)
+            script.Add(
+                new() { Action = second.gameObject, Conditions = GetActionConditions(second) }
+            );
+
+        if (first is not null)
+            script.Add(
+                new() { Action = first.gameObject, Conditions = GetActionConditions(first) }
+            );
 
         return script;
     }
@@ -182,10 +196,17 @@ internal class Random
         List<EMonsterType> types
     )
     {
-        BaseAction first = await GetRandomAction1(elements, types);
-        BaseAction second = await GetRandomAction2(elements, types, BoolType.False, first);
+        List<BaseAction> startActions = [];
 
-        return [first, second];
+        if (await GetRandomAction1(elements, types) is BaseAction first)
+        {
+            startActions.Add(first);
+
+            if (await GetRandomAction2(elements, types, BoolType.False, first) is BaseAction second)
+                startActions.Add(second);
+        }
+
+        return startActions;
     }
 
     /// <summary>
@@ -203,10 +224,10 @@ internal class Random
     /// <param name="maverick"></param>
     /// <param name="freeAction"></param>
     /// <returns></returns>
-    private static async Task<BaseAction> GetRandomAction(
+    private static async Task<BaseAction?> GetRandomAction(
         List<EElement> elements,
         List<EMonsterType> types,
-        BaseAction excludeAction,
+        BaseAction? excludeAction,
         bool byType,
         bool byElements,
         int costMinInclusive,
@@ -225,7 +246,9 @@ internal class Random
             dataset =
             [
                 .. (
-                    await types.SelectManyAsync(async x => (await MonsterTypes.Get(x))?.Actions)
+                    await types.SelectManyAsync(async x =>
+                        (await MonsterTypes.Get(x))?.Actions ?? []
+                    )
                 ).Distinct(),
             ];
         else
@@ -269,7 +292,7 @@ internal class Random
             ),
         ];
 
-        return actions.Count == 0 ? null : actions[Shuffle(0, actions.Count)[0]];
+        return actions.Count > 0 ? actions[Shuffle(0, actions.Count)[0]] : null;
     }
 
     /// <summary>
@@ -279,7 +302,7 @@ internal class Random
     /// <param name="elements"></param>
     /// <param name="types"></param>
     /// <returns></returns>
-    private static async Task<BaseAction> GetRandomAction1(
+    private static async Task<BaseAction?> GetRandomAction1(
         List<EElement> elements,
         List<EMonsterType> types
     ) =>
@@ -309,11 +332,11 @@ internal class Random
     /// <param name="maverick"></param>
     /// <param name="excludeAction"></param>
     /// <returns></returns>
-    private static async Task<BaseAction> GetRandomAction2(
+    private static async Task<BaseAction?> GetRandomAction2(
         List<EElement> elements,
         List<EMonsterType> types,
         BoolType maverick,
-        BaseAction excludeAction
+        BaseAction? excludeAction
     ) =>
         await GetRandomAction(
             elements,
@@ -363,7 +386,7 @@ internal class Random
     /// <param name="elements"></param>
     /// <param name="types"></param>
     /// <returns></returns>
-    private static async Task<BaseAction> GetRandomAction3(
+    private static async Task<BaseAction?> GetRandomAction3(
         List<EElement> elements,
         List<EMonsterType> types
     ) =>

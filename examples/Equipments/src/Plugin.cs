@@ -11,7 +11,7 @@ namespace ExampleEquipments;
 [BepInDependency("minavoii.ethereal")]
 public class Plugin : BaseUnityPlugin
 {
-    internal static new ManualLogSource Logger;
+    internal static new ManualLogSource Logger = null!;
 
     internal static readonly string ExamplesPath = Path.Join(
         Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),

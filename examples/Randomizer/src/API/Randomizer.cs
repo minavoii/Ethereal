@@ -119,15 +119,16 @@ internal class Randomizer
         {
             // Bolt skills only consume 1 aether for 9 damage,
             // +4 damage and +1 stagger per additional aether
-            ActionDamage damage = (await Actions.Get(name)).GetComponent<ActionDamage>();
-            damage.Damage = 7;
-            damage.AdditionalDamage = 2;
+            if ((await Actions.Get(name))?.GetComponent<ActionDamage>() is ActionDamage bolt)
+            {
+                bolt.Damage = 7;
+                bolt.AdditionalDamage = 2;
+            }
         }
 
         // Lava Bolt consumes 2 aether for 13 damage,
         // +2 burn and +1 stagger per fire aether
-        (await Actions.Get("Lava Bolt"))
-            .GetComponent<ActionDamage>()
-            .Damage = 10;
+        if ((await Actions.Get("Lava Bolt"))?.GetComponent<ActionDamage>() is ActionDamage lavaBolt)
+            lavaBolt.Damage = 10;
     }
 }

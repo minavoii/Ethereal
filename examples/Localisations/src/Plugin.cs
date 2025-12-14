@@ -11,7 +11,7 @@ namespace ExampleLocalisations;
 [BepInDependency("minavoii.ethereal")]
 public class Plugin : BaseUnityPlugin
 {
-    internal static new ManualLogSource Logger;
+    internal static new ManualLogSource Logger = null!;
 
     internal static System.Timers.Timer Timer = new() { Interval = 5000 };
 

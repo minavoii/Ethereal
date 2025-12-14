@@ -62,42 +62,61 @@ internal class SerializableView()
     /// Deserialize itself into a new `MonsterView`.
     /// </summary>
     /// <returns></returns>
-    public async Task<MonsterView> Deserialize() =>
-        new(await Monsters.Get(ID))
-        {
-            Elements = Elements,
-            MainType = MainType,
-            Types = Types,
-            EliteTrait = await Traits.Get(EliteTrait),
-            SignatureTrait = await Traits.Get(SignatureTrait),
-            BasePerks =
-            [
-                .. Perks.Select(x => Data.AllPerks.Find(y => y.Perk.GetComponent<Perk>().ID == x)),
-            ],
-            Scripting =
-            [
-                .. (
-                    await Scripting.SelectAsync(async x => new MonsterAIAction()
-                    {
-                        Action = (await Actions.Get(x.id))?.gameObject,
-                        Conditions = x.conditions,
-                        IsTemporary = false,
-                    })
-                ).Where(x => x.Action is not null),
-            ],
-            StartActions =
-            [
-                .. (await StartActions.SelectAsync(Actions.Get)).Where(x => x is not null),
-            ],
-            WildTraits =
-            [
-                .. (
-                    await WildTraits.SelectAsync(async x =>
-                        await Traits.Get(x.id) is Trait trait
-                            ? await new MonsterAITraitBuilder(trait, x.difficulty).Build()
-                            : null
-                    )
-                ).Where(x => x is not null),
-            ],
-        };
+    public async Task<MonsterView?> Deserialize()
+    {
+        MonsterView? view = await Monsters.GetView(ID);
+
+        if (view is null)
+            return null;
+
+        view.Elements = Elements;
+        view.MainType = MainType;
+        view.Types = Types;
+
+        if (await Traits.Get(EliteTrait) is Trait eliteTrait)
+            view.EliteTrait = eliteTrait;
+
+        if (await Traits.Get(SignatureTrait) is Trait signatureTrait)
+            view.SignatureTrait = signatureTrait;
+
+        view.BasePerks =
+        [
+            .. Perks.Select(x => Data.AllPerks.Find(y => y.Perk.GetComponent<Perk>().ID == x)),
+        ];
+
+        view.Scripting =
+        [
+            .. (
+                await Scripting.SelectAsync(async x => new MonsterAIAction()
+                {
+                    Action = (await Actions.Get(x.id))?.gameObject,
+                    Conditions = x.conditions,
+                    IsTemporary = false,
+                })
+            ).Where(x => x.Action is not null),
+        ];
+
+        IEnumerable<BaseAction> a = (await StartActions.SelectAsync(Actions.Get)).Where(x =>
+            x is not null
+        )!;
+
+        view.StartActions =
+        [
+            .. (IEnumerable<BaseAction>)
+                (await StartActions.SelectAsync(Actions.Get)).Where(x => x is not null),
+        ];
+
+        view.WildTraits =
+        [
+            .. (
+                await WildTraits.SelectAsync(async x =>
+                    await Traits.Get(x.id) is Trait trait
+                        ? await new MonsterAITraitBuilder(trait, x.difficulty).Build()
+                        : null!
+                )
+            ).Where(x => x is not null),
+        ];
+
+        return view;
+    }
 }
