@@ -88,7 +88,7 @@ public static partial class Localisation
     /// Add new localisation to the game's data.
     /// </summary>
     /// <param name="entry"></param>
-    public static async Task AddLocalisedText(LocalisationData.LocalisationDataEntry entry)
+    public static async Task Add(LocalisationData.LocalisationDataEntry entry)
     {
         await WhenReady();
 
@@ -163,12 +163,12 @@ public static partial class Localisation
     /// </summary>
     /// <param name="entry"></param>
     /// <param name="customLanguageEntries"></param>
-    public static async Task AddLocalisedText(
+    public static async Task Add(
         LocalisationData.LocalisationDataEntry entry,
         Dictionary<string, string> customLanguageEntries
     )
     {
-        await AddLocalisedText(entry);
+        await Add(entry);
 
         foreach ((string langName, string text) in customLanguageEntries)
         {
