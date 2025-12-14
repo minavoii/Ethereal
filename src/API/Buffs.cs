@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Ethereal.Attributes;
 using UnityEngine;
@@ -13,14 +15,14 @@ public static partial class Buffs
     /// </summary>
     /// <param name="id"></param>
     [GetObject]
-    public static async Task<Buff> Get(int id) => await Get(x => x?.ID == id);
+    public static async Task<Buff?> Get(int id) => await Get(x => x.ID == id);
 
     /// <summary>
     /// Get a buff by name.
     /// </summary>
     /// <param name="name"></param>
     [GetObject]
-    public static async Task<Buff> Get(string name) => await Get(x => x?.Name == name);
+    public static async Task<Buff?> Get(string name) => await Get(x => x.Name == name);
 
     /// <summary>
     /// Get a buff using a predicate.
@@ -28,12 +30,19 @@ public static partial class Buffs
     /// <param name="predicate"></param>
     /// <returns></returns>
     [GetObject]
-    public static async Task<Buff> Get(Predicate<Buff?> predicate)
+    public static async Task<Buff?> Get(Predicate<Buff> predicate) =>
+        (await GetAllBuffs()).Find(predicate) ?? (await GetAllDebuffs()).Find(predicate);
+
+    public static async Task<List<Buff>> GetAllBuffs()
     {
         await WhenReady();
+        return [.. Prefabs.Instance.AllBuffs.Where(x => x is not null)];
+    }
 
-        return Prefabs.Instance.AllBuffs.Find(predicate)
-            ?? Prefabs.Instance.AllDebuffs.Find(predicate);
+    public static async Task<List<Buff>> GetAllDebuffs()
+    {
+        await WhenReady();
+        return [.. Prefabs.Instance.AllDebuffs.Where(x => x is not null)];
     }
 
     /// <summary>

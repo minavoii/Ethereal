@@ -32,20 +32,10 @@ public static partial class Traits
     /// </summary>
     /// <param name="predicate"></param>
     [GetObject, GetView(typeof(TraitView))]
-    public static async Task<Trait?> Get(Func<Trait?, bool> predicate)
-    {
-        await WhenReady();
-
-        return GameController
-                .Instance.MonsterTypes.SelectMany(x => x.Traits)
-                .FirstOrDefault(predicate)
-            ?? GameController
-                .Instance.CompleteMonsterList.Select(x =>
-                    x?.GetComponent<SkillManager>()?.SignatureTrait?.GetComponent<Trait>()
-                )
-                .FirstOrDefault(predicate)
-            ?? (await Referenceables.GetManyOfType<Trait>()).FirstOrDefault(predicate);
-    }
+    public static async Task<Trait?> Get(Func<Trait?, bool> predicate) =>
+        (await GetAllLearnable()).FirstOrDefault(predicate)
+        ?? (await GetAllSignature()).FirstOrDefault(predicate)
+        ?? (await Referenceables.GetManyOfType<Trait>()).FirstOrDefault(predicate);
 
     /// <summary>
     /// Get all traits that can be learned (i.e. non-signature traits).
@@ -55,8 +45,8 @@ public static partial class Traits
         await WhenReady();
         return
         [
-            .. GameController
-                .Instance.MonsterTypes.SelectMany(x => x.Traits)
+            .. (await MonsterTypes.GetAll())
+                .SelectMany(x => x.Traits)
                 .Where(x => x is not null)
                 .Distinct(),
         ];
@@ -70,8 +60,8 @@ public static partial class Traits
         await WhenReady();
         return
         [
-            .. GameController
-                .Instance.CompleteMonsterList.Select(x =>
+            .. (await Monsters.GetAll())
+                .Select(x =>
                     x?.GetComponent<SkillManager>()?.SignatureTrait?.GetComponent<Trait>()!
                 )
                 .Where(x => x is not null && x.Name != "?????")

@@ -17,19 +17,14 @@ public static partial class Monsters
     /// </summary>
     /// <param name="id"></param>
     [GetObject, GetView(typeof(MonsterView))]
-    public static async Task<Monster?> Get(int id) =>
-        await Get(x =>
-            x?.GetComponent<Monster>() is Monster monster
-            && (monster.ID == id || monster.MonID == id)
-        );
+    public static async Task<Monster?> Get(int id) => await Get(x => x.ID == id || x.MonID == id);
 
     /// <summary>
     /// Get a monster by name.
     /// </summary>
     /// <param name="name"></param>
     [GetObject, GetView(typeof(MonsterView))]
-    public static async Task<Monster?> Get(string name) =>
-        await Get(x => x?.GetComponent<Monster>()?.Name == name);
+    public static async Task<Monster?> Get(string name) => await Get(x => x.Name == name);
 
     /// <summary>
     /// Get a monster using a predicate.
@@ -37,11 +32,8 @@ public static partial class Monsters
     /// <param name="predicate"></param>
     /// <returns></returns>
     [GetObject, GetView(typeof(MonsterView))]
-    public static async Task<Monster?> Get(Predicate<GameObject?> predicate)
-    {
-        await WhenReady();
-        return GameController.Instance.CompleteMonsterList.Find(predicate)?.GetComponent<Monster>();
-    }
+    public static async Task<Monster?> Get(Predicate<Monster> predicate) =>
+        (await GetAll()).Find(predicate)?.GetComponent<Monster>();
 
     /// <summary>
     /// Get all monsters.

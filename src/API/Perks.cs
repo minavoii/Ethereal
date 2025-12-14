@@ -14,14 +14,14 @@ public static partial class Perks
     /// </summary>
     /// <param name="id"></param>
     [GetObject]
-    public static async Task<Perk?> Get(int id) => await Get(x => x?.ID == id);
+    public static async Task<Perk?> Get(int id) => await Get(x => x.ID == id);
 
     /// <summary>
     /// Get a perk by name.
     /// </summary>
     /// <param name="name"></param>
     [GetObject]
-    public static async Task<Perk?> Get(string name) => await Get(x => x?.Name == name);
+    public static async Task<Perk?> Get(string name) => await Get(x => x.Name == name);
 
     /// <summary>
     /// Find a perk using a predicate.
@@ -29,15 +29,8 @@ public static partial class Perks
     /// <param name="name"></param>
     /// <returns></returns>
     [GetObject]
-    public static async Task<Perk?> Get(Func<Perk?, bool> predicate)
-    {
-        await WhenReady();
-        return GameController
-            .Instance.CompleteMonsterList.Where(x => x is not null)
-            .SelectMany(x => x?.GetComponent<MonsterStats>()?.PerkInfosList)
-            .Select(x => x?.Perk.GetComponent<Perk>())
-            .FirstOrDefault(predicate);
-    }
+    public static async Task<Perk?> Get(Predicate<Perk> predicate) =>
+        (await GetAll()).Find(predicate);
 
     /// <summary>
     /// Get all perks.
@@ -48,10 +41,8 @@ public static partial class Perks
         await WhenReady();
         return
         [
-            .. GameController
-                .Instance.CompleteMonsterList.SelectMany(x =>
-                    x?.GetComponent<MonsterStats>()?.PerkInfosList
-                )
+            .. (await Monsters.GetAll())
+                .SelectMany(x => x?.GetComponent<MonsterStats>()?.PerkInfosList)
                 .Select(x => x?.Perk.GetComponent<Perk>()!)
                 .Where(x => x is not null)
                 .Distinct(),

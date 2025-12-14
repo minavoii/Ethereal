@@ -48,11 +48,8 @@ public static partial class Biomes
     /// Get a biome by area.
     /// </summary>
     /// <param name="area"></param>
-    public static async Task<TilemapLevelBiome?> Get(EArea area)
-    {
-        await WhenReady();
-        return LevelBiomes.Find(x => x?.Name == GetAreaName(area));
-    }
+    public static async Task<TilemapLevelBiome?> Get(EArea area) =>
+        (await GetAll()).Find(x => x?.Name == GetAreaName(area));
 
     /// <summary>
     /// Get all biomes.

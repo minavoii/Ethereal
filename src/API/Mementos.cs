@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Ethereal.Attributes;
 using Ethereal.Classes.Builders;
@@ -13,16 +15,14 @@ public static partial class Mementos
     /// </summary>
     /// <param name="id"></param>
     [GetObject]
-    public static async Task<MonsterMemento?> Get(int id) =>
-        await Get(x => x?.BaseItem.ID == id, x => x?.ShiftedMemento.ID == id);
+    public static async Task<MonsterMemento?> Get(int id) => await Get(x => x?.ID == id);
 
     /// <summary>
     /// Get a memento by name.
     /// </summary>
     /// <param name="name"></param>
     [GetObject]
-    public static async Task<MonsterMemento?> Get(string name) =>
-        await Get(x => x?.BaseItem.Name == name, x => x?.ShiftedMemento.Name == name);
+    public static async Task<MonsterMemento?> Get(string name) => await Get(x => x?.Name == name);
 
     /// <summary>
     /// Get a memento using a predicate.
@@ -31,19 +31,47 @@ public static partial class Mementos
     /// <param name="predicateShifted"></param>
     /// <returns></returns>
     [GetObject]
-    public static async Task<MonsterMemento?> Get(
-        Predicate<ItemManager.MonsterMementoInstance?> predicate,
-        Predicate<ItemManager.MonsterMementoInstance?> predicateShifted
-    )
+    public static async Task<MonsterMemento?> Get(Predicate<MonsterMemento> predicate) =>
+        (await GetAllNormal()).Find(predicate) ?? (await GetAllShifted()).Find(predicate);
+
+    /// <summary>
+    /// Get all normal mementos.
+    /// </summary>
+    /// <returns></returns>
+    public static async Task<List<MonsterMemento>> GetAllNormal()
     {
         await WhenReady();
-        return (
-                GameController.Instance.ItemManager.MonsterMementos.Find(predicate)?.BaseItem
-                ?? GameController
-                    .Instance.ItemManager.MonsterMementos.Find(predicateShifted)
-                    ?.ShiftedMemento
-            ) as MonsterMemento;
+        return
+        [
+            .. GameController
+                .Instance.ItemManager.MonsterMementos.Select(x => (x?.BaseItem as MonsterMemento)!)
+                .Where(x => x is not null),
+        ];
     }
+
+    /// <summary>
+    /// Get all shifted mementos.
+    /// </summary>
+    /// <returns></returns>
+    public static async Task<List<MonsterMemento>> GetAllShifted()
+    {
+        await WhenReady();
+        return
+        [
+            .. GameController
+                .Instance.ItemManager.MonsterMementos.Select(x =>
+                    (x?.ShiftedMemento as MonsterMemento)!
+                )
+                .Where(x => x is not null),
+        ];
+    }
+
+    /// <summary>
+    /// Get all mementos, both normal and shifted.
+    /// </summary>
+    /// <returns></returns>
+    public static async Task<List<MonsterMemento>> GetAll() =>
+        [.. (await GetAllNormal()).Concat(await GetAllShifted())];
 
     /// <summary>
     /// Create a new memento and add it to the game's data.

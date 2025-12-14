@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Ethereal.Attributes;
 using Ethereal.Classes.Builders;
@@ -16,12 +18,7 @@ public static partial class Equipments
     /// <param name="rarity"></param>
     [GetObject, GetView(typeof(EquipmentView))]
     public static async Task<Equipment?> Get(int id, ERarity rarity) =>
-        await Get(
-            x => x?.BaseItem.ID == id,
-            x => x?.RareItem.ID == id,
-            x => x?.EpicItem.ID == id,
-            rarity
-        );
+        await Get(x => x?.ID == id, rarity);
 
     /// <summary>
     /// Get an equipment by name.
@@ -30,12 +27,7 @@ public static partial class Equipments
     /// <param name="rarity"></param>
     [GetObject, GetView(typeof(EquipmentView))]
     public static async Task<Equipment?> Get(string name, ERarity rarity) =>
-        await Get(
-            x => x?.BaseItem.Name == name,
-            x => x?.RareItem.Name == name,
-            x => x?.EpicItem.Name == name,
-            rarity
-        );
+        await Get(x => x?.Name == name, rarity);
 
     /// <summary>
     /// Get an equipment using a predicate.
@@ -46,28 +38,37 @@ public static partial class Equipments
     /// <param name="rarity"></param>
     /// <returns></returns>
     [GetObject, GetView(typeof(EquipmentView))]
-    public static async Task<Equipment?> Get(
-        Predicate<ItemManager.EquipmentItemInstance?> predicateBase,
-        Predicate<ItemManager.EquipmentItemInstance?> predicateRare,
-        Predicate<ItemManager.EquipmentItemInstance?> predicateEpic,
-        ERarity rarity
-    )
+    public static async Task<Equipment?> Get(Predicate<Equipment> predicate, ERarity rarity) =>
+        (await GetAll(rarity)).Find(predicate);
+
+    /// <summary>
+    /// Get all equipments of the given rarity.
+    /// </summary>
+    /// <param name="rarity"></param>
+    /// <returns></returns>
+    public static async Task<List<Equipment>> GetAll(ERarity rarity)
     {
         await WhenReady();
-
         return rarity switch
         {
-            ERarity.Epic => GameController
-                .Instance.ItemManager.Equipments.Find(predicateEpic)
-                ?.EpicItem as Equipment,
-
-            ERarity.Rare => GameController
-                .Instance.ItemManager.Equipments.Find(predicateRare)
-                ?.RareItem as Equipment,
-
-            ERarity.Common or _ => GameController
-                .Instance.ItemManager.Equipments.Find(predicateBase)
-                ?.BaseItem as Equipment,
+            ERarity.Epic =>
+            [
+                .. GameController
+                    .Instance.ItemManager.Equipments.Select(x => (x.EpicItem as Equipment)!)
+                    .Where(x => x is not null),
+            ],
+            ERarity.Rare =>
+            [
+                .. GameController
+                    .Instance.ItemManager.Equipments.Select(x => (x.RareItem as Equipment)!)
+                    .Where(x => x is not null),
+            ],
+            ERarity.Common or _ =>
+            [
+                .. GameController
+                    .Instance.ItemManager.Equipments.Select(x => (x.BaseItem as Equipment)!)
+                    .Where(x => x is not null),
+            ],
         };
     }
 

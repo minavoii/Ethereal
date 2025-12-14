@@ -13,11 +13,8 @@ public static partial class MonsterTypes
     /// </summary>
     /// <param name="monsterType"></param>
     [GetObject]
-    public static async Task<MonsterType?> Get(EMonsterType monsterType)
-    {
-        await WhenReady();
-        return GameController.Instance.MonsterTypes.Find(x => x?.Type == monsterType);
-    }
+    public static async Task<MonsterType?> Get(EMonsterType monsterType) =>
+        (await GetAll()).Find(x => x?.Type == monsterType);
 
     /// <summary>
     /// Get all monster types.

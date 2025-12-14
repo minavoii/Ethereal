@@ -12,11 +12,8 @@ public static partial class Keywords
     /// Get a keyword by name.
     /// </summary>
     /// <param name="name"></param>
-    public static async Task<Keyword?> Get(string name)
-    {
-        await WhenReady();
-        return KeywordManager.Instance.AllKeywords.Find(x => x.Name == name);
-    }
+    public static async Task<Keyword?> Get(string name) =>
+        (await GetAll()).Find(x => x.Name == name);
 
     /// <summary>
     /// Get all keywords.

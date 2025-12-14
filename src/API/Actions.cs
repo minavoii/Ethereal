@@ -36,15 +36,9 @@ public static partial class Actions
     /// <param name="predicate"></param>
     /// <returns></returns>
     [GetObject, GetView(typeof(ActionView))]
-    public static async Task<BaseAction?> Get(Func<BaseAction?, bool> predicate)
-    {
-        await WhenReady();
-
-        return GameController
-                .Instance.MonsterTypes.SelectMany(x => x.Actions)
-                .FirstOrDefault(predicate)
-            ?? (await Referenceables.GetManyOfType<BaseAction>()).FirstOrDefault(predicate);
-    }
+    public static async Task<BaseAction?> Get(Func<BaseAction?, bool> predicate) =>
+        (await GetAll()).FirstOrDefault(predicate)
+        ?? (await Referenceables.GetManyOfType<BaseAction>()).FirstOrDefault(predicate);
 
     /// <summary>
     /// Get all actions.
@@ -56,9 +50,9 @@ public static partial class Actions
 
         return
         [
-            .. GameController
-                .Instance.MonsterTypes.SelectMany(x => x.Actions)
-                .Where(x => x.Name != "?????" && x.Name != "PoiseBreaker")
+            .. (await MonsterTypes.GetAll())
+                .SelectMany(x => x.Actions)
+                .Where(x => x is not null && x.Name != "?????" && x.Name != "PoiseBreaker")
                 .Distinct(),
         ];
     }

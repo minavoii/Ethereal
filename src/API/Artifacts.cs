@@ -16,15 +16,14 @@ public static partial class Artifacts
     /// </summary>
     /// <param name="id"></param>
     [GetObject, GetView(typeof(ArtifactView))]
-    public static async Task<Consumable?> Get(int id) => await Get(x => x?.BaseItem.ID == id);
+    public static async Task<Consumable?> Get(int id) => await Get(x => x?.ID == id);
 
     /// <summary>
     /// Get an artifact by id.
     /// </summary>
     /// <param name="name"></param>
     [GetObject, GetView(typeof(ArtifactView))]
-    public static async Task<Consumable?> Get(string name) =>
-        await Get(x => x?.BaseItem.Name == name);
+    public static async Task<Consumable?> Get(string name) => await Get(x => x?.Name == name);
 
     /// <summary>
     /// Get an artifact using a predicate.
@@ -32,13 +31,8 @@ public static partial class Artifacts
     /// <param name="predicate"></param>
     /// <returns></returns>
     [GetObject, GetView(typeof(ArtifactView))]
-    public static async Task<Consumable?> Get(Predicate<ItemManager.BaseItemInstance?> predicate)
-    {
-        await WhenReady();
-
-        return GameController.Instance.ItemManager.Consumables.Find(predicate)?.BaseItem
-            as Consumable;
-    }
+    public static async Task<Consumable?> Get(Predicate<Consumable> predicate) =>
+        (await GetAll()).Find(predicate);
 
     public static async Task<List<Consumable>> GetAll()
     {
@@ -46,9 +40,9 @@ public static partial class Artifacts
 
         return
         [
-            .. GameController.Instance.ItemManager.Consumables.Select(x =>
-                (x.BaseItem as Consumable)!
-            ),
+            .. GameController
+                .Instance.ItemManager.Consumables.Select(x => (x.BaseItem as Consumable)!)
+                .Where(x => x is not null),
         ];
     }
 
