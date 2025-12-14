@@ -13,12 +13,14 @@ public static partial class Perks
     /// Get a perk by id.
     /// </summary>
     /// <param name="id"></param>
+    [GetObject]
     public static async Task<Perk?> Get(int id) => await Get(x => x?.ID == id);
 
     /// <summary>
     /// Get a perk by name.
     /// </summary>
     /// <param name="name"></param>
+    [GetObject]
     public static async Task<Perk?> Get(string name) => await Get(x => x?.Name == name);
 
     /// <summary>
@@ -26,6 +28,7 @@ public static partial class Perks
     /// </summary>
     /// <param name="name"></param>
     /// <returns></returns>
+    [GetObject]
     public static async Task<Perk?> Get(Func<Perk?, bool> predicate)
     {
         await WhenReady();

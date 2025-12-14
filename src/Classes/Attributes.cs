@@ -16,6 +16,21 @@ internal class LazyValueConstructor : Attribute
 }
 
 /// <summary>
+/// Get a View instance of a component.
+/// </summary>
+[AttributeUsage(AttributeTargets.Method, Inherited = false, AllowMultiple = false)]
+internal class GetView(Type viewType) : Attribute
+{
+    public Type ViewType = viewType;
+}
+
+/// <summary>
+/// Get the GameObject of a component.
+/// </summary>
+[AttributeUsage(AttributeTargets.Method, Inherited = false, AllowMultiple = false)]
+internal class GetObject : Attribute;
+
+/// <summary>
 /// Generate a getter and setter that forward their value to the given field or property.
 /// </summary>
 /// <param name="fieldOrProperty"></param>

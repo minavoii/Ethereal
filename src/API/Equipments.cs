@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Ethereal.Attributes;
 using Ethereal.Classes.Builders;
+using Ethereal.Classes.View;
 
 namespace Ethereal.API;
 
@@ -13,6 +14,7 @@ public static partial class Equipments
     /// </summary>
     /// <param name="id"></param>
     /// <param name="rarity"></param>
+    [GetObject, GetView(typeof(EquipmentView))]
     public static async Task<Equipment?> Get(int id, ERarity rarity) =>
         await Get(
             x => x?.BaseItem.ID == id,
@@ -26,6 +28,7 @@ public static partial class Equipments
     /// </summary>
     /// <param name="name"></param>
     /// <param name="rarity"></param>
+    [GetObject, GetView(typeof(EquipmentView))]
     public static async Task<Equipment?> Get(string name, ERarity rarity) =>
         await Get(
             x => x?.BaseItem.Name == name,
@@ -42,6 +45,7 @@ public static partial class Equipments
     /// <param name="predicateEpic"></param>
     /// <param name="rarity"></param>
     /// <returns></returns>
+    [GetObject, GetView(typeof(EquipmentView))]
     public static async Task<Equipment?> Get(
         Predicate<ItemManager.EquipmentItemInstance?> predicateBase,
         Predicate<ItemManager.EquipmentItemInstance?> predicateRare,

@@ -62,11 +62,8 @@ internal class SerializableView()
     /// Deserialize itself into a new `MonsterView`.
     /// </summary>
     /// <returns></returns>
-    public async Task<MonsterView> Deserialize()
-    {
-        Monster monster = await Monsters.Get(ID);
-
-        MonsterView view = new(monster)
+    public async Task<MonsterView> Deserialize() =>
+        new(await Monsters.Get(ID))
         {
             Elements = Elements,
             MainType = MainType,
@@ -103,7 +100,4 @@ internal class SerializableView()
                 ).Where(x => x is not null),
             ],
         };
-
-        return view;
-    }
 }

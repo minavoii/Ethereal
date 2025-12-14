@@ -26,7 +26,7 @@ public enum EtherealAPI
     Traits = 1 << 17,
 }
 
-public static partial class APIManager
+public static class APIManager
 {
     /// <summary>
     /// Wait for the specified API(s) to be ready to run an action,

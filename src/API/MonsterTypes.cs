@@ -12,6 +12,7 @@ public static partial class MonsterTypes
     /// Get a monster type.
     /// </summary>
     /// <param name="monsterType"></param>
+    [GetObject]
     public static async Task<MonsterType?> Get(EMonsterType monsterType)
     {
         await WhenReady();

@@ -26,14 +26,23 @@ internal static class MethodHelper
         if (attribute is null)
             return null;
 
-        return symbol
-            .GetAttributes()
-            .Any(x => SymbolEqualityComparer.Default.Equals(x.AttributeClass, attribute))
-            ? new MethodMetadata(
+        return
+            symbol
+                .GetAttributes()
+                .FirstOrDefault(x =>
+                    SymbolEqualityComparer.Default.Equals(x.AttributeClass, attribute)
+                )
+                is AttributeData attributeData
+            ? new(
                 symbol,
                 GetParameters(symbol),
                 GetMethodComments(declaration),
-                null
+                [
+                    .. attributeData.ConstructorArguments.Select(x => new Member(
+                        x.Type?.ToString() ?? "",
+                        x.Value?.ToString() ?? ""
+                    )),
+                ]
             )
             : null;
     }

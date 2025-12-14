@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Ethereal.Attributes;
 using Ethereal.Classes.Builders;
+using Ethereal.Classes.View;
 using Ethereal.Classes.Wrappers;
 using HarmonyLib;
 using UnityEngine;
@@ -18,6 +19,7 @@ public static partial class Actions
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
+    [GetObject, GetView(typeof(ActionView))]
     public static async Task<BaseAction?> Get(int id) => await Get(x => x?.ID == id);
 
     /// <summary>
@@ -25,6 +27,7 @@ public static partial class Actions
     /// </summary>
     /// <param name="name"></param>
     /// <returns></returns>
+    [GetObject, GetView(typeof(ActionView))]
     public static async Task<BaseAction?> Get(string name) => await Get(x => x?.Name == name);
 
     /// <summary>
@@ -32,6 +35,7 @@ public static partial class Actions
     /// </summary>
     /// <param name="predicate"></param>
     /// <returns></returns>
+    [GetObject, GetView(typeof(ActionView))]
     public static async Task<BaseAction?> Get(Func<BaseAction?, bool> predicate)
     {
         await WhenReady();
@@ -109,7 +113,7 @@ public static partial class Actions
                         go.GetComponent<ActionApplyBuff>(),
                         (List<ActionApplyBuff.BuffDefine>)
                             [
-                                .. await System.Threading.Tasks.Task.WhenAll(
+                                .. await Task.WhenAll(
                                     applyBuff.BuffDefines.Select(async x => await x.Build())
                                 ),
                             ]

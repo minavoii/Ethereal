@@ -12,6 +12,7 @@ public static partial class Mementos
     /// Get a memento by id.
     /// </summary>
     /// <param name="id"></param>
+    [GetObject]
     public static async Task<MonsterMemento?> Get(int id) =>
         await Get(x => x?.BaseItem.ID == id, x => x?.ShiftedMemento.ID == id);
 
@@ -19,6 +20,7 @@ public static partial class Mementos
     /// Get a memento by name.
     /// </summary>
     /// <param name="name"></param>
+    [GetObject]
     public static async Task<MonsterMemento?> Get(string name) =>
         await Get(x => x?.BaseItem.Name == name, x => x?.ShiftedMemento.Name == name);
 
@@ -28,6 +30,7 @@ public static partial class Mementos
     /// <param name="predicate"></param>
     /// <param name="predicateShifted"></param>
     /// <returns></returns>
+    [GetObject]
     public static async Task<MonsterMemento?> Get(
         Predicate<ItemManager.MonsterMementoInstance?> predicate,
         Predicate<ItemManager.MonsterMementoInstance?> predicateShifted

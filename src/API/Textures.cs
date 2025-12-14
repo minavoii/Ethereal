@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Ethereal.API;
 
-public static partial class Textures
+public static class Textures
 {
     /// <summary>
     /// Create a texture from an image file.

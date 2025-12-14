@@ -12,12 +12,14 @@ public static partial class Buffs
     /// Get a buff by id.
     /// </summary>
     /// <param name="id"></param>
+    [GetObject]
     public static async Task<Buff> Get(int id) => await Get(x => x?.ID == id);
 
     /// <summary>
     /// Get a buff by name.
     /// </summary>
     /// <param name="name"></param>
+    [GetObject]
     public static async Task<Buff> Get(string name) => await Get(x => x?.Name == name);
 
     /// <summary>
@@ -25,6 +27,7 @@ public static partial class Buffs
     /// </summary>
     /// <param name="predicate"></param>
     /// <returns></returns>
+    [GetObject]
     public static async Task<Buff> Get(Predicate<Buff?> predicate)
     {
         await WhenReady();

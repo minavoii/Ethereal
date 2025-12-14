@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Ethereal.Attributes;
 using Ethereal.Classes.Builders;
+using Ethereal.Classes.View;
 
 namespace Ethereal.API;
 
@@ -14,12 +15,14 @@ public static partial class Artifacts
     /// Get an artifact by id.
     /// </summary>
     /// <param name="id"></param>
+    [GetObject, GetView(typeof(ArtifactView))]
     public static async Task<Consumable?> Get(int id) => await Get(x => x?.BaseItem.ID == id);
 
     /// <summary>
     /// Get an artifact by id.
     /// </summary>
     /// <param name="name"></param>
+    [GetObject, GetView(typeof(ArtifactView))]
     public static async Task<Consumable?> Get(string name) =>
         await Get(x => x?.BaseItem.Name == name);
 
@@ -28,6 +31,7 @@ public static partial class Artifacts
     /// </summary>
     /// <param name="predicate"></param>
     /// <returns></returns>
+    [GetObject, GetView(typeof(ArtifactView))]
     public static async Task<Consumable?> Get(Predicate<ItemManager.BaseItemInstance?> predicate)
     {
         await WhenReady();

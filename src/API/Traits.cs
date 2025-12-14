@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Ethereal.Attributes;
 using Ethereal.Classes.Builders;
+using Ethereal.Classes.View;
 using Ethereal.Classes.Wrappers;
 using UnityEngine;
 
@@ -16,18 +17,21 @@ public static partial class Traits
     /// Get a trait by id.
     /// </summary>
     /// <param name="id"></param>
+    [GetObject, GetView(typeof(TraitView))]
     public static async Task<Trait?> Get(int id) => await Get(x => x?.ID == id);
 
     /// <summary>
     /// Get a trait by name.
     /// </summary>
     /// <param name="name"></param>
+    [GetObject, GetView(typeof(TraitView))]
     public static async Task<Trait?> Get(string name) => await Get(x => x?.Name == name);
 
     /// <summary>
     /// Find a trait using a predicate from a monster type or signature trait.
     /// </summary>
     /// <param name="predicate"></param>
+    [GetObject, GetView(typeof(TraitView))]
     public static async Task<Trait?> Get(Func<Trait?, bool> predicate)
     {
         await WhenReady();

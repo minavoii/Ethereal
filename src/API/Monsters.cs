@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Ethereal.Attributes;
 using Ethereal.Classes.Builders;
+using Ethereal.Classes.View;
 using UnityEngine;
 
 namespace Ethereal.API;
@@ -15,6 +16,7 @@ public static partial class Monsters
     /// Get a monster by id.
     /// </summary>
     /// <param name="id"></param>
+    [GetObject, GetView(typeof(MonsterView))]
     public static async Task<Monster?> Get(int id) =>
         await Get(x =>
             x?.GetComponent<Monster>() is Monster monster
@@ -25,6 +27,7 @@ public static partial class Monsters
     /// Get a monster by name.
     /// </summary>
     /// <param name="name"></param>
+    [GetObject, GetView(typeof(MonsterView))]
     public static async Task<Monster?> Get(string name) =>
         await Get(x => x?.GetComponent<Monster>()?.Name == name);
 
@@ -33,6 +36,7 @@ public static partial class Monsters
     /// </summary>
     /// <param name="predicate"></param>
     /// <returns></returns>
+    [GetObject, GetView(typeof(MonsterView))]
     public static async Task<Monster?> Get(Predicate<GameObject?> predicate)
     {
         await WhenReady();
