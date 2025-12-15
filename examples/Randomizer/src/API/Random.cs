@@ -29,19 +29,17 @@ internal class Random
     /// Get a list of random and different monster types.
     /// </summary>
     /// <returns></returns>
-    internal static List<EMonsterType> GetRandomTypes()
-    {
-        return
+    internal static List<EMonsterType> GetRandomTypes() =>
         [
-            .. GetUniqueRandomNumbers(0, 16, 3)
+            .. GetUniqueRandomNumbers(0, 18, 3)
                 // Some types are currently still unused
                 .Select(x =>
-                    x == (int)EMonsterType.SignatureTraits ? EMonsterType.Terror
-                    : x == (int)EMonsterType.StartingActions ? EMonsterType.Weakness
+                    x == (int)EMonsterType.SignatureTraits ? EMonsterType.Weakness
+                    : x == (int)EMonsterType.StartingActions ? EMonsterType.Force
+                    : x == (int)EMonsterType.Unknown ? EMonsterType.Summon
                     : (EMonsterType)x
                 ),
         ];
-    }
 
     /// <summary>
     /// Get a list of random and different main monster types.
