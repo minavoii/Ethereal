@@ -4,7 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Ethereal.API;
 using Ethereal.Classes.Builders;
+using Ethereal.Classes.LazyValues;
 using Ethereal.Classes.Views;
+using Ethereal.Utils.Extensions;
 using HarmonyLib;
 using Newtonsoft.Json;
 
@@ -66,21 +68,92 @@ internal class Randomizer
             randomized.Add(monster.ID, view);
         }
 
-        SaveData(randomized);
+        Save(randomized, await RandomizeMapping());
+    }
+
+    /// <summary>
+    /// Randomize the `original` to `replaced` monster mapping of wild encounters.
+    /// </summary>
+    /// <returns></returns>
+    private static async Task<Dictionary<int, int>> RandomizeMapping()
+    {
+        Dictionary<int, int> mapping = Random.GetRandomMapping(await Monsters.GetAll());
+
+        await ApplyRandomizedMapping(mapping);
+        return mapping;
+    }
+
+    /// <summary>
+    /// Replace monsters in wild encounters according to the given mapping.
+    /// </summary>
+    /// <param name="mapping"></param>
+    /// <returns></returns>
+    private static async Task ApplyRandomizedMapping(Dictionary<int, int> mapping)
+    {
+        List<MonsterEncounterSet> encounters = await Encounters.GetAll();
+        List<Monster> monsters = await Monsters.GetAll();
+
+        foreach (MonsterEncounterSet set in encounters)
+        {
+            foreach (MonsterEncounter encounter in set.MonsterEncounters)
+            {
+                // Ignore Chernobog
+                if (encounter.Enemies.Any(x => x?.GetComponent<Monster>().MonID == -1))
+                    continue;
+
+                await Encounters.SetEnemies(
+                    encounter,
+                    [
+                        .. encounter
+                            .Enemies.Select(x =>
+                                x?.GetComponent<Monster>() is Monster original
+                                    ? new LazyMonster(mapping[original.ID])
+                                    : null!
+                            )
+                            .Where(x => x is not null),
+                    ]
+                );
+            }
+        }
+    }
+
+    /// <summary>
+    /// Reset all wild monster encounters.
+    /// </summary>
+    /// <returns></returns>
+    private static async Task ResetMapping()
+    {
+        Dictionary<string, List<List<int>>> vanillaEncounters = Data.VanillaEncounters;
+        List<MonsterEncounterSet> sets = await Encounters.GetAll();
+        List<Monster> monsters = await Monsters.GetAll();
+
+        foreach ((string setName, List<List<int>> setData) in vanillaEncounters)
+        {
+            MonsterEncounterSet currentSet = sets.Find(x => x.name == setName);
+
+            for (int i = 0; i < setData.Count; i++)
+            {
+                List<int> enemyData = setData[i];
+                MonsterEncounter encounter = currentSet.MonsterEncounters[i];
+
+                encounter.Enemies = [.. await enemyData.SelectAsync(Monsters.GetObject)];
+            }
+        }
     }
 
     /// <summary>
     /// Save the randomized monster data to a file.
     /// </summary>
-    /// <param name="data"></param>
-    private static void SaveData(Dictionary<int, MonsterView> data)
+    /// <param name="views"></param>
+    private static void Save(Dictionary<int, MonsterView> views, Dictionary<int, int> mapping)
     {
-        Dictionary<int, SerializableView> list = data.ToDictionary(
+        Dictionary<int, SerializableView> list = views.ToDictionary(
             x => x.Key,
             x => new SerializableView(x.Value)
         );
 
-        string json = JsonConvert.SerializeObject(list);
+        SaveData saveData = new(list, mapping);
+        string json = JsonConvert.SerializeObject(saveData);
 
         Directory.CreateDirectory(Plugin.RandomizerPath);
         File.WriteAllText(CurrentDataPath, json);
@@ -89,7 +162,7 @@ internal class Randomizer
     /// <summary>
     /// Load the randomized monster data from a file.
     /// </summary>
-    internal static async Task LoadData()
+    internal static async Task Load()
     {
         string json = "";
 
@@ -102,11 +175,12 @@ internal class Randomizer
             return;
         }
 
-        await Task.WhenAll(
-            JsonConvert
-                .DeserializeObject<Dictionary<int, SerializableView>>(json)
-                .Select(async x => await x.Value.Deserialize())
-        );
+        if (JsonConvert.DeserializeObject<SaveData>(json) is SaveData saveData)
+        {
+            await Task.WhenAll(saveData.Views.Select(x => x.Value.Deserialize()));
+            await ResetMapping();
+            await ApplyRandomizedMapping(saveData.Mapping);
+        }
     }
 
     /// <summary>

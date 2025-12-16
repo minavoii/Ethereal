@@ -14,7 +14,7 @@ If you don't have BepInEx:
 
 -   Download [BepInEx separately](https://github.com/BepInEx/BepInEx) or the [Ethereal + BepInEx package](https://github.com/minavoii/Ethereal/releases/latest/download/Ethereal+BepInEx.zip).
 
--   Extract the files into the game's directory (`C:\Program Files (x86)\Steam\steamapps\common\Aethermancer Demo`).
+-   Extract the files into the game's directory (`C:\Program Files (x86)\Steam\steamapps\common\Aethermancer`).
 
 You can now download mods and extract them into the `BepInEx\plugins` directory.
 

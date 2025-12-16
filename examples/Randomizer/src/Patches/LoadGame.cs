@@ -12,10 +12,15 @@ internal static class LoadGame
     [HarmonyPrefix]
     private static async void Prefix()
     {
-        API.Data.AllPerks = await API.Data.GetAllPerkInfos();
-        API.Data.SignatureTraits = await Traits.GetAllSignature();
+        // Run only once
+        if (API.Data.AllPerks.Count == 0)
+        {
+            API.Data.AllPerks = await API.Data.GetAllPerkInfos();
+            API.Data.SignatureTraits = await Traits.GetAllSignature();
+            API.Data.VanillaEncounters = await API.Data.GetEncounters();
+        }
 
         await API.Randomizer.BalanceChanges();
-        await API.Randomizer.LoadData();
+        await API.Randomizer.Load();
     }
 }

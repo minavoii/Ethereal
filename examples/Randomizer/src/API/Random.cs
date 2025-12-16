@@ -29,19 +29,17 @@ internal class Random
     /// Get a list of random and different monster types.
     /// </summary>
     /// <returns></returns>
-    internal static List<EMonsterType> GetRandomTypes()
-    {
-        return
+    internal static List<EMonsterType> GetRandomTypes() =>
         [
-            .. GetUniqueRandomNumbers(0, 16, 3)
+            .. GetUniqueRandomNumbers(0, 18, 3)
                 // Some types are currently still unused
                 .Select(x =>
-                    x == (int)EMonsterType.SignatureTraits ? EMonsterType.Terror
-                    : x == (int)EMonsterType.StartingActions ? EMonsterType.Weakness
+                    x == (int)EMonsterType.SignatureTraits ? EMonsterType.Weakness
+                    : x == (int)EMonsterType.StartingActions ? EMonsterType.Force
+                    : x == (int)EMonsterType.Unknown ? EMonsterType.Summon
                     : (EMonsterType)x
                 ),
         ];
-    }
 
     /// <summary>
     /// Get a list of random and different main monster types.
@@ -417,6 +415,34 @@ internal class Random
             BoolType.False
         );
 
+    public static Dictionary<int, int> GetRandomMapping(List<Monster> monsters)
+    {
+        Dictionary<int, int> mapping = [];
+        int[] indexes = Shuffle(0, monsters.Count, true);
+
+        // Do not replace ambush monsters to prevent overworld issues
+        List<int> excludeList =
+        [
+            .. monsters
+                .Where(x => x.Name == "Mandragora" || x.Name == "Gargoyle" || x.Name == "Djinn")
+                .Select(x => x.ID),
+        ];
+
+        for (int i = 0; i < monsters.Count; i++)
+        {
+            Monster monster = monsters[i];
+            Monster replacement = monsters[indexes[i]];
+
+            // Dot not replace ambush monsters, nor replace other monsters by an ambush monster
+            if (excludeList.Contains(monster.ID) || excludeList.Contains(replacement.ID))
+                mapping.Add(monster.ID, monster.ID);
+            else
+                mapping.Add(monster.ID, replacement.ID);
+        }
+
+        return mapping;
+    }
+
     /// <summary>
     /// Get random and different numbers.
     /// </summary>
@@ -448,17 +474,47 @@ internal class Random
     /// <param name="minInclusive"></param>
     /// <param name="maxExclusive"></param>
     /// <returns></returns>
-    private static int[] Shuffle(int minInclusive, int maxExclusive)
-    {
-        System.Random rnd = new();
-        int[] arr = [.. Enumerable.Range(minInclusive, maxExclusive)];
+    private static int[] Shuffle(
+        int minInclusive,
+        int maxExclusive,
+        bool mustChangePosition = false
+    ) => Shuffle([.. Enumerable.Range(minInclusive, maxExclusive)], mustChangePosition);
 
-        for (int i = arr.Length; i > 1; i--)
+    /// <summary>
+    /// Shuffle an array randomly.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="array"></param>
+    /// <param name="mustChangePosition">true if each element in the array needs to be moved
+    /// to another index</param>
+    /// <returns></returns>
+    private static T[] Shuffle<T>(T[] array, bool mustChangePosition = false)
+    {
+        System.Random random = new();
+
+        if (mustChangePosition)
         {
-            int pos = rnd.Next(i);
-            (arr[pos], arr[i - 1]) = (arr[i - 1], arr[pos]);
+            int pos;
+
+            for (int i = array.Length; i > 1; i--)
+            {
+                do
+                {
+                    pos = random.Next(i);
+                } while (pos == i - 1);
+
+                (array[pos], array[i - 1]) = (array[i - 1], array[pos]);
+            }
+        }
+        else
+        {
+            for (int i = array.Length; i > 1; i--)
+            {
+                int pos = random.Next(i);
+                (array[pos], array[i - 1]) = (array[i - 1], array[pos]);
+            }
         }
 
-        return arr;
+        return array;
     }
 }

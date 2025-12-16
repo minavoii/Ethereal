@@ -5,9 +5,9 @@ namespace Randomizer.Patches;
 internal static class RunStart
 {
     /// <summary>
-    /// Runs before a new run starts and the difficulty selector appears.
+    /// Runs before a new run starts, right before starter selection.
     /// </summary>
-    [HarmonyPatch(typeof(NextAreaInteractable), "StartInteraction")]
+    [HarmonyPatch(typeof(NextAreaInteractable), "StartRun")]
     [HarmonyPrefix]
     private static async void Prefix()
     {
