@@ -168,7 +168,7 @@ public static partial class Sprites
         try
         {
             foreach (FileInfo file in new DirectoryInfo(PathElements).EnumerateFiles())
-                ReplaceIconElement(ToTitleCase(file.Name), null, file.FullName);
+                await ReplaceIconElement(ToTitleCase(file.Name), null, file.FullName);
         }
         catch (Exception e)
             when (e is DirectoryNotFoundException || e is System.Security.SecurityException) { }
@@ -239,7 +239,7 @@ public static partial class Sprites
             else if (dir == "buffs")
                 await ReplaceIconBuff(name, icon);
             else if (dir == "elements")
-                ReplaceIconElement(name, icon);
+                await ReplaceIconElement(name, icon);
             else if (dir == "equipments")
                 await ReplaceIconEquipment(name, icon);
             else if (dir == "mementos")
@@ -337,32 +337,30 @@ public static partial class Sprites
     /// <param name="name"></param>
     /// <param name="icon"></param>
     /// <param name="iconPath"></param>
-    private static void ReplaceIconElement(string name, Sprite? icon = null, string iconPath = "")
+    private static async Task ReplaceIconElement(
+        string name,
+        Sprite? icon = null,
+        string iconPath = ""
+    )
     {
         if (name.EndsWith("Empty"))
         {
             string elementName = name[..(name.Length - 6)];
 
-            new ElementView(Enum.Parse<EElement>(elementName))
-            {
-                IconSmallEmpty = icon ?? LoadFromImage(SpriteType.ElementSmall, iconPath),
-            };
+            ElementView view = await Elements.GetView(Enum.Parse<EElement>(elementName));
+            view.IconSmallEmpty = icon ?? LoadFromImage(SpriteType.ElementSmall, iconPath);
         }
         else if (name.EndsWith("Filled"))
         {
             string elementName = name[..(name.Length - 7)];
 
-            new ElementView(Enum.Parse<EElement>(elementName))
-            {
-                IconSmallFilled = icon ?? LoadFromImage(SpriteType.ElementSmall, iconPath),
-            };
+            ElementView view = await Elements.GetView(Enum.Parse<EElement>(elementName));
+            view.IconSmallFilled = icon ?? LoadFromImage(SpriteType.ElementSmall, iconPath);
         }
         else
         {
-            new ElementView(Enum.Parse<EElement>(name))
-            {
-                Icon = icon ?? LoadFromImage(SpriteType.ElementSmall, iconPath),
-            };
+            ElementView view = await Elements.GetView(Enum.Parse<EElement>(name));
+            view.Icon = icon ?? LoadFromImage(SpriteType.ElementSmall, iconPath);
         }
     }
 
