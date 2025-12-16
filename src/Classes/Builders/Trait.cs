@@ -1,6 +1,7 @@
 using System.Collections.Generic;
-using System.Linq;
+using System.Threading.Tasks;
 using Ethereal.API;
+using Ethereal.Utils.Extensions;
 using UnityEngine;
 
 namespace Ethereal.Classes.Builders;
@@ -31,7 +32,7 @@ public sealed record TraitBuilder(
     bool MaverickSkill = false
 )
 {
-    public Trait Build() =>
+    public async Task<Trait> Build() =>
         new()
         {
             ID = ID,
@@ -41,9 +42,7 @@ public sealed record TraitBuilder(
             SkillType = SkillType,
             Types =
             [
-                .. Types.Select(x =>
-                    MonsterTypes.TryGet(x, out MonsterType type) ? type.gameObject : null
-                ),
+                .. await Types.SelectAsync(async x => (await MonsterTypes.Get(x))?.gameObject),
             ],
             PassiveEffectList = PassiveEffects,
             Icon = Icon,

@@ -17,7 +17,7 @@ namespace ExampleMonsters;
 [BepInDependency("minavoii.ethereal")]
 public class Plugin : BaseUnityPlugin
 {
-    internal static new ManualLogSource Logger;
+    internal static new ManualLogSource Logger = null!;
 
     internal static readonly string ExamplesPath = Path.Join(
         Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
@@ -26,69 +26,64 @@ public class Plugin : BaseUnityPlugin
 
     internal static readonly string CustomMonstersPath = Path.Join(ExamplesPath, "Monsters");
 
-    private void Awake()
+    private async void Awake()
     {
         Logger = base.Logger;
 
-        APIManager.RunWhenReady(
-            EtherealAPI.Buffs
-                | EtherealAPI.Actions
-                | EtherealAPI.Monsters
-                | EtherealAPI.Encounters
-                | EtherealAPI.Keywords,
-            () =>
-            {
-                if (Buffs.TryGet("Age", out Buff age))
-                {
-                    Gradient gradient = age
-                        .VFXApply.GetComponent<CosmeticVfxAnimator>()
-                        .ColorOverLifetime;
+        // Some of Unity's methods don't work properly in async contexts,
+        // so we initiliaze VFXs here instead of inside their constructors
+        await APIManager.WhenReady(EtherealAPI.Buffs);
 
-                    // Apply effects to the Rotation buff
-                    Rotation.Buff.SfxApply = age.SfxApply;
-                    Rotation.Buff.VFXApply.GetComponent<CosmeticVfxAnimator>().ColorOverLifetime =
-                        gradient;
+        Rotation.Buff.VFXApply = VFXs.CreateCosmetic(Rotation.Animation);
+        WheelSupremacyAction.VFX.VFX = VFXs.CreateCosmetic(Rotation.Animation);
+        ManyEyed.VFX.VFX = VFXs.CreateCosmetic(ManyEyed.Animation);
+        TwistedGarden.VFX.VFX = VFXs.CreateCosmetic(TwistedGarden.Animation);
 
-                    // Apply effects to Wheel Supremacy's action
-                    WheelSupremacyAction
-                        .VFX.VFX.GetComponent<CosmeticVfxAnimator>()
-                        .ColorOverLifetime = gradient;
-                    WheelSupremacyAction.VFX.FlipX = true;
-                }
+        if (await Buffs.Get("Age") is Buff age)
+        {
+            Gradient gradient = age.VFXApply.GetComponent<CosmeticVfxAnimator>().ColorOverLifetime;
 
-                // Use another action's VFX
-                if (Actions.TryGet("Moisturize", out BaseAction moisturize))
-                {
-                    FountainOfLife.Action.VFXs.Add(
-                        new() { VFX = moisturize.ActionVFX?.Children?.FirstOrDefault()?.VFX }
-                    );
-                }
+            // Apply effects to the Rotation buff
+            Rotation.Buff.SfxApply = age.SfxApply;
+            Rotation.Buff.VFXApply.GetComponent<CosmeticVfxAnimator>().ColorOverLifetime = gradient;
 
-                Keywords.Add(Rotation.Keyword);
-                Buffs.Add(Rotation.Buff);
+            // Apply effects to Wheel Supremacy's action
+            WheelSupremacyAction.VFX.VFX.GetComponent<CosmeticVfxAnimator>().ColorOverLifetime =
+                gradient;
+            WheelSupremacyAction.VFX.FlipX = true;
+        }
 
-                Actions.Add(ManyEyed.Action, ManyEyed.Modifiers, true);
-                Actions.Add(TwistedGarden.Action, TwistedGarden.Modifiers);
-                Actions.Add(FountainOfLife.Action, FountainOfLife.Modifiers);
+        // Use another action's VFX
+        if (await Actions.Get("Moisturize") is BaseAction moisturize)
+        {
+            FountainOfLife.Action.VFXs.Add(
+                new() { VFX = moisturize.ActionVFX?.Children?.FirstOrDefault()?.VFX }
+            );
+        }
 
-                Actions.Add(WheelSupremacyAction.Action, WheelSupremacyAction.Modifiers);
-                Traits.Add(WheelSupremacy.Trait);
+        await Keywords.Add(Rotation.Keyword);
+        await Buffs.Add(Rotation.Buff);
 
-                Monsters.Add(WaterWheel.Builder);
-                Mementos.Add(
-                    WaterWheel.Memento,
-                    WaterWheel.MementoShifted,
-                    WaterWheel.MetaUpgrade,
-                    "Special"
-                );
+        await Actions.Add(ManyEyed.Action, ManyEyed.Modifiers, true);
+        await Actions.Add(TwistedGarden.Action, TwistedGarden.Modifiers);
+        await Actions.Add(FountainOfLife.Action, FountainOfLife.Modifiers);
 
-                if (Encounters.TryGet(EArea.PilgrimagePath, 3, out MonsterEncounterSet set))
-                {
-                    MonsterEncounter wardenEncounter = set.MonsterEncounters.FirstOrDefault();
+        await Actions.Add(WheelSupremacyAction.Action, WheelSupremacyAction.Modifiers);
+        await Traits.Add(WheelSupremacy.Trait);
 
-                    Encounters.SetEnemies(wardenEncounter, [new(WaterWheel.Builder.Monster.ID)]);
-                }
-            }
+        await Monsters.Add(WaterWheel.Builder);
+        await Mementos.Add(
+            WaterWheel.Memento,
+            WaterWheel.MementoShifted,
+            WaterWheel.MetaUpgrade,
+            "Special"
         );
+
+        if (await Encounters.Get(EArea.PilgrimagePath, 3) is MonsterEncounterSet set)
+        {
+            MonsterEncounter wardenEncounter = set.MonsterEncounters.FirstOrDefault();
+
+            await Encounters.SetEnemies(wardenEncounter, [new(WaterWheel.Builder.Monster.ID)]);
+        }
     }
 }

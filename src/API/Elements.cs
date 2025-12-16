@@ -1,6 +1,15 @@
+using System.Threading.Tasks;
 using Ethereal.Attributes;
+using Ethereal.Classes.Views;
 
 namespace Ethereal.API;
 
-[Deferrable]
-public static partial class Elements { }
+[BasicAPI]
+public static partial class Elements
+{
+    public static async Task<ElementView> GetView(EElement element)
+    {
+        await WhenReady();
+        return new(element);
+    }
+}

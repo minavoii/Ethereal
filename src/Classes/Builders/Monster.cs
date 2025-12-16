@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Threading.Tasks;
 using Ethereal.API;
 using HarmonyLib;
 using UnityEngine;
@@ -37,7 +38,7 @@ public sealed record MonsterBuilder(
     Sprite[] ShiftedSprites
 )
 {
-    public GameObject Build()
+    public async Task<GameObject> Build()
     {
         GameObject go = new();
 
@@ -46,11 +47,11 @@ public sealed record MonsterBuilder(
         GameObjects.CopyToGameObject(ref go, Animator);
         go.AddComponent<SpriteRenderer>();
         GameObjects.CopyToGameObject(ref go, OverworldBehaviour);
-        GameObjects.CopyToGameObject(ref go, SkillManager.Build());
-        GameObjects.CopyToGameObject(ref go, Stats.Build());
-        GameObjects.CopyToGameObject(ref go, AI.Build());
+        GameObjects.CopyToGameObject(ref go, await SkillManager.Build());
+        GameObjects.CopyToGameObject(ref go, await Stats.Build());
+        GameObjects.CopyToGameObject(ref go, await AI.Build());
         GameObjects.CopyToGameObject(ref go, Monster);
-        GameObjects.CopyToGameObject(ref go, Shift.Build());
+        GameObjects.CopyToGameObject(ref go, await Shift.Build());
         GameObject.Destroy(go.GetComponent<SpriteAnim>());
 
         Monster goMonster = go.GetComponent<Monster>();
@@ -67,15 +68,12 @@ public sealed record MonsterBuilder(
         );
 
         if (Bounds.Bounds is not null)
-        {
             AccessTools.Field(typeof(Monster), "Bounds").SetValue(goMonster, Bounds.Bounds);
-        }
+
         if (Bounds.BoundsOffset is not null)
-        {
             AccessTools
                 .Field(typeof(Monster), "BoundsOffset")
                 .SetValue(goMonster, Bounds.BoundsOffset);
-        }
 
         Transform focusPointTransform = new GameObject("FocusPoint").transform;
 

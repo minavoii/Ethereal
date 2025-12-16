@@ -9,15 +9,11 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 namespace Generators;
 
 [Generator]
-public sealed class TryGetMethodGenerator : IIncrementalGenerator
+public sealed class GetViewGenerator : IIncrementalGenerator
 {
-    private const string Attribute = "Ethereal.Attributes.TryGet";
+    private const string Attribute = "Ethereal.Attributes.GetView";
 
-    private const string Suffix = "TryGet";
-
-    private const string AdditionalComments =
-        "/// <param name=\"result\"></param>\n"
-        + "/// <returns>true if the API is ready and it was found; otherwise, false.</returns>";
+    private const string Suffix = "GetView";
 
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
@@ -65,25 +61,26 @@ public sealed class TryGetMethodGenerator : IIncrementalGenerator
 
         foreach (MethodMetadata data in methods)
         {
-            IMethodSymbol method = data.Symbol!;
-            string name = method.Name.Replace("Get", "TryGet");
+            IMethodSymbol method = data.Symbol;
             string args = string.Join(", ", method.Parameters.Select(p => p.Name));
             string @params = string.Join(", ", data.Parameters?.Select(x => x.AsArgument()));
-            string paramSeparator = @params == string.Empty ? "" : ", ";
-            string returnType = method.ReturnType.ToString();
 
-            if (returnType.EndsWith("?"))
-                returnType = returnType.Remove(returnType.Length - 1);
+            if (data.Comments is List<string> comments)
+                sb.AppendLine(CommentHelper.ToString(comments));
 
-            sb.AppendLine($"        /// {string.Join("\n", data.Comments)}");
-            sb.AppendLine(AdditionalComments);
+            string? viewType = data.AttributeProperties?.FirstOrDefault()?.Name;
+            string returnType = method
+                .ReturnType.ToString()
+                .Replace("System.Threading.Tasks.Task<", "")
+                .Replace("?>", "");
+            string returnValue = new Member("", returnType).ParameterName;
+
             sb.AppendLine(
-                $"        public static bool {name}({@params}{paramSeparator}out {returnType} result)"
+                $"        public static async System.Threading.Tasks.Task<{viewType}?> GetView({@params}) =>"
             );
-            sb.AppendLine("        {");
-            sb.AppendLine($"            result = API.IsReady ? {method.Name}({args}) : null;");
-            sb.AppendLine("            return result is not null;");
-            sb.AppendLine("        }");
+            sb.AppendLine(
+                $"            await {method.Name}({args}) is {returnType} {returnValue} ? new({returnValue}) : null;"
+            );
         }
 
         // Class ends

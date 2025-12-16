@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Ethereal.Attributes;
 
 namespace Ethereal.API;
@@ -12,41 +13,39 @@ public static partial class Perks
     /// Get a perk by id.
     /// </summary>
     /// <param name="id"></param>
-    [TryGet]
-    private static Perk? Get(int id) => Get(x => x?.ID == id);
+    [GetObject]
+    public static async Task<Perk?> Get(int id) => await Get(x => x.ID == id);
 
     /// <summary>
     /// Get a perk by name.
     /// </summary>
     /// <param name="name"></param>
-    [TryGet]
-    private static Perk? Get(string name) => Get(x => x?.Name == name);
+    [GetObject]
+    public static async Task<Perk?> Get(string name) => await Get(x => x.Name == name);
 
     /// <summary>
-    /// Find a perk by monster.
+    /// Find a perk using a predicate.
     /// </summary>
     /// <param name="name"></param>
     /// <returns></returns>
-    private static Perk? Get(Func<Perk?, bool> predicate) =>
-        GameController
-            .Instance.CompleteMonsterList.Where(x => x is not null)
-            .SelectMany(x => x?.GetComponent<MonsterStats>()?.PerkInfosList)
-            .Select(x => x?.Perk.GetComponent<Perk>())
-            .FirstOrDefault(predicate);
+    [GetObject]
+    public static async Task<Perk?> Get(Predicate<Perk> predicate) =>
+        (await GetAll()).Find(predicate);
 
     /// <summary>
     /// Get all perks.
     /// </summary>
-    /// <returns>a list of all perks.</returns>
-    [TryGet]
-    private static List<Perk> GetAll() =>
+    /// <returns></returns>
+    public static async Task<List<Perk>> GetAll()
+    {
+        await WhenReady();
+        return
         [
-            .. GameController
-                .Instance.CompleteMonsterList.SelectMany(x =>
-                    x?.GetComponent<MonsterStats>()?.PerkInfosList
-                )
+            .. (await Monsters.GetAll())
+                .SelectMany(x => x?.GetComponent<MonsterStats>()?.PerkInfosList)
                 .Select(x => x?.Perk.GetComponent<Perk>()!)
                 .Where(x => x is not null)
                 .Distinct(),
         ];
+    }
 }

@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Ethereal.API;
 using HarmonyLib;
 
@@ -11,14 +10,12 @@ internal static class LoadGame
     /// </summary>
     [HarmonyPatch(typeof(SaveSlotMenu), "LoadExistingGame")]
     [HarmonyPrefix]
-    private static void Prefix()
+    private static async void Prefix()
     {
-        API.Data.AllPerks = API.Data.GetAllPerkInfos();
+        API.Data.AllPerks = await API.Data.GetAllPerkInfos();
+        API.Data.SignatureTraits = await Traits.GetAllSignature();
 
-        if (Traits.TryGetAllSignature(out List<Trait> signatureTraits))
-            API.Data.SignatureTraits = signatureTraits;
-
-        API.Randomizer.BalanceChanges();
-        API.Randomizer.LoadData();
+        await API.Randomizer.BalanceChanges();
+        await API.Randomizer.LoadData();
     }
 }

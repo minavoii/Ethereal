@@ -13,16 +13,12 @@ internal static class ManyEyed
 
     private const string Name = "Many Eyed";
 
-    private static readonly AnimationClip Animation = Animations.LoadFromBundle(
+    internal static readonly AnimationClip Animation = Animations.LoadFromBundle(
         Path.Join(Plugin.CustomMonstersPath, "ManyEyed"),
         "assets/animations/actions/manyeyed.prefab"
     );
 
-    private static readonly VFX.ChildVFX VFX = new()
-    {
-        VFX = VFXs.CreateCosmetic(Animation),
-        SpawnForEveryEnemy = true,
-    };
+    internal static readonly VFX.ChildVFX VFX = new() { VFX = null, SpawnForEveryEnemy = true };
 
     internal static readonly BaseActionBuilder Action = new(
         ID: ID,

@@ -1,38 +1,77 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Ethereal.Attributes;
 using Ethereal.Classes.Builders;
 
 namespace Ethereal.API;
 
-[Deferrable]
+[BasicAPI]
 public static partial class Mementos
 {
     /// <summary>
     /// Get a memento by id.
     /// </summary>
     /// <param name="id"></param>
-    [TryGet]
-    private static MonsterMemento? Get(int id) =>
-        Get(x => x?.BaseItem.ID == id, x => x?.ShiftedMemento.ID == id);
+    [GetObject]
+    public static async Task<MonsterMemento?> Get(int id) => await Get(x => x?.ID == id);
 
     /// <summary>
     /// Get a memento by name.
     /// </summary>
     /// <param name="name"></param>
-    [TryGet]
-    private static MonsterMemento? Get(string name) =>
-        Get(x => x?.BaseItem.Name == name, x => x?.ShiftedMemento.Name == name);
+    [GetObject]
+    public static async Task<MonsterMemento?> Get(string name) => await Get(x => x?.Name == name);
 
-    private static MonsterMemento? Get(
-        Predicate<ItemManager.MonsterMementoInstance?> predicate,
-        Predicate<ItemManager.MonsterMementoInstance?> predicateShifted
-    ) =>
-        (
-            GameController.Instance.ItemManager.MonsterMementos.Find(predicate)?.BaseItem
-            ?? GameController
-                .Instance.ItemManager.MonsterMementos.Find(predicateShifted)
-                ?.ShiftedMemento
-        ) as MonsterMemento;
+    /// <summary>
+    /// Get a memento using a predicate.
+    /// </summary>
+    /// <param name="predicate"></param>
+    /// <param name="predicateShifted"></param>
+    /// <returns></returns>
+    [GetObject]
+    public static async Task<MonsterMemento?> Get(Predicate<MonsterMemento> predicate) =>
+        (await GetAllNormal()).Find(predicate) ?? (await GetAllShifted()).Find(predicate);
+
+    /// <summary>
+    /// Get all normal mementos.
+    /// </summary>
+    /// <returns></returns>
+    public static async Task<List<MonsterMemento>> GetAllNormal()
+    {
+        await WhenReady();
+        return
+        [
+            .. GameController
+                .Instance.ItemManager.MonsterMementos.Select(x => (x?.BaseItem as MonsterMemento)!)
+                .Where(x => x is not null),
+        ];
+    }
+
+    /// <summary>
+    /// Get all shifted mementos.
+    /// </summary>
+    /// <returns></returns>
+    public static async Task<List<MonsterMemento>> GetAllShifted()
+    {
+        await WhenReady();
+        return
+        [
+            .. GameController
+                .Instance.ItemManager.MonsterMementos.Select(x =>
+                    (x?.ShiftedMemento as MonsterMemento)!
+                )
+                .Where(x => x is not null),
+        ];
+    }
+
+    /// <summary>
+    /// Get all mementos, both normal and shifted.
+    /// </summary>
+    /// <returns></returns>
+    public static async Task<List<MonsterMemento>> GetAll() =>
+        [.. (await GetAllNormal()).Concat(await GetAllShifted())];
 
     /// <summary>
     /// Create a new memento and add it to the game's data.
@@ -41,12 +80,11 @@ public static partial class Mementos
     /// <param name="memento"></param>
     /// <param name="metaUpgrade"></param>
     /// <param name="witchCategory"></param>
-    [Deferrable]
-    private static void Add_Impl(
+    public static async Task<MonsterMemento> Add(
         MonsterMementoBuilder memento,
         MetaUpgradeBuilder metaUpgrade,
         string? witchCategory = null
-    ) => Add(metaUpgrade.Build(), memento.Build(), null, witchCategory);
+    ) => await Add(await metaUpgrade.Build(), await memento.Build(), null, witchCategory);
 
     /// <summary>
     /// Create a new memento and its shifted variant, and add them to the game's data. <br/>
@@ -56,13 +94,18 @@ public static partial class Mementos
     /// <param name="shiftedMemento"></param>
     /// <param name="metaUpgrade"></param>
     /// <param name="WitchCategory"></param>
-    [Deferrable]
-    private static void Add_Impl(
+    public static async Task<MonsterMemento> Add(
         MonsterMementoBuilder memento,
         MonsterMementoBuilder shiftedMemento,
         MetaUpgradeBuilder metaUpgrade,
         string? witchCategory = null
-    ) => Add(metaUpgrade.Build(), memento.Build(), shiftedMemento.Build(), witchCategory);
+    ) =>
+        await Add(
+            await metaUpgrade.Build(),
+            await memento.Build(),
+            await shiftedMemento.Build(),
+            witchCategory
+        );
 
     /// <summary>
     /// Create a new memento and its shifted variant (if any), then add them to the game's data. <br/>
@@ -72,13 +115,15 @@ public static partial class Mementos
     /// <param name="shiftedMemento"></param>
     /// <param name="metaUpgrade"></param>
     /// <param name="witchCategory"></param>
-    private static void Add(
+    public static async Task<MonsterMemento> Add(
         MetaUpgrade metaUpgrade,
         MonsterMemento memento,
         MonsterMemento? shiftedMemento = null,
         string? witchCategory = null
     )
     {
+        await WhenReady();
+
         MetaUpgrade goUpgrade = GameObjects.WithinGameObject(metaUpgrade);
         MonsterMemento goMemento = GameObjects.WithinGameObject(memento);
 
@@ -90,7 +135,7 @@ public static partial class Mementos
                 new() { BaseItem = goMemento, ShiftedMemento = goShifted }
             );
 
-            Referenceables.Add(goShifted);
+            await Referenceables.Add(goShifted);
         }
         else
         {
@@ -99,10 +144,12 @@ public static partial class Mementos
             );
         }
 
-        Referenceables.Add(goMemento);
-        Referenceables.Add(goUpgrade);
+        await Referenceables.Add(goMemento);
+        await Referenceables.Add(goUpgrade);
 
         if (witchCategory is not null)
-            MetaUpgrades.AddToNPC(EMetaUpgradeNPC.Witch, witchCategory, goUpgrade);
+            _ = MetaUpgrades.AddToNPC(EMetaUpgradeNPC.Witch, witchCategory, goUpgrade);
+
+        return goMemento;
     }
 }

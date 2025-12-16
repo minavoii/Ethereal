@@ -1,20 +1,22 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Ethereal.Attributes;
 using HarmonyLib;
 
 namespace Ethereal.API;
 
-[Deferrable]
+[BasicAPI]
 public static partial class Referenceables
 {
     /// <summary>
     /// Add a referenceable to the game's data, and additionally to the cache if it's already built.
     /// </summary>
     /// <param name="referenceable"></param>
-    [Deferrable]
-    private static void Add_Impl(Referenceable referenceable)
+    public static async Task Add(Referenceable referenceable)
     {
+        await WhenReady();
+
         Dictionary<int, Referenceable> cache =
             (Dictionary<int, Referenceable>)
                 AccessTools
@@ -29,19 +31,36 @@ public static partial class Referenceables
     }
 
     /// <summary>
-    /// Get a referenceable by id from the cache.
+    /// Get a referenceable from the cache.
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    [TryGet]
-    private static Referenceable GetCached(int id) => WorldData.Instance.GetReferenceable(id);
+    public static async Task<Referenceable> GetCached(int id)
+    {
+        await WhenReady();
+        return WorldData.Instance.GetReferenceable(id);
+    }
 
     /// <summary>
-    /// Get a referenceable by id from the game's data.
+    /// Get a referenceable from the game's data.
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    [TryGet]
-    private static Referenceable GetFromPrefab(int id) =>
-        WorldData.Instance.Referenceables.FirstOrDefault(x => x?.ID == id);
+    public static async Task<Referenceable> GetFromPrefab(int id)
+    {
+        await WhenReady();
+        return WorldData.Instance.Referenceables.FirstOrDefault(x => x?.ID == id);
+    }
+
+    /// <summary>
+    /// Get all referenceables of type T from the game's data.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    public static async Task<IEnumerable<T>> GetManyOfType<T>()
+        where T : Referenceable
+    {
+        await WhenReady();
+        return WorldData.Instance.Referenceables.OfType<T>();
+    }
 }

@@ -3,6 +3,7 @@ using System.Reflection;
 using BepInEx;
 using BepInEx.Logging;
 using Ethereal.API;
+using ExampleEquipments.Accessory;
 
 namespace ExampleEquipments;
 
@@ -11,7 +12,7 @@ namespace ExampleEquipments;
 [BepInDependency("minavoii.ethereal")]
 public class Plugin : BaseUnityPlugin
 {
-    internal static new ManualLogSource Logger;
+    internal static new ManualLogSource Logger = null!;
 
     internal static readonly string ExamplesPath = Path.Join(
         Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
@@ -24,11 +25,10 @@ public class Plugin : BaseUnityPlugin
     {
         Logger = base.Logger;
 
-        await APIManager.WaitUntilReady(EtherealAPI.Equipments);
+        await Equipments.Add(RedArmor.Builder);
+        await Localisation.Add(RedArmor.LocalisationData, RedArmor.CustomLanguageEntries);
 
-        Equipments.Add(Accessory.RedArmor.Builder);
-
-        if (Equipments.TryGet("Blade", ERarity.Common, out Equipment equipment))
+        if (await Equipments.Get("Blade", ERarity.Common) is Equipment equipment)
             Weapon.BlueBlade.View(equipment);
     }
 }

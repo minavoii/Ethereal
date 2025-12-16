@@ -1,32 +1,44 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Ethereal.Attributes;
 using UnityEngine;
 using static MetaUpgradeDialogueEventManager;
 
 namespace Ethereal.API;
 
-[Deferrable]
+[BasicAPI]
 public static partial class MetaUpgrades
 {
+    private static List<MetaUpgradeDialogueEventManager> MetaUpgradeDialogues { get; set; } = [];
+
+    /// <summary>
+    /// Mark the API as ready and run all deferred methods.
+    /// </summary>
+    internal static void SetReady()
+    {
+        MetaUpgradeDialogues =
+        [
+            .. Resources.FindObjectsOfTypeAll<MetaUpgradeDialogueEventManager>(),
+        ];
+
+        API.SetReady();
+    }
+
     /// <summary>
     /// Add a meta upgrade to an npc dialogue's listing.
     /// </summary>
     /// <param name="npc"></param>
     /// <param name="page"></param>
     /// <param name="upgrade"></param>
-    [Deferrable]
-    private static void AddToNPC_Impl(EMetaUpgradeNPC npc, string page, MetaUpgrade upgrade)
+    public static async Task AddToNPC(EMetaUpgradeNPC npc, string page, MetaUpgrade upgrade)
     {
-        List<MetaUpgradeDialogueEventManager> dialogues =
-        [
-            .. Resources.FindObjectsOfTypeAll<MetaUpgradeDialogueEventManager>(),
-        ];
+        await WhenReady();
 
         string dialogueName = $"NPC_{npc}_MetaUpgrades";
 
         if (
-            dialogues.FirstOrDefault(x => x?.name == dialogueName)
+            MetaUpgradeDialogues.FirstOrDefault(x => x?.name == dialogueName)
                 is MetaUpgradeDialogueEventManager dialogue
             && dialogue.AvailableUpgrades.FirstOrDefault(x => x?.CustomHeader == page)
                 is MetaUpgradePageData pageData

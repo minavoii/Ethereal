@@ -1,7 +1,8 @@
 using System.Collections.Generic;
-using System.Linq;
+using System.Threading.Tasks;
 using Ethereal.API;
 using Ethereal.Classes.LazyValues;
+using Ethereal.Utils.Extensions;
 
 namespace Ethereal.Classes.Builders;
 
@@ -33,21 +34,22 @@ public sealed record SkillManagerBuilder(
     bool AllAetherDefaultAttack
 )
 {
-    public SkillManager Build() =>
+    public async Task<SkillManager> Build() =>
         new()
         {
             MainType = MainType,
-            SignatureTrait = SignatureTrait.Get()?.gameObject,
+            SignatureTrait = await SignatureTrait.GetObject(),
             MonsterTypes =
             [
-                .. Types.Select(x =>
-                    MonsterTypes.TryGet(x, out MonsterType type) ? type.gameObject : null
-                ),
+                .. await Types.SelectAsync(async x => (await MonsterTypes.Get(x))?.gameObject),
             ],
             Elements = Elements,
             StaggerDefines = StaggerDefines,
-            StartActions = [.. StartActions.Select(x => x.Get()?.gameObject)],
-            EliteTrait = EliteTrait.Get()?.gameObject,
+            StartActions =
+            [
+                .. await StartActions.SelectAsync(async x => (await x.Get())?.gameObject),
+            ],
+            EliteTrait = (await EliteTrait.Get())?.gameObject,
             BossStagger = BossStagger,
             BossAlternativeStagger = BossAlternativeStagger,
             ImpossibleToStagger = ImpossibleToStagger,

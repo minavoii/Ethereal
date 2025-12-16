@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Ethereal.Classes.LazyValues;
 using UnityEngine;
 
@@ -25,12 +26,12 @@ public sealed record MonsterMementoBuilder(
     Sprite Icon
 )
 {
-    public MonsterMemento Build() =>
+    public async Task<MonsterMemento> Build() =>
         new()
         {
             ID = ID,
             Name = Name,
-            Monster = Monster.Get(),
+            Monster = await Monster.Get(),
             Area = Area,
             Shift = Shift,
             ActionIconBig = ActionIconBig,

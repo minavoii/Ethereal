@@ -9,11 +9,11 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 namespace Generators;
 
 [Generator]
-public sealed class DeferrableMethodGenerator : IIncrementalGenerator
+public sealed class GetObjectGenerator : IIncrementalGenerator
 {
-    private const string Attribute = "Ethereal.Attributes.Deferrable";
+    private const string Attribute = "Ethereal.Attributes.GetObject";
 
-    private const string Suffix = "Deferrable";
+    private const string Suffix = "GetObject";
 
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
@@ -61,19 +61,17 @@ public sealed class DeferrableMethodGenerator : IIncrementalGenerator
 
         foreach (MethodMetadata data in methods)
         {
-            IMethodSymbol method = data.Symbol!;
-            string name = method.Name.Replace("_Impl", "");
-            string args = string.Join(", ", data.Parameters?.Select(p => p.Name));
+            IMethodSymbol method = data.Symbol;
+            string args = string.Join(", ", method.Parameters.Select(p => p.Name));
             string @params = string.Join(", ", data.Parameters?.Select(x => x.AsArgument()));
 
-            sb.AppendLine($"        /// {string.Join("\n", data.Comments)}");
-            sb.AppendLine($"        public static void {name}({@params})");
-            sb.AppendLine("        {");
-            sb.AppendLine("            if (!API.IsReady)");
-            sb.AppendLine($"                API.Enqueue(() => {name}({args}));");
-            sb.AppendLine("           else");
-            sb.AppendLine($"                {method.Name}({args});");
-            sb.AppendLine("        }");
+            if (data.Comments is List<string> comments)
+                sb.AppendLine(CommentHelper.ToString(comments));
+
+            sb.AppendLine(
+                $"        public static async System.Threading.Tasks.Task<UnityEngine.GameObject?> GetObject({@params}) =>"
+            );
+            sb.AppendLine($"            (await {method.Name}({args}))?.gameObject;");
         }
 
         // Class ends

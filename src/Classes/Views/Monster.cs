@@ -5,7 +5,7 @@ using Ethereal.Attributes;
 using Generators.Enums;
 using UnityEngine;
 
-namespace Ethereal.Classes.View;
+namespace Ethereal.Classes.Views;
 
 /// <summary>
 /// A helper class that allows easy viewing and editing of a Monster.
@@ -52,7 +52,7 @@ public sealed partial class MonsterView(GameObject gameObject)
         set =>
             SkillManager.MonsterTypes = [
                 .. value.Select(x =>
-                    MonsterTypes.TryGet(x, out MonsterType type) ? type.gameObject : null
+                    GameController.Instance.MonsterTypes.Find(y => y?.Type == x)?.gameObject
                 ),
             ];
     }

@@ -1,54 +1,69 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Ethereal.Attributes;
 using Ethereal.Classes.Builders;
+using Ethereal.Classes.Views;
 
 namespace Ethereal.API;
 
-[Deferrable]
+[BasicAPI]
 public static partial class Artifacts
 {
     /// <summary>
     /// Get an artifact by id.
     /// </summary>
     /// <param name="id"></param>
-    [TryGet]
-    private static Consumable? Get(int id) => Get(x => x?.BaseItem.ID == id);
+    [GetObject, GetView(typeof(ArtifactView))]
+    public static async Task<Consumable?> Get(int id) => await Get(x => x?.ID == id);
 
     /// <summary>
     /// Get an artifact by id.
     /// </summary>
     /// <param name="name"></param>
-    [TryGet]
-    private static Consumable? Get(string name) => Get(x => x?.BaseItem.Name == name);
-
-    private static Consumable? Get(Predicate<ItemManager.BaseItemInstance?> predicate) =>
-        GameController.Instance.ItemManager.Consumables.Find(predicate)?.BaseItem as Consumable;
-
-    [TryGet]
-    private static List<Consumable> GetAll() =>
-        [
-            .. GameController.Instance.ItemManager.Consumables.Select(x =>
-                (x.BaseItem as Consumable)!
-            ),
-        ];
+    [GetObject, GetView(typeof(ArtifactView))]
+    public static async Task<Consumable?> Get(string name) => await Get(x => x?.Name == name);
 
     /// <summary>
-    /// Create a new artifact and add it to the game's data
+    /// Get an artifact using a predicate.
     /// </summary>
-    /// <param name="artifact"></param>
-    [Deferrable]
-    private static void Add_Impl(ArtifactBuilder artifact) => Add_Impl(artifact.Build());
+    /// <param name="predicate"></param>
+    /// <returns></returns>
+    [GetObject, GetView(typeof(ArtifactView))]
+    public static async Task<Consumable?> Get(Predicate<Consumable> predicate) =>
+        (await GetAll()).Find(predicate);
 
-    /// <summary>
-    /// Create a new artifact and add it to the game's data
-    /// </summary>
-    /// <param name="artifact"></param>
-    [Deferrable]
-    private static void Add_Impl(Consumable artifact)
+    public static async Task<List<Consumable>> GetAll()
     {
+        await WhenReady();
+
+        return
+        [
+            .. GameController
+                .Instance.ItemManager.Consumables.Select(x => (x.BaseItem as Consumable)!)
+                .Where(x => x is not null),
+        ];
+    }
+
+    /// <summary>
+    /// Create a new artifact and add it to the game's data
+    /// </summary>
+    /// <param name="artifact"></param>
+    public static async Task<Consumable> Add(ArtifactBuilder artifact) =>
+        await Add(artifact.Build());
+
+    /// <summary>
+    /// Create a new artifact and add it to the game's data
+    /// </summary>
+    /// <param name="artifact"></param>
+    public static async Task<Consumable> Add(Consumable artifact)
+    {
+        await WhenReady();
+
         GameController.Instance.ItemManager.Consumables.Insert(0, new() { BaseItem = artifact });
-        Referenceables.Add(artifact);
+        await Referenceables.Add(artifact);
+
+        return artifact;
     }
 }

@@ -1,7 +1,10 @@
-﻿using System.Timers;
+﻿using System.Threading.Tasks;
+using System.Timers;
 using BepInEx;
 using BepInEx.Logging;
 using Ethereal.API;
+using ExampleLocalisations.Text;
+using ExampleLocalisations.TextExtra;
 
 namespace ExampleLocalisations;
 
@@ -10,16 +13,16 @@ namespace ExampleLocalisations;
 [BepInDependency("minavoii.ethereal")]
 public class Plugin : BaseUnityPlugin
 {
-    internal static new ManualLogSource Logger;
+    internal static new ManualLogSource Logger = null!;
 
     internal static System.Timers.Timer Timer = new() { Interval = 5000 };
 
-    private void Awake()
+    private async Task Awake()
     {
         Logger = base.Logger;
 
-        Localisation.AddLocalisedText(Text.Apple.Entry);
-        Localisation.AddLocalisedText(TextExtra.Pear.Entry, TextExtra.Pear.Extras);
+        await Localisation.Add(Apple.Entry);
+        await Localisation.Add(Pear.Entry, Pear.Extras);
 
         // We're using a timer here because GameController may not be initialized yet
         // We are only calling `Loca.Localize()` here to check that it worked,
@@ -42,10 +45,10 @@ public class Plugin : BaseUnityPlugin
             GameSettingsController.Instance.CurrentLanguage = ELanguage.French;
 
             Logger.LogInfo(
-                $"French localisation test: {Text.Apple.Original} -> {Loca.Localize(Text.Apple.Original)}"
+                $"French localisation test: {Apple.Original} -> {Loca.Localize(Apple.Original)}"
             );
             Logger.LogInfo(
-                $"French localisation test: {TextExtra.Pear.Original} -> {Loca.Localize(TextExtra.Pear.Original)}"
+                $"French localisation test: {Pear.Original} -> {Loca.Localize(Pear.Original)}"
             );
 
             Timer.Stop();

@@ -1,3 +1,6 @@
+using System.Threading.Tasks;
+using UnityEngine;
+
 namespace Ethereal.Classes.LazyValues;
 
 public abstract record LazyReferenceable<T> : LazyValue<T>
@@ -18,4 +21,6 @@ public abstract record LazyReferenceable<T> : LazyValue<T>
         if (data == null)
             Id = data?.ID;
     }
+
+    public virtual async Task<GameObject?> GetObject() => (await Get())?.gameObject;
 }

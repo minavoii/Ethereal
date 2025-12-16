@@ -4,7 +4,7 @@ using Ethereal.API;
 using Ethereal.Attributes;
 using UnityEngine;
 
-namespace Ethereal.Classes.View;
+namespace Ethereal.Classes.Views;
 
 /// <summary>
 /// A helper class that allows easy viewing and editing of a Trait.
@@ -64,7 +64,7 @@ public sealed partial class TraitView(GameObject gameObject)
             Trait.Types =
             [
                 .. value.Select(x =>
-                    MonsterTypes.TryGet(x, out MonsterType type) ? type.gameObject : null
+                    GameController.Instance.MonsterTypes.Find(y => y.Type == x)?.gameObject
                 ),
             ];
         }

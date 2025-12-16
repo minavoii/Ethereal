@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Ethereal.API;
 using Ethereal.Classes.LazyValues;
 
 namespace Ethereal.Classes.Builders;
@@ -26,25 +28,32 @@ public sealed record MonsterShiftBuilder(
     List<PerkInfosBuilder>? Perks = null
 )
 {
-    public MonsterShift Build() =>
+    public async Task<MonsterShift> Build() =>
         new()
         {
             MonsterTypesOverride = Types is not null
                 ?
                 [
-                    .. Types.Select(x =>
-                        Ethereal.API.MonsterTypes.TryGet(x, out MonsterType type)
-                            ? type.gameObject
-                            : null
+                    .. await Task.WhenAll(
+                        Types.Select(async x => (await MonsterTypes.Get(x))?.gameObject)
                     ),
                 ]
                 : null,
             ElementsOverride = Elements,
-            SignatureTraitOverride = SignatureTrait?.Get()?.gameObject,
-            StartActionsOverride = StartActions is not null
-                ? [.. StartActions.Select(x => x.Get()?.gameObject)]
+            SignatureTraitOverride = SignatureTrait is not null
+                ? await SignatureTrait.GetObject()
                 : null,
-            ResetPoiseActionOverride = ResetAction?.Get()?.gameObject,
+            StartActionsOverride = StartActions is not null
+                ?
+                [
+                    .. await Task.WhenAll(
+                        StartActions.Select(async x => (await x.Get())?.gameObject)
+                    ),
+                ]
+                : null,
+            ResetPoiseActionOverride = ResetAction is not null
+                ? await ResetAction.GetObject()
+                : null,
             PerksOverride = [],
             ChangeMainType = MainType.HasValue,
             MainTypeOverride = MainType ?? EMonsterMainType.Hybrid,

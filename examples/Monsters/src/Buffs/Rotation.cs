@@ -35,7 +35,7 @@ internal static class Rotation
         MonsterHUDIconSmall = Icon,
         IsAfflictionDebuff = false,
         IsDamagingBuff = false,
-        VFXApply = VFXs.CreateCosmetic(Animation),
+        VFXApply = null,
         SfxApply = new(),
         PassiveEffectList = [],
     };

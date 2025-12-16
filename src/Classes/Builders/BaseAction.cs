@@ -1,6 +1,7 @@
 using System.Collections.Generic;
-using System.Linq;
+using System.Threading.Tasks;
 using Ethereal.API;
+using Ethereal.Utils.Extensions;
 using UnityEngine;
 
 namespace Ethereal.Classes.Builders;
@@ -45,7 +46,7 @@ public sealed record BaseActionBuilder(
     string DescriptionOverride = ""
 )
 {
-    public BaseAction Build()
+    public async Task<BaseAction> Build()
     {
         BaseAction action = new()
         {
@@ -58,9 +59,7 @@ public sealed record BaseActionBuilder(
             ElementsOverride = Elements,
             Types =
             [
-                .. Types.Select(x =>
-                    MonsterTypes.TryGet(x, out MonsterType type) ? type.gameObject : null
-                ),
+                .. await Types.SelectAsync(async x => (await MonsterTypes.Get(x))?.gameObject),
             ],
             AnimationType = AnimationType,
             ActionIconBig = ActionIconBig,

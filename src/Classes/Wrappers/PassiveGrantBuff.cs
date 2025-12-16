@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Ethereal.Classes.LazyValues;
 
 namespace Ethereal.Classes.Wrappers;
@@ -6,5 +7,5 @@ public sealed class PassiveGrantBuffWrapper(LazyBuff grantBuff) : PassiveGrantBu
 {
     public LazyBuff GrantBuffWrapper { get; init; } = grantBuff;
 
-    public void Unwrap() => GrantBuff = GrantBuffWrapper.Get()?.gameObject;
+    public async Task Unwrap() => GrantBuff = (await GrantBuffWrapper.Get())?.gameObject;
 }

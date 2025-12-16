@@ -1,11 +1,13 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Ethereal.Attributes;
 using Ethereal.Classes.LazyValues;
+using UnityEngine;
 
 namespace Ethereal.API;
 
-[Deferrable]
+[BasicAPI]
 public static partial class Encounters
 {
     /// <summary>
@@ -50,30 +52,32 @@ public static partial class Encounters
     /// <param name="area"></param>
     /// <param name="zone">The 0-based zone number index</param>
     /// <returns></returns>
-    [TryGet]
-    private static MonsterEncounterSet? Get(EArea area, int zone) =>
-        Biomes.TryGet(area, out TilemapLevelBiome biome)
-            ? biome
-                .MapBubbles.Select(x => x?.MonsterEncounterSet)
-                .FirstOrDefault(x => x?.name == GetSetName(area, zone))
-            : null;
+    public static async Task<MonsterEncounterSet?> Get(EArea area, int zone)
+    {
+        await WhenReady();
+
+        return (await Biomes.Get(area))
+            ?.MapBubbles.Select(x => x?.MonsterEncounterSet)
+            .FirstOrDefault(x => x?.name == GetSetName(area, zone));
+    }
 
     /// <summary>
     /// Get all monster encounter sets.
     /// </summary>
     /// <returns></returns>
-    [TryGet]
-    private static List<MonsterEncounterSet> GetAll() =>
-        Biomes.TryGetAll(out List<TilemapLevelBiome> biomes)
-            ?
-            [
-                .. biomes
-                    .SelectMany(x => x?.MapBubbles)
-                    .Select(x => x?.MonsterEncounterSet!)
-                    .Where(x => x is not null)
-                    .Distinct(),
-            ]
-            : [];
+    public static async Task<List<MonsterEncounterSet>> GetAll()
+    {
+        await WhenReady();
+
+        return
+        [
+            .. (await Biomes.GetAll())
+                .SelectMany(x => x?.MapBubbles)
+                .Select(x => x?.MonsterEncounterSet!)
+                .Where(x => x is not null)
+                .Distinct(),
+        ];
+    }
 
     /// <summary>
     /// Set wild monsters for the given encounter.
@@ -82,19 +86,20 @@ public static partial class Encounters
     /// <param name="monsters"></param>
     /// <param name="encounterType"></param>
     /// <returns></returns>
-    [Deferrable]
-    private static void SetEnemies_Impl(
+    public static async Task SetEnemies(
         MonsterEncounter encounter,
         List<LazyMonster> monsters,
         MonsterEncounter.EEncounterType? encounterType = null
     )
     {
+        await WhenReady();
+
         encounter.Enemies.Clear();
         encounter.Shifts.Clear();
 
         foreach (LazyMonster lazyMonster in monsters)
-            if (lazyMonster.Get() is Monster monster)
-                encounter.AddEnemy(monster.gameObject);
+            if (await lazyMonster.GetObject() is GameObject monster)
+                encounter.AddEnemy(monster);
 
         if (encounterType.HasValue)
             encounter.EncounterType = encounterType.Value;

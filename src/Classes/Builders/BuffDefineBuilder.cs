@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Ethereal.Attributes;
 using Ethereal.Classes.LazyValues;
 using static ActionApplyBuff;
@@ -23,5 +24,6 @@ public sealed partial record BuffDefineBuilder
 
     public int Stacks { get; init; }
 
-    public BuffDefine? Build() => new() { Buff = LazyBuff.Get()?.gameObject, Stacks = Stacks };
+    public async Task<BuffDefine> Build() =>
+        new() { Buff = (await LazyBuff.Get())?.gameObject, Stacks = Stacks };
 }

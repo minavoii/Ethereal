@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Ethereal.Utils;
+namespace Ethereal.Utils.Extensions;
 
 public static class DictionaryExtensions
 {

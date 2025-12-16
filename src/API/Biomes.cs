@@ -1,11 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Ethereal.Attributes;
 using UnityEngine;
 
 namespace Ethereal.API;
 
-[Deferrable]
+[BasicAPI]
 public static partial class Biomes
 {
     private static List<TilemapLevelBiome> LevelBiomes { get; set; } = [];
@@ -47,14 +48,16 @@ public static partial class Biomes
     /// Get a biome by area.
     /// </summary>
     /// <param name="area"></param>
-    [TryGet]
-    private static TilemapLevelBiome? Get(EArea area) =>
-        LevelBiomes.Find(x => x?.Name == GetAreaName(area));
+    public static async Task<TilemapLevelBiome?> Get(EArea area) =>
+        (await GetAll()).Find(x => x?.Name == GetAreaName(area));
 
     /// <summary>
     /// Get all biomes.
     /// </summary>
     /// <returns></returns>
-    [TryGet]
-    private static List<TilemapLevelBiome> GetAll() => LevelBiomes;
+    public static async Task<List<TilemapLevelBiome>> GetAll()
+    {
+        await WhenReady();
+        return LevelBiomes;
+    }
 }

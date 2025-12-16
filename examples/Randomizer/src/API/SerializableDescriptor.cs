@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Ethereal.API;
 using Ethereal.Classes.Builders;
-using Ethereal.Classes.View;
+using Ethereal.Classes.Views;
+using Ethereal.Utils.Extensions;
 
 namespace Randomizer.API;
 
@@ -60,55 +62,60 @@ internal class SerializableView()
     /// Deserialize itself into a new `MonsterView`.
     /// </summary>
     /// <returns></returns>
-    public MonsterView Deserialize()
+    public async Task<MonsterView?> Deserialize()
     {
-        Monsters.TryGet(ID, out Monster monster);
+        MonsterView? view = await Monsters.GetView(ID);
 
-        MonsterView view = new(monster)
-        {
-            Elements = Elements,
-            MainType = MainType,
-            Types = Types,
-            EliteTrait = Traits.TryGet(EliteTrait, out Trait eliteTrait) ? eliteTrait : null,
-            SignatureTrait = Traits.TryGet(SignatureTrait, out Trait signatureTrait)
-                ? signatureTrait
-                : null,
-            BasePerks =
-            [
-                .. Perks.Select(x => Data.AllPerks.Find(y => y.Perk.GetComponent<Perk>().ID == x)),
-            ],
-            Scripting =
-            [
-                .. Scripting
-                    .Select(x =>
-                        Actions.TryGet(x.id, out BaseAction action)
-                            ? new MonsterAIAction()
-                            {
-                                Action = action.gameObject,
-                                Conditions = x.conditions,
-                                IsTemporary = false,
-                            }
-                            : null
-                    )
-                    .Where(x => x is not null),
-            ],
-            StartActions =
-            [
-                .. StartActions
-                    .Select(x => Actions.TryGet(x, out BaseAction action) ? action : null)
-                    .Where(x => x is not null),
-            ],
-            WildTraits =
-            [
-                .. WildTraits
-                    .Select(x =>
-                        Traits.TryGet(x.id, out Trait trait)
-                            ? new MonsterAITraitBuilder(trait, x.difficulty).Build()
-                            : null
-                    )
-                    .Where(x => x is not null),
-            ],
-        };
+        if (view is null)
+            return null;
+
+        view.Elements = Elements;
+        view.MainType = MainType;
+        view.Types = Types;
+
+        if (await Traits.Get(EliteTrait) is Trait eliteTrait)
+            view.EliteTrait = eliteTrait;
+
+        if (await Traits.Get(SignatureTrait) is Trait signatureTrait)
+            view.SignatureTrait = signatureTrait;
+
+        view.BasePerks =
+        [
+            .. Perks.Select(x => Data.AllPerks.Find(y => y.Perk.GetComponent<Perk>().ID == x)),
+        ];
+
+        view.Scripting =
+        [
+            .. (
+                await Scripting.SelectAsync(async x => new MonsterAIAction()
+                {
+                    Action = (await Actions.Get(x.id))?.gameObject,
+                    Conditions = x.conditions,
+                    IsTemporary = false,
+                })
+            ).Where(x => x.Action is not null),
+        ];
+
+        IEnumerable<BaseAction> a = (await StartActions.SelectAsync(Actions.Get)).Where(x =>
+            x is not null
+        )!;
+
+        view.StartActions =
+        [
+            .. (IEnumerable<BaseAction>)
+                (await StartActions.SelectAsync(Actions.Get)).Where(x => x is not null),
+        ];
+
+        view.WildTraits =
+        [
+            .. (
+                await WildTraits.SelectAsync(async x =>
+                    await Traits.Get(x.id) is Trait trait
+                        ? await new MonsterAITraitBuilder(trait, x.difficulty).Build()
+                        : null!
+                )
+            ).Where(x => x is not null),
+        ];
 
         return view;
     }

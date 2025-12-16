@@ -6,16 +6,6 @@ namespace Ethereal.Attributes;
 [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
 internal class BasicAPI : Attribute;
 
-[AttributeUsage(
-    AttributeTargets.Class | AttributeTargets.Method,
-    Inherited = false,
-    AllowMultiple = false
-)]
-internal class Deferrable : Attribute;
-
-[AttributeUsage(AttributeTargets.Method, Inherited = false, AllowMultiple = false)]
-internal class TryGet : Attribute;
-
 [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
 internal class PrivatePrimaryConstructor : Attribute;
 
@@ -24,6 +14,21 @@ internal class LazyValueConstructor : Attribute
 {
     public (Type Type, string Name)[] NamedTypes => [(typeof(int), "id"), (typeof(string), "name")];
 }
+
+/// <summary>
+/// Get a View instance of a component.
+/// </summary>
+[AttributeUsage(AttributeTargets.Method, Inherited = false, AllowMultiple = false)]
+internal class GetView(Type viewType) : Attribute
+{
+    public Type ViewType = viewType;
+}
+
+/// <summary>
+/// Get the GameObject of a component.
+/// </summary>
+[AttributeUsage(AttributeTargets.Method, Inherited = false, AllowMultiple = false)]
+internal class GetObject : Attribute;
 
 /// <summary>
 /// Generate a getter and setter that forward their value to the given field or property.

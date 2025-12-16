@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Ethereal.API;
 
 namespace Ethereal.Classes.LazyValues;
@@ -13,11 +14,11 @@ public sealed record LazyPerk : LazyReferenceable<Perk>
     public LazyPerk(Perk perk)
         : base(perk) { }
 
-    public override Perk? Get() =>
-        base.Get()
+    public override async Task<Perk?> Get() =>
+        Data
         ?? (
-            Id.HasValue && Perks.TryGet(Id.Value, out Perk byId) ? byId
-            : Name is not null && Perks.TryGet(Name, out Perk byName) ? byName
+            Id.HasValue ? await Perks.Get(Id.Value)
+            : Name is not null ? await Perks.Get(Name)
             : null
         );
 }

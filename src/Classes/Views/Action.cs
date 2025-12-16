@@ -3,7 +3,7 @@ using Ethereal.Attributes;
 using HarmonyLib;
 using UnityEngine;
 
-namespace Ethereal.Classes.View;
+namespace Ethereal.Classes.Views;
 
 /// <summary>
 /// A helper class that allows easy viewing and editing of an Action.
@@ -61,7 +61,7 @@ public sealed partial class ActionView(GameObject gameObject)
         set => AccessTools.Field(typeof(BaseAction), "subTypes").SetValue(Action, value);
     }
 
-    public Sprite? IconBig
+    public Sprite IconBig
     {
         get => Action.Icon;
         set

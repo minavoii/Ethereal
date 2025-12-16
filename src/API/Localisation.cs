@@ -3,15 +3,16 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Ethereal.Attributes;
-using Ethereal.Utils;
+using Ethereal.Utils.Extensions;
 using HarmonyLib;
 using Newtonsoft.Json;
 using UnityEngine;
 
 namespace Ethereal.API;
 
-[Deferrable]
+[BasicAPI]
 public static partial class Localisation
 {
     /// <summary>
@@ -87,9 +88,10 @@ public static partial class Localisation
     /// Add new localisation to the game's data.
     /// </summary>
     /// <param name="entry"></param>
-    [Deferrable]
-    private static void AddLocalisedText_Impl(LocalisationData.LocalisationDataEntry entry)
+    public static async Task Add(LocalisationData.LocalisationDataEntry entry)
     {
+        await WhenReady();
+
         // Already translated
         // Need to return in case multiple mods add the same `StringContent` to localise
         if (LocalisationData.Instance.LocaEntries.ContainsKey(entry.StringContent))
@@ -161,13 +163,12 @@ public static partial class Localisation
     /// </summary>
     /// <param name="entry"></param>
     /// <param name="customLanguageEntries"></param>
-    [Deferrable]
-    private static void AddLocalisedText_Impl(
+    public static async Task Add(
         LocalisationData.LocalisationDataEntry entry,
         Dictionary<string, string> customLanguageEntries
     )
     {
-        AddLocalisedText(entry);
+        await Add(entry);
 
         foreach ((string langName, string text) in customLanguageEntries)
         {

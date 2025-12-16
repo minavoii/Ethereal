@@ -26,7 +26,7 @@ public enum EtherealAPI
     Traits = 1 << 17,
 }
 
-public static partial class APIManager
+public static class APIManager
 {
     /// <summary>
     /// Wait for the specified API(s) to be ready to run an action,
@@ -36,7 +36,7 @@ public static partial class APIManager
     /// <param name="action"></param>
     public static async void RunWhenReady(EtherealAPI apis, Action action)
     {
-        await WaitUntilReady(apis);
+        await WhenReady(apis);
         action();
     }
 
@@ -46,60 +46,60 @@ public static partial class APIManager
     /// </summary>
     /// <param name="apis"></param>
     /// <returns></returns>
-    public static async Task WaitUntilReady(EtherealAPI apis)
+    public static async Task WhenReady(EtherealAPI apis)
     {
         if (apis.HasFlag(EtherealAPI.Actions))
-            await Actions.Task;
+            await Actions.WhenReady();
 
         if (apis.HasFlag(EtherealAPI.Artifacts))
-            await Artifacts.Task;
+            await Artifacts.WhenReady();
 
         if (apis.HasFlag(EtherealAPI.Biomes))
-            await Biomes.Task;
+            await Biomes.WhenReady();
 
         if (apis.HasFlag(EtherealAPI.Buffs))
-            await Buffs.Task;
+            await Buffs.WhenReady();
 
         if (apis.HasFlag(EtherealAPI.Encounters))
-            await Encounters.Task;
+            await Encounters.WhenReady();
 
         if (apis.HasFlag(EtherealAPI.Elements))
-            await Elements.Task;
+            await Elements.WhenReady();
 
         if (apis.HasFlag(EtherealAPI.Equipments))
-            await Equipments.Task;
+            await Equipments.WhenReady();
 
         if (apis.HasFlag(EtherealAPI.Fonts))
-            await Fonts.Task;
+            await Fonts.WhenReady();
 
         if (apis.HasFlag(EtherealAPI.Keywords))
-            await Keywords.Task;
+            await Keywords.WhenReady();
 
         if (apis.HasFlag(EtherealAPI.Localisation))
-            await Localisation.Task;
+            await Localisation.WhenReady();
 
         if (apis.HasFlag(EtherealAPI.Mementos))
-            await Mementos.Task;
+            await Mementos.WhenReady();
 
         if (apis.HasFlag(EtherealAPI.MetaUpgrades))
-            await MetaUpgrades.Task;
+            await MetaUpgrades.WhenReady();
 
         if (apis.HasFlag(EtherealAPI.Monsters))
-            await Monsters.Task;
+            await Monsters.WhenReady();
 
         if (apis.HasFlag(EtherealAPI.MonsterTypes))
-            await MonsterTypes.Task;
+            await MonsterTypes.WhenReady();
 
         if (apis.HasFlag(EtherealAPI.Perks))
-            await Perks.Task;
+            await Perks.WhenReady();
 
         if (apis.HasFlag(EtherealAPI.Referenceables))
-            await Referenceables.Task;
+            await Referenceables.WhenReady();
 
         if (apis.HasFlag(EtherealAPI.Sprites))
-            await Sprites.Task;
+            await Sprites.WhenReady();
 
         if (apis.HasFlag(EtherealAPI.Traits))
-            await Traits.Task;
+            await Traits.WhenReady();
     }
 }

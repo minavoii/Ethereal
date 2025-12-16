@@ -9,8 +9,8 @@ internal static class RunStart
     /// </summary>
     [HarmonyPatch(typeof(NextAreaInteractable), "StartInteraction")]
     [HarmonyPrefix]
-    private static void Prefix()
+    private static async void Prefix()
     {
-        API.Randomizer.Randomize();
+        await API.Randomizer.Randomize();
     }
 }

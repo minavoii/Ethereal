@@ -1,47 +1,61 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Ethereal.Attributes;
 using Ethereal.Classes.Builders;
+using Ethereal.Classes.Views;
 using Ethereal.Classes.Wrappers;
 using HarmonyLib;
 using UnityEngine;
 
 namespace Ethereal.API;
 
-[Deferrable]
+[BasicAPI]
 public static partial class Actions
 {
     /// <summary>
     /// Get an action by id.
     /// </summary>
     /// <param name="id"></param>
-    [TryGet]
-    private static BaseAction? Get(int id) => Get(x => x?.ID == id);
+    /// <returns></returns>
+    [GetObject, GetView(typeof(ActionView))]
+    public static async Task<BaseAction?> Get(int id) => await Get(x => x?.ID == id);
 
     /// <summary>
     /// Get an action by name.
     /// </summary>
     /// <param name="name"></param>
-    [TryGet]
-    private static BaseAction? Get(string name) => Get(x => x?.Name == name);
+    /// <returns></returns>
+    [GetObject, GetView(typeof(ActionView))]
+    public static async Task<BaseAction?> Get(string name) => await Get(x => x?.Name == name);
 
-    private static BaseAction? Get(Func<BaseAction?, bool> predicate) =>
-        GameController.Instance.MonsterTypes.SelectMany(x => x.Actions).FirstOrDefault(predicate)
-        ?? WorldData.Instance.Referenceables.OfType<BaseAction>().FirstOrDefault(predicate);
+    /// <summary>
+    /// Get an action using a predicate.
+    /// </summary>
+    /// <param name="predicate"></param>
+    /// <returns></returns>
+    [GetObject, GetView(typeof(ActionView))]
+    public static async Task<BaseAction?> Get(Func<BaseAction?, bool> predicate) =>
+        (await GetAll()).FirstOrDefault(predicate)
+        ?? (await Referenceables.GetManyOfType<BaseAction>()).FirstOrDefault(predicate);
 
     /// <summary>
     /// Get all actions.
     /// </summary>
     /// <returns></returns>
-    [TryGet]
-    private static List<BaseAction> GetAll() =>
+    public static async Task<List<BaseAction>> GetAll()
+    {
+        await WhenReady();
+
+        return
         [
-            .. GameController
-                .Instance.MonsterTypes.SelectMany(x => x.Actions)
-                .Where(x => x.Name != "?????" && x.Name != "PoiseBreaker")
+            .. (await MonsterTypes.GetAll())
+                .SelectMany(x => x.Actions)
+                .Where(x => x is not null && x.Name != "?????" && x.Name != "PoiseBreaker")
                 .Distinct(),
         ];
+    }
 
     /// <summary>
     /// Create a new action and add it to the game's data.
@@ -49,12 +63,11 @@ public static partial class Actions
     /// <param name="action"></param>
     /// <param name="modifiers"></param>
     /// <param name="learnable"></param>
-    [Deferrable]
-    private static void Add_Impl(
+    public static async Task<BaseAction> Add(
         BaseActionBuilder action,
         List<ActionModifier> modifiers,
         bool learnable = false
-    ) => Add_Impl(action.Build(), modifiers, action.VFXs, learnable);
+    ) => await Add(await action.Build(), modifiers, action.VFXs, learnable);
 
     /// <summary>
     /// Create a new action and add it to the game's data.
@@ -62,14 +75,15 @@ public static partial class Actions
     /// <param name="action"></param>
     /// <param name="modifiers"></param>
     /// <param name="learnable"></param>
-    [Deferrable]
-    private static void Add_Impl(
+    public static async Task<BaseAction> Add(
         BaseAction action,
         List<ActionModifier> modifiers,
         List<VFX.ChildVFX> vfxChildren,
         bool learnable = false
     )
     {
+        await WhenReady();
+
         GameObject go = GameObjects.IntoGameObject(action);
         BaseAction goAction = go.GetComponent<BaseAction>();
         goAction.enabled = false;
@@ -80,7 +94,7 @@ public static partial class Actions
         foreach (ActionModifier modifier in modifiers)
         {
             if (modifier is ActionDamageWrapper damageWrapper)
-                damageWrapper.Unwrap();
+                await damageWrapper.Unwrap();
 
             GameObjects.CopyToGameObject(ref go, modifier);
 
@@ -91,7 +105,12 @@ public static partial class Actions
                     .Field(typeof(ActionApplyBuff), "Buffs")
                     .SetValue(
                         go.GetComponent<ActionApplyBuff>(),
-                        applyBuff.BuffDefines.Select(x => x.Build()).ToList()
+                        (List<ActionApplyBuff.BuffDefine>)
+                            [
+                                .. await Task.WhenAll(
+                                    applyBuff.BuffDefines.Select(async x => await x.Build())
+                                ),
+                            ]
                     );
             }
         }
@@ -104,12 +123,14 @@ public static partial class Actions
         }
 
         goAction.InitializeReferenceable();
-        Referenceables.Add(goAction);
+        await Referenceables.Add(goAction);
 
         if (learnable)
         {
             foreach (GameObject monsterType in action.Types)
                 monsterType.GetComponent<MonsterType>().Actions.Add(goAction);
         }
+
+        return goAction;
     }
 }

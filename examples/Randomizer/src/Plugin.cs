@@ -11,7 +11,7 @@ namespace Randomizer;
 [BepInDependency("minavoii.ethereal")]
 public class Plugin : BaseUnityPlugin
 {
-    internal static new ManualLogSource Logger;
+    internal static new ManualLogSource Logger = null!;
 
     private static readonly string PluginsPath = Path.GetDirectoryName(
         Assembly.GetExecutingAssembly().Location

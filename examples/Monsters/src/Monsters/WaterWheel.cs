@@ -138,7 +138,7 @@ internal static class WaterWheel
             new() { Element = EElement.Earth, Hits = 15 },
             new() { Element = EElement.Wind, Hits = 15 },
         ],
-        BossAlternativeStagger: null,
+        BossAlternativeStagger: [],
         ImpossibleToStagger: false,
         AllAetherDefaultAttack: false
     );
