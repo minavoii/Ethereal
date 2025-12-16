@@ -133,6 +133,7 @@ public static partial class Sprites
         string PathElements = Path.Join(spritesPath, "Elements");
         string PathEquipments = Path.Join(spritesPath, "Equipments");
         string PathMementos = Path.Join(spritesPath, "Mementos");
+        string PathMonsters = Path.Join(spritesPath, "Monsters");
         string PathTraits = Path.Join(spritesPath, "Traits");
         string PathTypes = Path.Join(spritesPath, "Types");
 
@@ -193,6 +194,16 @@ public static partial class Sprites
         catch (Exception e)
             when (e is DirectoryNotFoundException || e is System.Security.SecurityException) { }
 
+        // Monsters
+        try
+        {
+            foreach (FileInfo file in new DirectoryInfo(PathMonsters).EnumerateFiles())
+                if (LoadFromImage(SpriteType.Memento, file.FullName) is Sprite icon)
+                    await ReplaceIconMonster(ToTitleCase(file.Name), icon);
+        }
+        catch (Exception e)
+            when (e is DirectoryNotFoundException || e is System.Security.SecurityException) { }
+
         // Traits
         try
         {
@@ -244,6 +255,8 @@ public static partial class Sprites
                 await ReplaceIconEquipment(name, icon);
             else if (dir == "mementos")
                 await ReplaceIconMemento(name, icon);
+            else if (dir == "monsters")
+                await ReplaceIconMonster(name, icon);
             else if (dir == "traits")
                 await ReplaceIconTrait(name, icon);
             else if (dir == "types")
@@ -401,6 +414,17 @@ public static partial class Sprites
 
         if (await Mementos.Get(name) is MonsterMemento memento)
             memento.Icon = icon;
+    }
+
+    /// <summary>
+    /// Replace a monster's texture with the given sprite.
+    /// </summary>
+    /// <param name="name"></param>
+    /// <param name="icon"></param>
+    private static async Task ReplaceIconMonster(string name, Sprite icon)
+    {
+        if (await Monsters.GetView(name) is MonsterView monster)
+            monster.Texture = icon.texture;
     }
 
     /// <summary>
