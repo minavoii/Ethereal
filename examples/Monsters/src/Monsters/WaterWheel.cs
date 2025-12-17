@@ -244,10 +244,7 @@ internal static class WaterWheel
         Shift: EMonsterShift.Normal,
         ActionIconBig: new(),
         ActionIconSmall: new(),
-        Icon: Sprites.LoadFromImage(
-            Sprites.SpriteType.Memento,
-            Path.Join(Plugin.CustomMonstersPath, "Memento_WaterWheel.png")
-        )
+        Icon: Sprites.LoadFromImage(Path.Join(Plugin.CustomMonstersPath, "Memento_WaterWheel.png"))
     );
 
     internal static readonly MonsterMementoBuilder MementoShifted = Memento with

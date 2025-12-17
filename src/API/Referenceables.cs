@@ -35,7 +35,7 @@ public static partial class Referenceables
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    public static async Task<Referenceable> GetCached(int id)
+    public static async Task<Referenceable?> GetCached(int id)
     {
         await WhenReady();
         return WorldData.Instance.GetReferenceable(id);
@@ -46,7 +46,7 @@ public static partial class Referenceables
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    public static async Task<Referenceable> GetFromPrefab(int id)
+    public static async Task<Referenceable?> GetFromPrefab(int id)
     {
         await WhenReady();
         return WorldData.Instance.Referenceables.FirstOrDefault(x => x?.ID == id);

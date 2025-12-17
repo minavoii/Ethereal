@@ -15,16 +15,11 @@ internal static class TrucePact
         ID: ID,
         Name: Name,
         TargetType: ETargetType.SingleAlly,
-        Icon: Sprites.LoadFromImage(
-            Sprites.SpriteType.Artifact,
-            Path.Join(Plugin.ArtifactsPath, "Artifact_TrucePact.png")
-        ),
+        Icon: Sprites.LoadFromImage(Path.Join(Plugin.ArtifactsPath, "Artifact_TrucePact.png")),
         IconBig: Sprites.LoadFromImage(
-            Sprites.SpriteType.Action,
             Path.Join(Plugin.ArtifactsPath, "ActionIcon_TrucePact_Big.png")
         ),
         IconSmall: Sprites.LoadFromImage(
-            Sprites.SpriteType.ActionSmall,
             Path.Join(Plugin.ArtifactsPath, "ActionIcon_TrucePact_Small.png")
         ),
         Modifiers:

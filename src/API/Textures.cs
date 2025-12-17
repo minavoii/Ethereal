@@ -7,6 +7,13 @@ namespace Ethereal.API;
 public static class Textures
 {
     /// <summary>
+    /// Create an empty texture.
+    /// </summary>
+    /// <returns></returns>
+    public static Texture2D Create() =>
+        new(1, 1, TextureFormat.ARGB32, false) { filterMode = FilterMode.Point };
+
+    /// <summary>
     /// Create a texture from an image file.
     /// </summary>
     /// <param name="path"></param>
@@ -14,7 +21,7 @@ public static class Textures
     /// <returns>a Texture2D if the file was found; otherwise null.</returns>
     public static Texture2D LoadFromImage(string path)
     {
-        Texture2D texture = new(0, 0);
+        Texture2D texture = Create();
         texture.LoadImage(File.ReadAllBytes(path));
 
         return texture;

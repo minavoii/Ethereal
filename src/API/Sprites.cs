@@ -13,21 +13,6 @@ namespace Ethereal.API;
 [BasicAPI]
 public static partial class Sprites
 {
-    public enum SpriteType
-    {
-        Action,
-        ActionSmall,
-        ActionCutSmall,
-        Artifact,
-        Buff,
-        Element,
-        ElementSmall,
-        Equipment,
-        Memento,
-        MonsterType,
-        Trait,
-    }
-
     private static readonly string SpritesPath = Path.Join(Plugin.EtherealPath, "Sprites");
 
     internal static Dictionary<int, Sprite[]> ShiftedSprites { get; } = [];
@@ -41,6 +26,24 @@ public static partial class Sprites
 
         API.SetReady();
     }
+
+    /// <summary>
+    /// Create a sprite and load a texture inside.
+    /// </summary>
+    /// <param name="texture"></param>
+    /// <returns></returns>
+    public static Sprite Create(Texture2D texture) =>
+        Sprite.CreateSprite(
+            texture,
+            new Rect(0, 0, texture.width, texture.height),
+            new Vector2(0.5f, 0.5f),
+            1,
+            1,
+            SpriteMeshType.FullRect,
+            new Vector4(0, 0, 0, 0),
+            true,
+            []
+        );
 
     /// <summary>
     /// Load a sprite from an asset bundle.
@@ -85,24 +88,10 @@ public static partial class Sprites
     /// <param name="iconType"></param>
     /// <param name="path"></param>
     /// <returns>a Sprite if the file was found; otherwise null.</returns>
-    public static Sprite LoadFromImage(SpriteType iconType, string path)
+    public static Sprite LoadFromImage(string path)
     {
-        Sprite sprite = CreateBySize(
-            iconType switch
-            {
-                SpriteType.Action => (18, 18),
-                SpriteType.ActionSmall => (12, 12),
-                SpriteType.ActionCutSmall => (12, 8),
-                SpriteType.Artifact or SpriteType.Equipment or SpriteType.Trait => (48, 48),
-                SpriteType.Element => (8, 8),
-                SpriteType.ElementSmall => (4, 4),
-                SpriteType.Memento => (38, 38),
-                SpriteType.MonsterType or SpriteType.Buff => (7, 7),
-                _ => (0, 0),
-            }
-        );
-
-        sprite.texture.LoadImage(File.ReadAllBytes(path));
+        Texture2D texture = Textures.LoadFromImage(path);
+        Sprite sprite = Create(texture);
 
         return sprite;
     }
@@ -133,6 +122,7 @@ public static partial class Sprites
         string PathElements = Path.Join(spritesPath, "Elements");
         string PathEquipments = Path.Join(spritesPath, "Equipments");
         string PathMementos = Path.Join(spritesPath, "Mementos");
+        string PathMonsters = Path.Join(spritesPath, "Monsters");
         string PathTraits = Path.Join(spritesPath, "Traits");
         string PathTypes = Path.Join(spritesPath, "Types");
 
@@ -158,7 +148,7 @@ public static partial class Sprites
         try
         {
             foreach (FileInfo file in new DirectoryInfo(PathBuffs).EnumerateFiles())
-                if (LoadFromImage(SpriteType.Buff, file.FullName) is Sprite icon)
+                if (LoadFromImage(file.FullName) is Sprite icon)
                     await ReplaceIconBuff(ToTitleCase(file.Name), icon);
         }
         catch (Exception e)
@@ -168,7 +158,7 @@ public static partial class Sprites
         try
         {
             foreach (FileInfo file in new DirectoryInfo(PathElements).EnumerateFiles())
-                ReplaceIconElement(ToTitleCase(file.Name), null, file.FullName);
+                await ReplaceIconElement(ToTitleCase(file.Name), null, file.FullName);
         }
         catch (Exception e)
             when (e is DirectoryNotFoundException || e is System.Security.SecurityException) { }
@@ -177,7 +167,7 @@ public static partial class Sprites
         try
         {
             foreach (FileInfo file in new DirectoryInfo(PathEquipments).EnumerateFiles())
-                if (LoadFromImage(SpriteType.Equipment, file.FullName) is Sprite icon)
+                if (LoadFromImage(file.FullName) is Sprite icon)
                     await ReplaceIconEquipment(ToTitleCase(file.Name), icon);
         }
         catch (Exception e)
@@ -187,8 +177,18 @@ public static partial class Sprites
         try
         {
             foreach (FileInfo file in new DirectoryInfo(PathMementos).EnumerateFiles())
-                if (LoadFromImage(SpriteType.Memento, file.FullName) is Sprite icon)
+                if (LoadFromImage(file.FullName) is Sprite icon)
                     await ReplaceIconMemento(ToTitleCase(file.Name), icon);
+        }
+        catch (Exception e)
+            when (e is DirectoryNotFoundException || e is System.Security.SecurityException) { }
+
+        // Monsters
+        try
+        {
+            foreach (FileInfo file in new DirectoryInfo(PathMonsters).EnumerateFiles())
+                if (LoadFromImage(file.FullName) is Sprite icon)
+                    await ReplaceIconMonster(ToTitleCase(file.Name), icon);
         }
         catch (Exception e)
             when (e is DirectoryNotFoundException || e is System.Security.SecurityException) { }
@@ -197,7 +197,7 @@ public static partial class Sprites
         try
         {
             foreach (FileInfo file in new DirectoryInfo(PathTraits).EnumerateFiles())
-                if (LoadFromImage(SpriteType.Trait, file.FullName) is Sprite icon)
+                if (LoadFromImage(file.FullName) is Sprite icon)
                     await ReplaceIconTrait(ToTitleCase(file.Name), icon);
         }
         catch (Exception e)
@@ -207,7 +207,7 @@ public static partial class Sprites
         try
         {
             foreach (FileInfo file in new DirectoryInfo(PathTypes).EnumerateFiles())
-                if (LoadFromImage(SpriteType.MonsterType, file.FullName) is Sprite icon)
+                if (LoadFromImage(file.FullName) is Sprite icon)
                     await ReplaceIconType(ToTitleCase(file.Name), icon);
         }
         catch (Exception e)
@@ -230,7 +230,7 @@ public static partial class Sprites
 
             string dir = Path.GetDirectoryName(assetName)[7..];
             string name = ToTitleCase(assetName);
-            Sprite icon = CreateBySize((asset.width, asset.height), asset);
+            Sprite icon = Create(asset);
 
             if (dir == "actions")
                 await ReplaceIconAction(name, icon);
@@ -239,11 +239,13 @@ public static partial class Sprites
             else if (dir == "buffs")
                 await ReplaceIconBuff(name, icon);
             else if (dir == "elements")
-                ReplaceIconElement(name, icon);
+                await ReplaceIconElement(name, icon);
             else if (dir == "equipments")
                 await ReplaceIconEquipment(name, icon);
             else if (dir == "mementos")
                 await ReplaceIconMemento(name, icon);
+            else if (dir == "monsters")
+                await ReplaceIconMonster(name, icon);
             else if (dir == "traits")
                 await ReplaceIconTrait(name, icon);
             else if (dir == "types")
@@ -268,21 +270,20 @@ public static partial class Sprites
             string actionName = name[..(name.Length - 6)];
 
             if (await Actions.Get(actionName) is BaseAction action)
-                action.ActionIconSmall = icon ?? LoadFromImage(SpriteType.ActionSmall, iconPath);
+                action.ActionIconSmall = icon ?? LoadFromImage(iconPath);
         }
         else if (name.EndsWith("Cut"))
         {
             string actionName = name[..(name.Length - 4)];
 
             if (await Actions.Get(actionName) is BaseAction action)
-                action.ActionIconCutSmall =
-                    icon ?? LoadFromImage(SpriteType.ActionCutSmall, iconPath);
+                action.ActionIconCutSmall = icon ?? LoadFromImage(iconPath);
         }
         else
         {
             if (await Actions.Get(name) is BaseAction action)
             {
-                Sprite sprite = icon ?? LoadFromImage(SpriteType.Action, iconPath);
+                Sprite sprite = icon ?? LoadFromImage(iconPath);
 
                 action.ActionIconBig = sprite;
                 action.Icon = sprite;
@@ -307,17 +308,17 @@ public static partial class Sprites
             string artifactName = name[..(name.Length - 4)];
 
             if (await Artifacts.Get(artifactName) is Consumable artifact)
-                artifact.ActionIconBig = icon ?? LoadFromImage(SpriteType.Action, iconPath);
+                artifact.ActionIconBig = icon ?? LoadFromImage(iconPath);
         }
         else if (name.EndsWith("Small"))
         {
             string artifactName = name[..(name.Length - 6)];
 
             if (await Artifacts.Get(artifactName) is Consumable artifact)
-                artifact.ActionIconSmall = icon ?? LoadFromImage(SpriteType.Action, iconPath);
+                artifact.ActionIconSmall = icon ?? LoadFromImage(iconPath);
         }
         else if (await Artifacts.Get(name) is Consumable artifact)
-            artifact.Icon = icon ?? LoadFromImage(SpriteType.Artifact, iconPath);
+            artifact.Icon = icon ?? LoadFromImage(iconPath);
     }
 
     /// <summary>
@@ -337,32 +338,30 @@ public static partial class Sprites
     /// <param name="name"></param>
     /// <param name="icon"></param>
     /// <param name="iconPath"></param>
-    private static void ReplaceIconElement(string name, Sprite? icon = null, string iconPath = "")
+    private static async Task ReplaceIconElement(
+        string name,
+        Sprite? icon = null,
+        string iconPath = ""
+    )
     {
         if (name.EndsWith("Empty"))
         {
             string elementName = name[..(name.Length - 6)];
 
-            new ElementView(Enum.Parse<EElement>(elementName))
-            {
-                IconSmallEmpty = icon ?? LoadFromImage(SpriteType.ElementSmall, iconPath),
-            };
+            ElementView view = await Elements.GetView(Enum.Parse<EElement>(elementName));
+            view.IconSmallEmpty = icon ?? LoadFromImage(iconPath);
         }
         else if (name.EndsWith("Filled"))
         {
             string elementName = name[..(name.Length - 7)];
 
-            new ElementView(Enum.Parse<EElement>(elementName))
-            {
-                IconSmallFilled = icon ?? LoadFromImage(SpriteType.ElementSmall, iconPath),
-            };
+            ElementView view = await Elements.GetView(Enum.Parse<EElement>(elementName));
+            view.IconSmallFilled = icon ?? LoadFromImage(iconPath);
         }
         else
         {
-            new ElementView(Enum.Parse<EElement>(name))
-            {
-                Icon = icon ?? LoadFromImage(SpriteType.ElementSmall, iconPath),
-            };
+            ElementView view = await Elements.GetView(Enum.Parse<EElement>(name));
+            view.Icon = icon ?? LoadFromImage(iconPath);
         }
     }
 
@@ -406,6 +405,24 @@ public static partial class Sprites
     }
 
     /// <summary>
+    /// Replace a monster's texture with the given sprite.
+    /// </summary>
+    /// <param name="name"></param>
+    /// <param name="icon"></param>
+    private static async Task ReplaceIconMonster(string name, Sprite icon)
+    {
+        if (name.EndsWith("Exploration"))
+        {
+            string monsterName = name[..(name.Length - 12)];
+
+            if (await Monsters.GetView(monsterName) is MonsterView monster)
+                monster.ExplorationSpritesheet = icon.texture;
+        }
+        else if (await Monsters.GetView(name) is MonsterView monster)
+            monster.Texture = icon.texture;
+    }
+
+    /// <summary>
     /// Replace a trait's icon with the given sprite.
     /// </summary>
     /// <param name="name"></param>
@@ -436,42 +453,4 @@ public static partial class Sprites
         new CultureInfo("en-US").TextInfo.ToTitleCase(
             Path.GetFileNameWithoutExtension(filename).Replace("_", " ")
         );
-
-    /// <summary>
-    /// Create a sprite with a given size and load a texture inside.
-    /// </summary>
-    /// <param name="size"></param>
-    /// <param name="texture"></param>
-    /// <returns></returns>
-    private static Sprite CreateBySize((int width, int height) size, Texture2D texture)
-    {
-        Sprite sprite = Sprite.CreateSprite(
-            texture,
-            new Rect(0, 0, size.width, size.height),
-            new Vector2(0.5f, 0.5f),
-            1,
-            1,
-            SpriteMeshType.FullRect,
-            new Vector4(0, 0, 0, 0),
-            true,
-            []
-        );
-
-        return sprite;
-    }
-
-    /// <summary>
-    /// Create a sprite with a given size and a default texture.
-    /// </summary>
-    /// <param name="size"></param>
-    /// <returns></returns>
-    private static Sprite CreateBySize((int width, int height) size)
-    {
-        Texture2D texture = new(size.width, size.height, TextureFormat.ARGB32, false)
-        {
-            filterMode = FilterMode.Point,
-        };
-
-        return CreateBySize(size, texture);
-    }
 }

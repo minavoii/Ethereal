@@ -43,7 +43,6 @@ internal static class WheelSupremacy
             },
         ],
         Icon: Sprites.LoadFromImage(
-            Sprites.SpriteType.Trait,
             Path.Join(Plugin.CustomMonstersPath, "Trait_WheelSupremacy.png")
         )
     );

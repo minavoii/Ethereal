@@ -20,7 +20,6 @@ internal static class Rotation
     );
 
     private static readonly Sprite Icon = Sprites.LoadFromImage(
-        Sprites.SpriteType.Buff,
         Path.Join(Plugin.CustomMonstersPath, "Status_Rotation.png")
     );
 
