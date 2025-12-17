@@ -31,15 +31,12 @@ internal static class ManyEyed
         Elements: [EElement.Fire],
         AnimationType: EActionAnimationType.CastSpell,
         ActionIconBig: Sprites.LoadFromImage(
-            Sprites.SpriteType.Action,
             Path.Join(Plugin.CustomMonstersPath, "ActionManyEyed_Large.png")
         ),
         ActionIconSmall: Sprites.LoadFromImage(
-            Sprites.SpriteType.ActionSmall,
             Path.Join(Plugin.CustomMonstersPath, "ActionManyEyed_Small.png")
         ),
         ActionIconCutSmall: Sprites.LoadFromImage(
-            Sprites.SpriteType.ActionCutSmall,
             Path.Join(Plugin.CustomMonstersPath, "ActionManyEyed_SmallCut.png")
         ),
         AnimationBuildupTime: 1.1f,

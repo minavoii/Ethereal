@@ -14,7 +14,6 @@ internal static class BlueBlade
             Name = Name,
             Price = 100,
             Icon = Sprites.LoadFromImage(
-                Sprites.SpriteType.Equipment,
                 Path.Join(Plugin.EquipmentsPath, "Equipment_Blade_Blue.png")
             ),
         };

@@ -23,15 +23,12 @@ internal static class FountainOfLife
         Elements: [EElement.Water],
         AnimationType: EActionAnimationType.CastSpell,
         ActionIconBig: Sprites.LoadFromImage(
-            Sprites.SpriteType.Action,
             Path.Join(Plugin.CustomMonstersPath, "ActionFountainOfLife_Large.png")
         ),
         ActionIconSmall: Sprites.LoadFromImage(
-            Sprites.SpriteType.ActionSmall,
             Path.Join(Plugin.CustomMonstersPath, "ActionFountainOfLife_Small.png")
         ),
         ActionIconCutSmall: Sprites.LoadFromImage(
-            Sprites.SpriteType.ActionCutSmall,
             Path.Join(Plugin.CustomMonstersPath, "ActionFountainOfLife_SmallCut.png")
         ),
         VFXs: []
