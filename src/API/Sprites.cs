@@ -423,7 +423,14 @@ public static partial class Sprites
     /// <param name="icon"></param>
     private static async Task ReplaceIconMonster(string name, Sprite icon)
     {
-        if (await Monsters.GetView(name) is MonsterView monster)
+        if (name.EndsWith("Exploration"))
+        {
+            string monsterName = name[..(name.Length - 12)];
+
+            if (await Monsters.GetView(monsterName) is MonsterView monster)
+                monster.ExplorationSpritesheet = icon.texture;
+        }
+        else if (await Monsters.GetView(name) is MonsterView monster)
             monster.Texture = icon.texture;
     }
 

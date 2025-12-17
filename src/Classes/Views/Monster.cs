@@ -97,6 +97,16 @@ public sealed partial class MonsterView(GameObject gameObject)
         }
     }
 
+    public Texture2D ExplorationSpritesheet
+    {
+        get => Animator.ExplorationSpritesheet;
+        set
+        {
+            ExplorationSpritesheet.SetPixels32(value.GetPixels32());
+            ExplorationSpritesheet.Apply();
+        }
+    }
+
     public Sprite[] ShiftedSprites
     {
         set => Sprites.ShiftedSprites[Monster.ID] = value;
