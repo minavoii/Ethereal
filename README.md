@@ -22,7 +22,7 @@ You can now download mods and extract them into the `BepInEx\plugins` directory.
 
 You can find example mods into the [`examples` directory](https://github.com/minavoii/Ethereal/tree/main/examples).
 
-## Adding new languages
+## Adding localisation
 
 You can add localisations at runtime as shown in the examples.
 
