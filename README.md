@@ -28,7 +28,7 @@ You can add localisations at runtime as shown in the examples.
 
 You can also add entire new languages or modify existing ones by creating `.json` files inside the `plugins\Ethereal\Locales` directory.
 
-Please read [the wiki entry](https://github.com/minavoii/Ethereal/wiki/Languages) for more details.
+Please read [the wiki entry](https://github.com/minavoii/Ethereal/wiki/Localisation) for more details.
 
 ## Replacing sprites
 
