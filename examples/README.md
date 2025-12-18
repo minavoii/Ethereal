@@ -10,10 +10,10 @@ To create entire languages or modify existing ones without the need of runtime v
 
 ## Monsters
 
-This example adds a new monster based on Pilgrim's Rest's water wheel.
+This example adds a new monster based on Pilgrim's Rest's water wheel.  
 It also includes custom animations, actions, traits and buffs.
 
 ## Randomizer
 
-This is a more complete example that randomizes the elements, types, perks, traits and actions of all monsters, including wild encounters, on every new run.
+This is a more complete example that randomizes the elements, types, perks, traits and actions of all monsters, including wild encounters, on every new run.  
 It does not aim to be feature complete, but most of the work is there.
