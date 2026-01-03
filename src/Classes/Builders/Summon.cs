@@ -34,7 +34,13 @@ public sealed record SummonBuilder(
         {
             Debug.Log($"Setting up Summon {Summon.Name} in late update");
             Utils.GameObjects.CopyToGameObject(ref summon_go, Animator);
-            summon_go.AddComponent<SpriteRenderer>();
+            SpriteRenderer sr = summon_go.AddComponent<SpriteRenderer>();
+            if(Monsters.TryGet("Cherufe", out Monster existingMonster))
+            {
+                SpriteRenderer existingSr = existingMonster.gameObject.GetComponent<SpriteRenderer>(); 
+                sr.material = existingSr.material;
+            }
+
             Utils.GameObjects.CopyToGameObject(ref summon_go, SkillManager.Build());
             Utils.GameObjects.CopyToGameObject(ref summon_go, Stats.Build());
             Utils.GameObjects.CopyToGameObject(ref summon_go, AI.Build());
