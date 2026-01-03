@@ -54,8 +54,16 @@ public sealed record MonsterBuilder(
         {
             Debug.Log($"Setting up Monster {Monster.Name} in late update");
             Utils.GameObjects.CopyToGameObject(ref monster_go, Animator);
+
             SpriteRenderer sr = monster_go.AddComponent<SpriteRenderer>();
             sr.sprite = Sprite;
+
+            if(Monsters.TryGet("Cherufe", out Monster existingMonster))
+            {
+                SpriteRenderer existingSr = existingMonster.gameObject.GetComponent<SpriteRenderer>(); 
+                sr.material = existingSr.material;
+            }
+
             Utils.GameObjects.CopyToGameObject(ref monster_go, OverworldBehaviour);
             Utils.GameObjects.CopyToGameObject(ref monster_go, SkillManager.Build());
             Utils.GameObjects.CopyToGameObject(ref monster_go, Stats.Build());
