@@ -15,6 +15,33 @@ public sealed record MonsterBounds(Vector2? Bounds, Vector2? BoundsOffset, Vecto
 
 
 /// <summary>
+/// A helper record that stores a Monster's sprites.
+/// </summary>
+[System.Serializable]
+public sealed class MonsterSprites(
+    Sprite[] battleSprites,
+    Sprite[] shiftedBattleSprites,
+    Sprite[] overworldSprites,
+    Sprite[] shiftedOverworldSprites,
+    Sprite[] projectileSprites,
+    Sprite[] shiftedProjectileSprites
+)
+{
+    public Sprite[] BattleSprites => battleSprites;
+    public Sprite[] ShiftedBattleSprites => shiftedBattleSprites;
+    public Sprite[] OverworldSprites => overworldSprites;
+    public Sprite[] ShiftedOverworldSprites => shiftedOverworldSprites;
+    public Sprite[] ProjectileSprites => projectileSprites;
+    public Sprite[] ShiftedProjectileSprites => shiftedProjectileSprites;
+}
+
+public sealed class CustomMonsterSprites : MonoBehaviour
+{
+    [SerializeField]
+    public MonsterSprites? Sprites { get; set; }
+}
+
+/// <summary>
 /// A helper record that creates a Monster at runtime.
 /// </summary>
 /// <param name="Monster">Monster definition</param>
@@ -28,7 +55,7 @@ public sealed record MonsterBounds(Vector2? Bounds, Vector2? BoundsOffset, Vecto
 /// <param name="Shift">Defines monster shift overrides</param>
 public sealed record MonsterBuilder(
     Monster Monster,
-    Sprite Sprite,
+    MonsterSprites Sprite,
     MonsterAnimator Animator,
     MonsterBounds Bounds,
     SkillManagerBuilder SkillManager,
@@ -49,6 +76,8 @@ public sealed record MonsterBuilder(
         {
             Monster.Projectile.transform.SetParent(monster_go.transform);
         }
+        CustomMonsterSprites sprites = monster_go.AddComponent<CustomMonsterSprites>();
+        sprites.Sprites = Sprite;
 
         LateReferenceables.Queue(() =>
         {
@@ -56,7 +85,7 @@ public sealed record MonsterBuilder(
             Utils.GameObjects.CopyToGameObject(ref monster_go, Animator);
 
             SpriteRenderer sr = monster_go.AddComponent<SpriteRenderer>();
-            sr.sprite = Sprite;
+            sr.sprite = Sprite.BattleSprites?[0];
 
             if(Monsters.TryGet("Cherufe", out Monster existingMonster))
             {

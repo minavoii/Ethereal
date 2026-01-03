@@ -31,5 +31,6 @@ internal class Plugin : BaseUnityPlugin
         harmony.PatchAll(typeof(Patches.CombatState));
         harmony.PatchAll(typeof(Patches.Projectiles));
         harmony.PatchAll(typeof(Patches.MonsterInit));
+        harmony.PatchAll(typeof(Patches.ShiftedDisplay));
     }
 }
