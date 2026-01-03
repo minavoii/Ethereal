@@ -31,7 +31,7 @@ public static partial class Referenceables
         if (!WorldData.Instance.Referenceables.Any(x => x?.ID == referenceable.ID))
             WorldData.Instance.Referenceables.Add(referenceable);
 
-        referenceable.transform.SetParent(UIController.Instance.Storage());
+        referenceable.transform.SetParent(WorldData.Instance.Storage());
     }
 
     /// <summary>

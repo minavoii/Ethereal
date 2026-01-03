@@ -5,21 +5,21 @@ namespace Ethereal.Patches;
 
 internal class ReferenceableStorage : MonoBehaviour { }
 
-public static class UIControllerExtensions
+public static class WorldDataExtensions
 {
-    private static readonly ConditionalWeakTable<UIController, GameObject> _extra
+    private static readonly ConditionalWeakTable<WorldData, GameObject> _extra
         = new();
 
-    public static GameObject Extra(this UIController controller)
-        => _extra.GetOrCreateValue(controller);
+    public static GameObject Extra(this WorldData worldData)
+        => _extra.GetOrCreateValue(worldData);
 
-    public static Transform? Storage(this UIController controller)
+    public static Transform? Storage(this WorldData worldData)
     {
-        ReferenceableStorage? storage = controller.GetComponentInChildren<ReferenceableStorage>();
+        ReferenceableStorage? storage = worldData.GetComponentInChildren<ReferenceableStorage>();
         if (storage == null)
         {
             GameObject go = new("Storage");
-            go.transform.parent = controller.transform;
+            go.transform.parent = worldData.transform;
             storage = go.AddComponent<ReferenceableStorage>();
         }
 
