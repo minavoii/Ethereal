@@ -22,6 +22,7 @@ public static partial class Sprites
         Memento,
         MonsterType,
         Trait,
+        Portrait,
     }
 
     private static readonly string SpritesPath = Path.Join(Plugin.EtherealPath, "Sprites");
@@ -75,6 +76,7 @@ public static partial class Sprites
                 SpriteType.ElementSmall => (4, 4),
                 SpriteType.Memento => (38, 38),
                 SpriteType.MonsterType or SpriteType.Buff => (7, 7),
+                SpriteType.Portrait => (44, 39),
                 _ => (0, 0),
             }
         );
